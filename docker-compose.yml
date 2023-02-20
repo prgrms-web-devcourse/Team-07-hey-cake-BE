@@ -1,0 +1,16 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0.32
+    ports:
+      - 3306:3306
+    env_file:
+      - env/db.env
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - hey-cake:/var/lib/hey-cake/data
+    restart: always
+
+volumes:
+  hey-cake:
