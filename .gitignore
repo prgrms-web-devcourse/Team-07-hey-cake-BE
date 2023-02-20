@@ -206,3 +206,6 @@ gradle-app.setting
 
 # Config
 application-*.yml
+
+# Environment variables
+*.env
