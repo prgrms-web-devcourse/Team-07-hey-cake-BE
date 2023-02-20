@@ -52,7 +52,8 @@ jacocoTestReport {
                     ])
                 })
         )
-    finalizedBy 'jacocoTestCoverageVerification'
+        finalizedBy 'jacocoTestCoverageVerification'
+    }
 }
 
 // jacoco 만족도 설정
