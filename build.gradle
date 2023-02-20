@@ -47,6 +47,7 @@ jacocoTestReport {
                     fileTree(dir: it, excludes: [
                             '**/*Application*',
                             '**/*Exception*',
+                            '**/*Config*',
                             '**/dto/**'
                     ])
                 })
@@ -66,19 +67,20 @@ jacocoTestCoverageVerification {
             limit {
                 counter = "BRANCH"
                 value = "COVEREDRATIO"
-                minimum = 0.3
+                minimum = 0.5
             }
 
             limit {
                 counter = "LINE"
                 value = "COVEREDRATIO"
-                minimum = 0.3
+                minimum = 0.5
             }
 
             excludes = [
                     '*.*Application',
                     '*.*Exception',
-                    '*.dto.*',
+                    '**/*Config*',
+                    '*.dto.*'
             ]
         }
     }
