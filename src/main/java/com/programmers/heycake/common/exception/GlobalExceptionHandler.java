@@ -2,14 +2,13 @@ package com.programmers.heycake.common.exception;
 
 import static com.programmers.heycake.common.exception.ErrorCode.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -58,16 +57,13 @@ public class GlobalExceptionHandler {
 
 	private List<ErrorResponse.FieldError> getFieldErrors(BindingResult bindingResult) {
 
-		List<ErrorResponse.FieldError> fieldErrors = new ArrayList<>();
-
-		for (FieldError error : bindingResult.getFieldErrors()) {
-			ErrorResponse.FieldError fieldError = new ErrorResponse.FieldError(
-					error.getField(),
-					error.getRejectedValue().toString(),
-					error.getDefaultMessage()
-			);
-			fieldErrors.add(fieldError);
-		}
-		return fieldErrors;
+		return bindingResult.getFieldErrors()
+				.stream()
+				.map(error -> new ErrorResponse.FieldError(
+						error.getField(),
+						error.getRejectedValue().toString(),
+						error.getDefaultMessage()
+				))
+				.collect(Collectors.toList());
 	}
 }
