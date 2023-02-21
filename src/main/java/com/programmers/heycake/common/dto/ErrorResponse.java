@@ -5,10 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 public record ErrorResponse(
 		String message,
 		String path,
@@ -17,19 +13,7 @@ public record ErrorResponse(
 		List<FieldError> inputErrors
 ) {
 
-	@Getter
-	@NoArgsConstructor(access = AccessLevel.PROTECTED)
-	public static class FieldError {
-
-		private String field;
-		private String rejectedValue;
-		private String message;
-
-		public FieldError(String field, String rejectedValue, String message) {
-			this.field = field;
-			this.rejectedValue = rejectedValue;
-			this.message = message;
-		}
+	public record FieldError(String field, String rejectedValue, String message) {
 	}
 
 	public static ErrorResponse of(String message, String path, List<FieldError> inputErrors) {
