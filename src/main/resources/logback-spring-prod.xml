@@ -1,8 +1,6 @@
 <included>
-    <property resource="logback-variables.properties"/>
-
     <appender name="REQUEST_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/request.log</file>
+        <file>logs/request.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>logs/archive/request.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
             <maxFileSize>50MB</maxFileSize>
@@ -10,7 +8,7 @@
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>
-                [REQUEST] ${LOG_PATTERN}
+                [REQUEST] [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%thread] [%logger{40}:%line] - %msg%n
             </pattern>
             <outputPatternAsHeader>true</outputPatternAsHeader>
         </encoder>

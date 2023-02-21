@@ -1,6 +1,6 @@
 <included>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>
     </root>
 </included>
