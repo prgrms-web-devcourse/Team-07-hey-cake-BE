@@ -27,8 +27,10 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ErrorResponse> badRequestHandler(HttpServletRequest request,
-			MethodArgumentNotValidException e) {
+	public ResponseEntity<ErrorResponse> badRequestHandler(
+			HttpServletRequest request,
+			MethodArgumentNotValidException e
+	) {
 		return ResponseEntity
 				.badRequest()
 				.body(
@@ -62,11 +64,10 @@ public class GlobalExceptionHandler {
 			ErrorResponse.FieldError fieldError = new ErrorResponse.FieldError(
 					error.getField(),
 					error.getRejectedValue().toString(),
-					error.getDefaultMessage());
-
+					error.getDefaultMessage()
+			);
 			fieldErrors.add(fieldError);
 		}
-
 		return fieldErrors;
 	}
 }
