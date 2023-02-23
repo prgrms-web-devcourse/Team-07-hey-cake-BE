@@ -64,14 +64,14 @@ public class MarketEnrollment extends BaseEntity {
 	@Builder
 	public MarketEnrollment(
 			String businessNumber, MarketAddress marketAddress, String marketName,
-			String ownerName, String phoneNumber, EnrollmentStatus enrollmentStatus
+			String ownerName, String phoneNumber
 	) {
 		this.businessNumber = businessNumber;
 		this.marketAddress = marketAddress;
 		this.marketName = marketName;
 		this.ownerName = ownerName;
 		this.phoneNumber = phoneNumber;
-		this.enrollmentStatus = enrollmentStatus;
+		this.enrollmentStatus = EnrollmentStatus.WAITING;
 	}
 
 	public void setMember(Member member) {
