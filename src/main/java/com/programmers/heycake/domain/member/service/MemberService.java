@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,7 +71,8 @@ public class MemberService {
 			roles = claims.getRoles();
 		} catch (Exception e) {
 			log.warn("Jwt 처리중 문제가 발생하였습니다 : {}", e.getMessage());
-			throw new RuntimeException("인증 에러 뱉으세요!");
+			throw new AuthenticationException("jwt 처리 에러") {
+			};
 		} finally {
 			tokenRepository.delete(optionalToken.get());
 		}
