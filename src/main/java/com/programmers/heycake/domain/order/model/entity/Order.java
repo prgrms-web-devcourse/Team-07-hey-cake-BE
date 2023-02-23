@@ -52,7 +52,7 @@ public class Order extends BaseEntity {
 	@Column(name = "hope_price", nullable = false)
 	private Long hopePrice;
 
-	@Column(name = "region", length = 20, nullable = false)
+	@Column(name = "region", length = 40, nullable = false)
 	private String region;
 
 	@Column(name = "visit_date", nullable = false)

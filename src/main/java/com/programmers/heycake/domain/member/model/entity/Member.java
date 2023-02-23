@@ -1,7 +1,5 @@
 package com.programmers.heycake.domain.member.model.entity;
 
-import java.time.LocalDate;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -33,10 +31,10 @@ public class Member extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "nickname", nullable = false)
+	@Column(name = "nickname", length = 20, nullable = false)
 	private String nickname;
 
-	@Column(name = "email", nullable = false)
+	@Column(name = "email", length = 254, nullable = false, unique = true)
 	private String email;
 
 	@Column(name = "member_role", nullable = false)
@@ -44,9 +42,9 @@ public class Member extends BaseEntity {
 	private MemberRole memberRole;
 
 	@Column(name = "birth", nullable = true)
-	private LocalDate birth;
+	private String birth;
 
-	public Member(String nickname, String email, MemberRole memberRole, LocalDate birth) {
+	public Member(String nickname, String email, MemberRole memberRole, String birth) {
 		this.nickname = nickname;
 		this.email = email;
 		this.memberRole = memberRole;

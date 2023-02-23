@@ -39,7 +39,7 @@ public class MarketEnrollment extends BaseEntity {
 	@Column(name = "business_number", length = 10, nullable = false, unique = true)
 	private String businessNumber;
 
-	@Column(name = "address", length = 20, nullable = false)
+	@Column(name = "address", length = 100, nullable = false)
 	private String address;
 
 	@Column(name = "market_name", length = 20, nullable = false)
