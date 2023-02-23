@@ -4,10 +4,10 @@ import java.util.Map;
 
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import com.programmers.heycake.domain.member.model.Member;
-import com.programmers.heycake.domain.member.model.Role;
 import com.programmers.heycake.domain.member.model.dto.MemberDto;
 import com.programmers.heycake.domain.member.model.dto.response.MemberResponse;
+import com.programmers.heycake.domain.member.model.entity.Member;
+import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 
 public class MemberMapper {
 
@@ -26,7 +26,7 @@ public class MemberMapper {
 				.builder()
 				.email(memberDto.email())
 				.birth(memberDto.birthday())
-				.role(Role.USER)
+				.memberAuthority(MemberAuthority.USER)
 				.nickname(memberDto.nickname())
 				.imageUrl(memberDto.imageUrl())
 				.build();
@@ -39,7 +39,7 @@ public class MemberMapper {
 				member.getBirth(),
 				member.getImageUrl(),
 				member.getNickname(),
-				member.getRole()
+				member.getMemberAuthority()
 		);
 	}
 

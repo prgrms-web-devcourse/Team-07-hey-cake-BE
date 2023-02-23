@@ -1,6 +1,6 @@
 package com.programmers.heycake.domain.member.model.dto.response;
 
-import com.programmers.heycake.domain.member.model.Role;
+import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 
 public record MemberResponse(
 		Long id,
@@ -8,6 +8,6 @@ public record MemberResponse(
 		String birth,
 		String imageUrl,
 		String nickname,
-		Role role
+		MemberAuthority memberAuthority
 ) {
 }

@@ -28,8 +28,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.TestUtils;
-import com.programmers.heycake.domain.member.model.Member;
 import com.programmers.heycake.domain.member.model.Token;
+import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
 import com.programmers.heycake.domain.member.repository.TokenRepository;
 

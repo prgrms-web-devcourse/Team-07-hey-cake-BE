@@ -1,10 +1,10 @@
 package com.programmers.heycake;
 
-import com.programmers.heycake.domain.member.model.Member;
-import com.programmers.heycake.domain.member.model.Role;
 import com.programmers.heycake.domain.member.model.Token;
 import com.programmers.heycake.domain.member.model.dto.MemberDto;
 import com.programmers.heycake.domain.member.model.dto.response.MemberResponse;
+import com.programmers.heycake.domain.member.model.entity.Member;
+import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 
 public class TestUtils {
 
@@ -15,7 +15,7 @@ public class TestUtils {
 				"0925",
 				"profileImageUrl",
 				"nickname",
-				Role.USER
+				MemberAuthority.USER
 		);
 	}
 
@@ -31,7 +31,7 @@ public class TestUtils {
 		return Member.builder()
 				.nickname("nickname")
 				.email("email@naver.com")
-				.role(Role.USER)
+				.memberAuthority(MemberAuthority.USER)
 				.birth("0925")
 				.imageUrl("member profile image url")
 				.build();

@@ -17,10 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.programmers.heycake.domain.member.model.Member;
 import com.programmers.heycake.domain.member.model.Token;
 import com.programmers.heycake.domain.member.model.dto.MemberDto;
 import com.programmers.heycake.domain.member.model.dto.response.MemberResponse;
+import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
 import com.programmers.heycake.domain.member.repository.TokenRepository;
 
@@ -87,7 +87,7 @@ class MemberServiceTest {
 					.email(memberResponse.email())
 					.nickname(memberResponse.nickname())
 					.birth(memberResponse.birth())
-					.role(memberResponse.role())
+					.memberAuthority(memberResponse.memberAuthority())
 					.imageUrl(memberResponse.imageUrl())
 					.build();
 

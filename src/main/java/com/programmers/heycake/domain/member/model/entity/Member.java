@@ -16,6 +16,7 @@ import com.programmers.heycake.domain.BaseEntity;
 import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -41,13 +42,18 @@ public class Member extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private MemberAuthority memberAuthority;
 
-	@Column(name = "birth", nullable = true)
+	@Column(name = "birth", length = 4, nullable = true)
 	private String birth;
 
-	public Member(String nickname, String email, MemberAuthority memberAuthority, String birth) {
+	@Column(name = "image_url", length = 100, nullable = false)
+	private String imageUrl;
+
+	@Builder
+	public Member(String nickname, String email, MemberAuthority memberAuthority, String birth, String imageUrl) {
 		this.nickname = nickname;
 		this.email = email;
 		this.memberAuthority = memberAuthority;
 		this.birth = birth;
+		this.imageUrl = imageUrl;
 	}
 }

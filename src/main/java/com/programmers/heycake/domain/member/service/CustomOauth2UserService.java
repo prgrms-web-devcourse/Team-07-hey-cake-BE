@@ -14,7 +14,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import com.programmers.heycake.domain.member.model.Role;
+import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,7 +38,7 @@ public class CustomOauth2UserService implements OAuth2UserService<OAuth2UserRequ
 		Map<String, Object> memberAttribute = toMap(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
 		return new DefaultOAuth2User(
-				Collections.singleton(new SimpleGrantedAuthority(Role.USER.getAuthority())),
+				Collections.singleton(new SimpleGrantedAuthority(MemberAuthority.USER.getRole())),
 				memberAttribute,
 				"email"
 		);
