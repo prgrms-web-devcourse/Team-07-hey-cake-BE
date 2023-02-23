@@ -46,7 +46,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		TokenResponse tokenResponse = jwt.generateAllToken(
 				Jwt
 						.Claims.from(memberDto.email(), new String[] {
-								memberService.findByEmail(memberDto.email()).role().getAuthority()
+								memberService.findByEmail(memberDto.email()).memberAuthority().getRole()
 						})
 		);
 		writeTokenResponse(response, tokenResponse);
