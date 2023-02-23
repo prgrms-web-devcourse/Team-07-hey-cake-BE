@@ -16,7 +16,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import com.programmers.heycake.domain.BaseEntity;
-import com.programmers.heycake.domain.thread.model.entity.Thread;
+import com.programmers.heycake.domain.offer.model.entity.Offer;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -41,19 +41,19 @@ public class Comment extends BaseEntity {
 	private String content;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "thread_id", referencedColumnName = "id")
-	private Thread thread;
+	@JoinColumn(name = "offer_id", referencedColumnName = "id")
+	private Offer offer;
 
 	public Comment(Long memberId, String content) {
 		this.memberId = memberId;
 		this.content = content;
 	}
 
-	public void setThread(Thread thread) {
-		if (Objects.nonNull(this.thread)) {
-			this.thread.getComments().remove(this);
+	public void setOffer(Offer offer) {
+		if (Objects.nonNull(this.offer)) {
+			this.offer.getComments().remove(this);
 		}
-		this.thread = thread;
-		thread.getComments().add(this);
+		this.offer = offer;
+		offer.getComments().add(this);
 	}
 }

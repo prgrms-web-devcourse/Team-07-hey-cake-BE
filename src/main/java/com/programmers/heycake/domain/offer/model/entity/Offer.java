@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.thread.model.entity;
+package com.programmers.heycake.domain.offer.model.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,19 +26,19 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "thread")
+@Table(name = "offer")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Where(clause = "deleted_at IS NULL")
-@SQLDelete(sql = "UPDATE thread SET deleted_at = NOW() WHERE id = ?")
-public class Thread extends BaseEntity {
+@SQLDelete(sql = "UPDATE offer SET deleted_at = NOW() WHERE id = ?")
+public class Offer extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "member_id", nullable = false)
+	@Column(name = "market_id", nullable = false)
 	private Long marketId;
 
 	@Column(name = "expected_price", nullable = false)
@@ -51,10 +51,10 @@ public class Thread extends BaseEntity {
 	@JoinColumn(name = "order_id", referencedColumnName = "id")
 	private Order order;
 
-	@OneToMany(mappedBy = "thread")
+	@OneToMany(mappedBy = "offer")
 	private List<Comment> comments = new ArrayList<>();
 
-	public Thread(Long marketId, int expectedPrice, String content) {
+	public Offer(Long marketId, int expectedPrice, String content) {
 		this.marketId = marketId;
 		this.expectedPrice = expectedPrice;
 		this.content = content;
@@ -62,9 +62,9 @@ public class Thread extends BaseEntity {
 
 	public void setOrder(Order order) {
 		if (Objects.nonNull(this.order)) {
-			this.order.getThreads().remove(this);
+			this.order.getOffers().remove(this);
 		}
 		this.order = order;
-		order.getThreads().add(this);
+		order.getOffers().add(this);
 	}
 }

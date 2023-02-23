@@ -19,8 +19,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import com.programmers.heycake.domain.BaseEntity;
+import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
-import com.programmers.heycake.domain.thread.model.entity.Thread;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -62,7 +62,7 @@ public class Order extends BaseEntity {
 	private CakeInfo cakeInfo;
 
 	@OneToMany(mappedBy = "order")
-	private List<Thread> threads = new ArrayList<>();
+	private List<Offer> offers = new ArrayList<>();
 
 	@Builder
 	public Order(

@@ -15,7 +15,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import com.programmers.heycake.domain.BaseEntity;
-import com.programmers.heycake.domain.member.model.vo.Role;
+import com.programmers.heycake.domain.member.model.vo.MemberRole;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -46,20 +46,23 @@ public class Member extends BaseEntity {
 	@Column(name = "phone_number", nullable = false)
 	private String phoneNumber;
 
-	@Column(name = "role", nullable = false)
+	@Column(name = "member_role", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private Role role;
+	private MemberRole memberRole;
 
 	@Column(name = "birth", nullable = true)
 	private LocalDate birth;
 
 	@Builder
-	public Member(String name, String nickname, String email, String phoneNumber, Role role, LocalDate birth) {
+	public Member(
+			String name, String nickname, String email,
+			String phoneNumber, MemberRole memberRole, LocalDate birth
+	) {
 		this.name = name;
 		this.nickname = nickname;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
-		this.role = role;
+		this.memberRole = memberRole;
 		this.birth = birth;
 	}
 }

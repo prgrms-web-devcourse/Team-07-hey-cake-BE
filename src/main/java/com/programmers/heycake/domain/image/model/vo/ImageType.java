@@ -4,6 +4,6 @@ public enum ImageType {
 	MEMBER,
 	MARKET,
 	ORDER,
-	THREAD,
+	OFFER,
 	COMMENT
 }
