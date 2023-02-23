@@ -18,7 +18,6 @@ import com.programmers.heycake.domain.BaseEntity;
 import com.programmers.heycake.domain.member.model.vo.MemberRole;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,17 +33,11 @@ public class Member extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "name", nullable = false)
-	private String name;
-
 	@Column(name = "nickname", nullable = false)
 	private String nickname;
 
 	@Column(name = "email", nullable = false)
 	private String email;
-
-	@Column(name = "phone_number", nullable = false)
-	private String phoneNumber;
 
 	@Column(name = "member_role", nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -53,15 +46,9 @@ public class Member extends BaseEntity {
 	@Column(name = "birth", nullable = true)
 	private LocalDate birth;
 
-	@Builder
-	public Member(
-			String name, String nickname, String email,
-			String phoneNumber, MemberRole memberRole, LocalDate birth
-	) {
-		this.name = name;
+	public Member(String nickname, String email, MemberRole memberRole, LocalDate birth) {
 		this.nickname = nickname;
 		this.email = email;
-		this.phoneNumber = phoneNumber;
 		this.memberRole = memberRole;
 		this.birth = birth;
 	}
