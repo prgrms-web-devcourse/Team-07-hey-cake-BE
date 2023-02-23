@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    include: security
   config:
     import: optional:file:env/spring.env[.properties]
 
