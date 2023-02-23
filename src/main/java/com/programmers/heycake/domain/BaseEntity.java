@@ -17,7 +17,7 @@ import lombok.Getter;
 @MappedSuperclass
 public abstract class BaseEntity {
 
-	@Column(name = "created_at", nullable = false)
+	@Column(name = "created_at", nullable = false, updatable = false)
 	@CreatedDate
 	private LocalDateTime createdAt;
 
