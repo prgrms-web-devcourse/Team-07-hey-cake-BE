@@ -12,8 +12,8 @@ spring:
           kakao:
             client-name: ${CLIENT_NAME}
             client-id: ${CLIENT_ID}
-            client-secret: ${CLIENT-SECRET}
-            redirect-uri: ${REDIRECT-URI}
+            client-secret: ${CLIENT_SECRET}
+            redirect-uri: ${REDIRECT_URI}
             authorization-grant-type: authorization_code
             client-authentication-method: POST
             scope:
