@@ -116,10 +116,8 @@ class MemberServiceTest {
 					.thenReturn(Optional.empty());
 
 			// when, then
-			memberService.findByEmail(email);
-
-			verify(memberRepository).findByEmail(email);
 			assertThrows(EntityNotFoundException.class, () -> memberService.findByEmail(email));
+			verify(memberRepository).findByEmail(email);
 		}
 	}
 
