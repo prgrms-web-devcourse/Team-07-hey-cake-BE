@@ -1,6 +1,7 @@
 package com.programmers.heycake.domain.market.model.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -17,6 +18,7 @@ import org.hibernate.annotations.Where;
 
 import com.programmers.heycake.domain.BaseEntity;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
+import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 import com.programmers.heycake.domain.member.model.entity.Member;
 
 import lombok.AccessLevel;
@@ -39,8 +41,8 @@ public class MarketEnrollment extends BaseEntity {
 	@Column(name = "business_number", length = 10, nullable = false, unique = true)
 	private String businessNumber;
 
-	@Column(name = "address", length = 100, nullable = false)
-	private String address;
+	@Embedded
+	private MarketAddress marketAddress;
 
 	@Column(name = "market_name", length = 20, nullable = false)
 	private String marketName;
@@ -61,11 +63,11 @@ public class MarketEnrollment extends BaseEntity {
 
 	@Builder
 	public MarketEnrollment(
-			String businessNumber, String address, String marketName,
+			String businessNumber, MarketAddress marketAddress, String marketName,
 			String ownerName, String phoneNumber, EnrollmentStatus enrollmentStatus
 	) {
 		this.businessNumber = businessNumber;
-		this.address = address;
+		this.marketAddress = marketAddress;
 		this.marketName = marketName;
 		this.ownerName = ownerName;
 		this.phoneNumber = phoneNumber;
