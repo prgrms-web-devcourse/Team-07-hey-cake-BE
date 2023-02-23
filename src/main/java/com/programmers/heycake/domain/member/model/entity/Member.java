@@ -11,6 +11,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
 import com.programmers.heycake.domain.BaseEntity;
 import com.programmers.heycake.domain.member.model.vo.Role;
 
@@ -23,6 +26,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE member SET deleted_at = NOW() WHERE id = ?")
 public class Member extends BaseEntity {
 
 	@Id

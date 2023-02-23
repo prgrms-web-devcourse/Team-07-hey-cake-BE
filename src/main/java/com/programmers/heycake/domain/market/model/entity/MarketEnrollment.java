@@ -12,6 +12,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
 import com.programmers.heycake.domain.BaseEntity;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 import com.programmers.heycake.domain.member.model.entity.Member;
@@ -25,6 +28,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE market_enrollment SET deleted_at = NOW() WHERE id = ?")
 public class MarketEnrollment extends BaseEntity {
 
 	@Id
