@@ -1,8 +1,10 @@
 spring:
-  profiles:
-    include: security
+  #  profiles:
+  #    include: security
   config:
-    import: optional:file:env/spring.env[.properties]
+    import:
+      - optional:file:env/spring.env[.properties]
+      - application-security.yml
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

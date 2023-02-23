@@ -113,6 +113,8 @@ class OAuth2SuccessHandlerTest {
 			assertThat(members.get(0))
 					.usingRecursiveComparison()
 					.ignoringFields("id")
+					.ignoringFields("createdAt")
+					.ignoringFields("updatedAt")
 					.isEqualTo(member);
 			assertThat(tokens).hasSize(1);
 			assertThat(tokens.get(0).getEmail()).isEqualTo(member.getEmail());

@@ -1,4 +1,10 @@
 spring:
+  config:
+    import:
+      - optional:file:env/jwt.env[.properties]
+      - optional:file:env/oauth2.env[.properties]
+
+
   security:
     oauth2:
       client:
