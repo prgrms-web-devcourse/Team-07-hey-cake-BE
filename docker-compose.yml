@@ -6,6 +6,7 @@ services:
       - 3306:3306
     env_file:
       - env/db.env
+    container_name: hey-cake
     environment:
       TZ: Asia/Seoul
     volumes:
