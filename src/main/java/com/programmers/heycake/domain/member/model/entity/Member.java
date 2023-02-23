@@ -42,7 +42,7 @@ public class Member extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private MemberAuthority memberAuthority;
 
-	@Column(name = "birth", length = 4, nullable = true)
+	@Column(name = "birth", length = 8, nullable = true)
 	private String birth;
 
 	@Column(name = "image_url", length = 100, nullable = false)
