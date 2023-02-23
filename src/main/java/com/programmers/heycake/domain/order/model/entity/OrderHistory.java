@@ -38,7 +38,7 @@ public class OrderHistory extends BaseEntity {
 	private Long marketId;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "order_id", referencedColumnName = "id")
+	@JoinColumn(name = "order_id")
 	private Order order;
 
 	public OrderHistory(Long memberId, Long marketId) {

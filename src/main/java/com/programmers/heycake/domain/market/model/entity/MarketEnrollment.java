@@ -56,7 +56,7 @@ public class MarketEnrollment extends BaseEntity {
 	private EnrollmentStatus enrollmentStatus;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id", referencedColumnName = "id")
+	@JoinColumn(name = "member_id")
 	private Member member;
 
 	@Builder

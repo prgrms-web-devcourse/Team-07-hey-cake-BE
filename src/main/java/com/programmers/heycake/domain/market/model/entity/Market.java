@@ -60,11 +60,11 @@ public class Market extends BaseEntity {
 	private String description;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id", referencedColumnName = "id")
+	@JoinColumn(name = "member_id")
 	private Member member;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "market_enrollment_id", referencedColumnName = "id")
+	@JoinColumn(name = "market_enrollment_id")
 	private MarketEnrollment marketEnrollment;
 
 	@Builder

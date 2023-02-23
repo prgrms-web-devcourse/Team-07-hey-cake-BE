@@ -48,7 +48,7 @@ public class Offer extends BaseEntity {
 	private String content;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "order_id", referencedColumnName = "id")
+	@JoinColumn(name = "order_id")
 	private Order order;
 
 	@OneToMany(mappedBy = "offer")

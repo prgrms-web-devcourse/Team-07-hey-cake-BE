@@ -41,7 +41,7 @@ public class Comment extends BaseEntity {
 	private String content;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "offer_id", referencedColumnName = "id")
+	@JoinColumn(name = "offer_id")
 	private Offer offer;
 
 	public Comment(Long memberId, String content) {
