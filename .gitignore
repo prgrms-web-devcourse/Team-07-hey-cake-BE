@@ -200,8 +200,5 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
-# Config
-application-*.yml
-
 # Environment variables
 *.env
