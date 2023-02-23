@@ -13,7 +13,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import com.programmers.heycake.domain.BaseEntity;
-import com.programmers.heycake.domain.member.model.vo.MemberRole;
+import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -39,15 +39,15 @@ public class Member extends BaseEntity {
 
 	@Column(name = "member_role", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private MemberRole memberRole;
+	private MemberAuthority memberAuthority;
 
 	@Column(name = "birth", nullable = true)
 	private String birth;
 
-	public Member(String nickname, String email, MemberRole memberRole, String birth) {
+	public Member(String nickname, String email, MemberAuthority memberAuthority, String birth) {
 		this.nickname = nickname;
 		this.email = email;
-		this.memberRole = memberRole;
+		this.memberAuthority = memberAuthority;
 		this.birth = birth;
 	}
 }
