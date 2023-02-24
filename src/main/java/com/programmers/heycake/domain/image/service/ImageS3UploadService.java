@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
@@ -41,7 +42,7 @@ public class ImageS3UploadService implements ImageUploadService {
 
 	@Override
 	public void delete(String subPath, String savedFilename) {
-		amazonS3.deleteObject(bucketName, subPath + "/" + savedFilename);
+		amazonS3.deleteObject(new DeleteObjectRequest(bucketName, subPath + "/" + savedFilename));
 	}
 
 	private String createSavedFilename(String originalFilename) {
