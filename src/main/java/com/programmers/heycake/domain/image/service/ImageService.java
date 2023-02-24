@@ -3,6 +3,8 @@ package com.programmers.heycake.domain.image.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.common.exception.BusinessException;
+import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
@@ -16,7 +18,16 @@ public class ImageService {
 	private final ImageRepository imageRepository;
 
 	@Transactional
-	public void save(Long referenceId, ImageType imageType, String savedUrl) {
+	public void createImage(Long referenceId, ImageType imageType, String savedUrl) {
 		imageRepository.save(new Image(referenceId, imageType, savedUrl));
+	}
+
+	@Transactional
+	public void deleteImage(Long referenceId, ImageType imageType) {
+		imageRepository.findByReferenceIdAndImageType(referenceId, imageType)
+				.orElseThrow(() -> {
+					throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
+				});
+		imageRepository.deleteByReferenceIdAndImageType(referenceId, imageType);
 	}
 }
