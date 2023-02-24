@@ -1,10 +1,22 @@
 package com.programmers.heycake.domain.image.service;
 
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface ImageService {
+import com.programmers.heycake.domain.image.model.entity.Image;
+import com.programmers.heycake.domain.image.model.vo.ImageType;
+import com.programmers.heycake.domain.image.repository.ImageRepository;
 
-	String upload(MultipartFile multipartFile, String dirName);
+import lombok.RequiredArgsConstructor;
 
-	void delete(String subPath, String savedFilename);
+@Service
+@RequiredArgsConstructor
+public class ImageService {
+
+	private final ImageRepository imageRepository;
+
+	@Transactional
+	public void save(Long referenceId, ImageType imageType, String savedUrl) {
+		imageRepository.save(new Image(referenceId, imageType, savedUrl));
+	}
 }
