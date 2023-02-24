@@ -32,7 +32,12 @@ public class ImageS3Service implements ImageService {
 		objectMetadata.setContentType(multipartFile.getContentType());
 
 		try {
-			amazonS3.putObject(new PutObjectRequest(bucketName, subPath, multipartFile.getInputStream(), objectMetadata));
+			amazonS3.putObject(new PutObjectRequest(
+					bucketName,
+					subPath + "/" + savedFilename,
+					multipartFile.getInputStream(),
+					objectMetadata
+			));
 		} catch (IOException e) {
 			throw new IllegalStateException("이미지를 업로드할 수 없습니다.", e);
 		}
