@@ -2,7 +2,7 @@ package com.programmers.heycake.domain.image.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public interface ImageUploadService {
+public interface ImageService {
 
 	String upload(MultipartFile multipartFile, String dirName);
 

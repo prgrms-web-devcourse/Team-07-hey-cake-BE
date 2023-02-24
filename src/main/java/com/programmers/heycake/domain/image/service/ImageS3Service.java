@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ImageS3UploadService implements ImageUploadService {
+public class ImageS3Service implements ImageService {
 
 	private final AmazonS3 amazonS3;
 
