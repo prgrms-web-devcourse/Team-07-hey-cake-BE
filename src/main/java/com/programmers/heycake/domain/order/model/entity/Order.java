@@ -50,7 +50,7 @@ public class Order extends BaseEntity {
 	private OrderStatus orderStatus;
 
 	@Column(name = "hope_price", nullable = false)
-	private Long hopePrice;
+	private int hopePrice;
 
 	@Column(name = "region", length = 40, nullable = false)
 	private String region;
@@ -66,7 +66,7 @@ public class Order extends BaseEntity {
 
 	@Builder
 	public Order(
-			Long memberId, String title, OrderStatus orderStatus, Long hopePrice,
+			Long memberId, String title, OrderStatus orderStatus, int hopePrice,
 			String region, LocalDateTime visitDate, CakeInfo cakeInfo
 	) {
 		this.memberId = memberId;

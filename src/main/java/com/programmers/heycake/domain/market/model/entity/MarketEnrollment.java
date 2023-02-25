@@ -1,6 +1,10 @@
 package com.programmers.heycake.domain.market.model.entity;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -17,6 +21,7 @@ import org.hibernate.annotations.Where;
 
 import com.programmers.heycake.domain.BaseEntity;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
+import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 import com.programmers.heycake.domain.member.model.entity.Member;
 
 import lombok.AccessLevel;
@@ -39,17 +44,29 @@ public class MarketEnrollment extends BaseEntity {
 	@Column(name = "business_number", length = 10, nullable = false, unique = true)
 	private String businessNumber;
 
-	@Column(name = "address", length = 100, nullable = false)
-	private String address;
+	@Column(name = "owner_name", length = 10, nullable = false)
+	private String ownerName;
+
+	@Column(name = "open_date", nullable = false)
+	private LocalDate openDate;
 
 	@Column(name = "market_name", length = 20, nullable = false)
 	private String marketName;
 
-	@Column(name = "owner_name", length = 10, nullable = false)
-	private String ownerName;
-
 	@Column(name = "phone_number", length = 20, nullable = false)
 	private String phoneNumber;
+
+	@Embedded
+	private MarketAddress marketAddress;
+
+	@Column(name = "open_time", nullable = false)
+	private LocalTime openTime;
+
+	@Column(name = "end_time", nullable = false)
+	private LocalTime endTime;
+
+	@Column(name = "description", length = 500, nullable = false)
+	private String description;
 
 	@Column(name = "enrollment_status", length = 10, nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -61,14 +78,26 @@ public class MarketEnrollment extends BaseEntity {
 
 	@Builder
 	public MarketEnrollment(
-			String businessNumber, String address, String marketName,
-			String ownerName, String phoneNumber, EnrollmentStatus enrollmentStatus
+			String businessNumber,
+			String ownerName,
+			LocalDate openDate,
+			String marketName,
+			String phoneNumber,
+			MarketAddress marketAddress,
+			LocalTime openTime,
+			LocalTime endTime,
+			String description,
+			EnrollmentStatus enrollmentStatus
 	) {
 		this.businessNumber = businessNumber;
-		this.address = address;
-		this.marketName = marketName;
 		this.ownerName = ownerName;
+		this.openDate = openDate;
+		this.marketName = marketName;
 		this.phoneNumber = phoneNumber;
+		this.marketAddress = marketAddress;
+		this.openTime = openTime;
+		this.endTime = endTime;
+		this.description = description;
 		this.enrollmentStatus = enrollmentStatus;
 	}
 
