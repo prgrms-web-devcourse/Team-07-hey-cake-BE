@@ -1,5 +1,9 @@
 package com.programmers.heycake.domain.offer.service;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
@@ -21,12 +25,16 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class OfferService {
-
 	private final OfferRepository offerRepository;
 	private final MemberRepository memberRepository;
 	private final OrderRepository orderRepository;
 	private final MarketRepository marketRepository;
 
+	@Transactional
+	public void deleteOffer(Long offerId) {
+		//Todo Context 에서 유저 가져다가 권한 확인
+		offerRepository.deleteById(offerId);
+	}
 	public Long saveOffer(Long memberId, Long orderId, int expectedPrice, String content) {
 
 		Order order = getOrder(orderId);
