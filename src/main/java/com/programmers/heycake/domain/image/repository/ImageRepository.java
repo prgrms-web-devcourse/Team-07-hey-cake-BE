@@ -10,6 +10,4 @@ import com.programmers.heycake.domain.image.model.vo.ImageType;
 public interface ImageRepository extends JpaRepository<Image, Long> {
 
 	Optional<Image> findByReferenceIdAndImageType(Long referenceId, ImageType imageType);
-
-	void deleteByReferenceIdAndImageType(Long referenceId, ImageType imageType);
 }

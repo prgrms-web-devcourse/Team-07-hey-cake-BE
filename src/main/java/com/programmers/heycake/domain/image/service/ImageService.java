@@ -25,9 +25,11 @@ public class ImageService {
 	@Transactional
 	public void deleteImage(Long referenceId, ImageType imageType) {
 		imageRepository.findByReferenceIdAndImageType(referenceId, imageType)
-				.orElseThrow(() -> {
-					throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
-				});
-		imageRepository.deleteByReferenceIdAndImageType(referenceId, imageType);
+				.ifPresentOrElse(
+						imageRepository::delete,
+						() -> {
+							throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
+						}
+				);
 	}
 }
