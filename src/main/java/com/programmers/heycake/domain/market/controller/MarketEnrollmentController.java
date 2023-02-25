@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponse;
-import com.programmers.heycake.domain.market.service.MarketEnrollmentService;
+import com.programmers.heycake.domain.market.service.MarketEnrollmentFacade;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,12 +20,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MarketEnrollmentController {
 
-	private final MarketEnrollmentService marketEnrollmentService;
+	private final MarketEnrollmentFacade marketEnrollmentFacade;
 
+	// todo 인증 로직 완료 시 입력 인자 수정 필요
 	@PostMapping
-	public ResponseEntity<Void> enrollMarket(@Valid @ModelAttribute MarketEnrollmentRequest marketEnrollmentRequest) {
-		MarketEnrollmentResponse marketEnrollmentResponse = marketEnrollmentService.enrollMarket(marketEnrollmentRequest);
-		URI location = URI.create("/api/v1/enrollments/" + marketEnrollmentResponse.id());
+	public ResponseEntity<Void> enrollMarket(@Valid @ModelAttribute MarketEnrollmentRequest request) {
+		Long enrollmentId = marketEnrollmentFacade.enrollMarket(request);
+		URI location = URI.create("/api/v1/enrollments/" + enrollmentId);
 		return ResponseEntity.created(location).build();
 	}
 }

@@ -7,7 +7,6 @@ import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.market.mapper.MarketEnrollmentMapper;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponse;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
@@ -23,11 +22,12 @@ public class MarketEnrollmentService {
 	private final MemberRepository memberRepository;
 
 	@Transactional
-	public MarketEnrollmentResponse enrollMarket(MarketEnrollmentRequest marketEnrollmentRequest) {
+	public Long enrollMarket(MarketEnrollmentRequest request) {
 
-		MarketEnrollment marketEnrollment = MarketEnrollmentMapper.toEntity(marketEnrollmentRequest);
+		MarketEnrollment enrollment = MarketEnrollmentMapper.toEntity(request);
 
-		Member member = memberRepository.findById(marketEnrollmentRequest.memberId())
+		// todo 인증 완성 시 회원 조회 방식 변경
+		Member member = memberRepository.findById(request.memberId())
 				.orElseThrow(() -> {
 					throw new BusinessException(ErrorCode.UNAUTHORIZED);
 				});
@@ -35,9 +35,9 @@ public class MarketEnrollmentService {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
 
-		marketEnrollment.setMember(member);
-		MarketEnrollment savedMarketEnrollment = marketEnrollmentRepository.save(marketEnrollment);
+		enrollment.setMember(member);
+		MarketEnrollment savedEnrollment = marketEnrollmentRepository.save(enrollment);
 
-		return new MarketEnrollmentResponse(savedMarketEnrollment.getId());
+		return savedEnrollment.getId();
 	}
 }
