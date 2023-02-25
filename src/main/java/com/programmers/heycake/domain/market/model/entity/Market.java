@@ -37,28 +37,19 @@ public class Market extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "business_number", length = 10, nullable = false, unique = true)
-	private String businessNumber;
+	@Column(name = "phone_number", length = 20, nullable = false)
+	private String phoneNumber;
 
 	@Embedded
 	private MarketAddress marketAddress;
 
-	@Column(name = "market_name", length = 20, nullable = false)
-	private String marketName;
-
-	@Column(name = "owner_name", length = 10, nullable = false)
-	private String ownerName;
-
-	@Column(name = "phone_number", length = 20, nullable = false, unique = true)
-	private String phoneNumber;
-
-	@Column(name = "open_time", nullable = true)
+	@Column(name = "open_time", nullable = false)
 	private LocalTime openTime;
 
-	@Column(name = "end_time", nullable = true)
+	@Column(name = "end_time", nullable = false)
 	private LocalTime endTime;
 
-	@Column(name = "description", length = 500, nullable = true)
+	@Column(name = "description", length = 500, nullable = false)
 	private String description;
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -71,14 +62,14 @@ public class Market extends BaseEntity {
 
 	@Builder
 	public Market(
-			String businessNumber, MarketAddress marketAddress, String marketName, String ownerName,
-			String phoneNumber, LocalTime openTime, LocalTime endTime, String description
+			String phoneNumber,
+			MarketAddress marketAddress,
+			LocalTime openTime,
+			LocalTime endTime,
+			String description
 	) {
-		this.businessNumber = businessNumber;
-		this.marketAddress = marketAddress;
-		this.marketName = marketName;
-		this.ownerName = ownerName;
 		this.phoneNumber = phoneNumber;
+		this.marketAddress = marketAddress;
 		this.openTime = openTime;
 		this.endTime = endTime;
 		this.description = description;

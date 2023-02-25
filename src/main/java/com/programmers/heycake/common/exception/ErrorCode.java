@@ -9,7 +9,8 @@ public enum ErrorCode {
 
 	BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 입력 값입니다."),
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
-	FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 없는 사용자입니다.");
+	FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 없는 사용자입니다."),
+	ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 데이터입니다.");
 
 	private final HttpStatus status;
 	private final String message;

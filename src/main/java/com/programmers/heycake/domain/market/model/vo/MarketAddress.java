@@ -18,7 +18,7 @@ public class MarketAddress {
 	@Column(name = "district", length = 10, nullable = false)
 	private String district;
 
-	@Column(name = "detailAddress", length = 80, nullable = false)
+	@Column(name = "detail_address", length = 80, nullable = false)
 	private String detailAddress;
 
 	public MarketAddress(String city, String district, String detailAddress) {
