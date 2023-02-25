@@ -10,17 +10,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MarketEnrollmentMapper {
 
-	public static MarketEnrollment toEntity(MarketEnrollmentRequest marketEnrollmentRequest) {
+	public static MarketEnrollment toEntity(MarketEnrollmentRequest request) {
 		return MarketEnrollment.builder()
-				.businessNumber(marketEnrollmentRequest.businessNumber())
+				.businessNumber(request.businessNumber())
+				.ownerName(request.ownerName())
+				.openDate(request.openDate())
+				.marketName(request.marketName())
+				.phoneNumber(request.phoneNumber())
 				.marketAddress(new MarketAddress(
-						marketEnrollmentRequest.city(),
-						marketEnrollmentRequest.district(),
-						marketEnrollmentRequest.detailAddress())
+						request.city(),
+						request.district(),
+						request.detailAddress())
 				)
-				.marketName(marketEnrollmentRequest.marketName())
-				.ownerName(marketEnrollmentRequest.ownerName())
-				.phoneNumber(marketEnrollmentRequest.phoneNumber())
+				.openTime(request.openTime())
+				.endTime(request.endTime())
+				.description(request.description())
 				.build();
 	}
 }
