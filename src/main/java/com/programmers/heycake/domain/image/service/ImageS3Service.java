@@ -7,10 +7,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.programmers.heycake.common.exception.BusinessException;
+import com.programmers.heycake.common.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -45,7 +48,11 @@ public class ImageS3Service {
 	}
 
 	public void delete(String subPath, String savedFilename) {
-		amazonS3.deleteObject(new DeleteObjectRequest(bucketName, subPath + "/" + savedFilename));
+		try {
+			amazonS3.deleteObject(new DeleteObjectRequest(bucketName, subPath + "/" + savedFilename));
+		} catch (SdkClientException e) {
+			throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
+		}
 	}
 
 	private String createSavedFilename(String originalFilename) {
