@@ -41,7 +41,7 @@ public class Image {
 		this.imageUrl = imageUrl;
 	}
 
-	public String getFilename(String imageUrl) {
+	public String getFilename() {
 		int beforeFilenameIndex = imageUrl.lastIndexOf("/");
 		return imageUrl.substring(beforeFilenameIndex + 1);
 	}
