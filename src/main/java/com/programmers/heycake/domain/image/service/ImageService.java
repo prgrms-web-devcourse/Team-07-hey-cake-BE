@@ -1,5 +1,7 @@
 package com.programmers.heycake.domain.image.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,11 @@ public class ImageService {
 	}
 
 	@Transactional
+	public void createImage(Image image) {
+		imageRepository.save(image);
+	}
+
+	@Transactional
 	public void deleteImage(Long referenceId, ImageType imageType) {
 		imageRepository.findByReferenceIdAndImageType(referenceId, imageType)
 				.ifPresentOrElse(
@@ -31,5 +38,11 @@ public class ImageService {
 							throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
 						}
 				);
+	}
+
+	@Transactional
+	public void createImages(List<Image> images) {
+		images.stream()
+				.forEach(this::createImage);
 	}
 }
