@@ -29,6 +29,7 @@ jobs:
           mkdir -p env
           echo "${{secrets.DB_ENV}}" >> env/db.env
           echo "${{secrets.SPRING_ENV}}" >> env/spring.env
+          echo "${{secrets.AWS_ENV}}" >> env/aws.env
       - name: Run docker-compose
         uses: isbang/compose-action@v1.4.1
         with:
