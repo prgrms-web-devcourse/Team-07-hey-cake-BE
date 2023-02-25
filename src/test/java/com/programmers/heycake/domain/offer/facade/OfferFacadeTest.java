@@ -18,15 +18,32 @@ import com.programmers.heycake.domain.offer.service.OfferService;
 
 @ExtendWith(MockitoExtension.class)
 class OfferFacadeTest {
-
 	@InjectMocks
-	private OfferFacade offerFacade;
+	OfferFacade offerFacade;
 
 	@Mock
-	private OfferService offerService;
+	OfferService offerService;
 
 	@Mock
 	private ImageIntegrationService imageIntegrationService;
+
+	@Nested
+	@DisplayName("deleteOffer")
+	class DeleteOffer {
+
+		@Test
+		@DisplayName("Success - offer와 관련된 정보를 삭제한다. - deleteOffer")
+		void deleteOfferSuccess() {
+			//given
+
+			//when
+			offerFacade.deleteOffer(1L);
+
+			//then
+			//TODO 호출되는 메서드 추가되는대로 추가하기
+			verify(offerService).deleteOffer(anyLong());
+		}
+	}
 
 	@Nested
 	@DisplayName("saveOffer")
