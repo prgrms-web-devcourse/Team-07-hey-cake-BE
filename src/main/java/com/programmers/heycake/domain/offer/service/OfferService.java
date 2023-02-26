@@ -19,6 +19,14 @@ import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.repository.OrderRepository;
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.programmers.heycake.common.exception.ErrorCode;
+import com.programmers.heycake.domain.offer.model.entity.Offer;
+import com.programmers.heycake.domain.offer.repository.OfferRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -80,4 +88,15 @@ public class OfferService {
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
+
+	//Todo DTO로 변경
+	@Transactional(readOnly = true)
+	public Offer findById(Long offerId) {
+		return offerRepository
+				.findById(offerId)
+				.orElseThrow(
+						() -> {
+							throw new EntityNotFoundException(ErrorCode.ENTITY_NOT_FOUND.getMessage());
+						});
+	}
 }
