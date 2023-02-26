@@ -1,0 +1,23 @@
+= 제안
+== 제안 생성
+=== 제안 생성 성공
+operation::offer/제안 생성 성공[snippets='http-request,request-parameters,request-parts,http-response,response-headers']
+=== 제안 생성 실패 - 주문이 존재하지 않는 경우
+
+operation::offer/제안 생성 실패 - 주문이 존재하지 않는 경우[snippets='http-response']
+
+=== 제안 생성 실패 - 글 작성 회원이 업주가 아닌 경우
+
+operation::offer/제안 생성 실패 - 글 작성 회원이 업주가 아닌 경우[snippets='http-response']
+
+=== 제안 생성 실패 - 이미 완료된 주문인 경우
+
+operation::offer/제안 생성 실패 - 이미 완료된 주문인 경우[snippets='http-response']
+
+=== 제안 생성 실패 - 이미 해당 글에 제안 글을 작성한 적이 있는 경우
+
+operation::offer/제안 생성 실패 - 이미 해당 글에 제안 글을 작성한 적 있는 경우[snippets='http-response']
+
+=== 제안 생성 실패 - 픽업 날짜가 지난 주문인 경우
+
+operation::offer/제안 생성 실패 - 픽업 날짜가 지난 주문인 경우[snippets='http-response']
