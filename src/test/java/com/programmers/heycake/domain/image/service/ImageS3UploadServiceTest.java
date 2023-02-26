@@ -18,7 +18,7 @@ import io.findify.s3mock.S3Mock;
 
 @Import(S3MockConfig.class)
 @SpringBootTest
-class ImageS3ServiceTest {
+class ImageS3UploadServiceTest {
 
 	private static final String BASE_URL = "http://localhost:8001";
 
@@ -29,7 +29,7 @@ class ImageS3ServiceTest {
 	private AmazonS3 amazonS3;
 
 	@Autowired
-	private ImageS3Service imageS3Service;
+	private ImageS3UploadService imageS3UploadService;
 
 	private String originalFilename = "test.jpg";
 	private String contentType = "image/jpg";
@@ -50,7 +50,7 @@ class ImageS3ServiceTest {
 	@DisplayName("Success - S3 에 이미지 업로드를 성공한다 - upload")
 	void uploadSuccess() {
 		// given & when
-		String url = imageS3Service.upload(mockMultipartFile, subPath);
+		String url = imageS3UploadService.upload(mockMultipartFile, subPath);
 
 		// then
 		assertThat(url).contains(BASE_URL + "/" + BUCKET_NAME + "/" + subPath);

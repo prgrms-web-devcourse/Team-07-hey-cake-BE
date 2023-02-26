@@ -19,13 +19,14 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ImageS3Service {
+public class ImageS3UploadService implements ImageUploadService {
 
 	private final AmazonS3 amazonS3;
 
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucketName;
 
+	@Override
 	public String upload(MultipartFile multipartFile, String subPath) {
 		String originalFilename = multipartFile.getOriginalFilename();
 		String savedFilename = createSavedFilename(originalFilename);
@@ -47,6 +48,7 @@ public class ImageS3Service {
 		return amazonS3.getUrl(bucketName, subPath + "/" + savedFilename).toString();
 	}
 
+	@Override
 	public void delete(String subPath, String savedFilename) {
 		try {
 			amazonS3.deleteObject(new DeleteObjectRequest(bucketName, subPath + "/" + savedFilename));

@@ -32,12 +32,17 @@ public class Image {
 	@Enumerated(EnumType.STRING)
 	private ImageType imageType;
 
-	@Column(name = "image_url", length = 100, nullable = false)
+	@Column(name = "image_url", length = 2000, nullable = false)
 	private String imageUrl;
 
 	public Image(Long referenceId, ImageType imageType, String imageUrl) {
 		this.referenceId = referenceId;
 		this.imageType = imageType;
 		this.imageUrl = imageUrl;
+	}
+
+	public String getFilename() {
+		int beforeFilenameIndex = imageUrl.lastIndexOf("/");
+		return imageUrl.substring(beforeFilenameIndex + 1);
 	}
 }
