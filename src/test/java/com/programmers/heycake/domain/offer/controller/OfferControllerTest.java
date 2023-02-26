@@ -23,6 +23,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.junit.jupiter.MockitoExtension;
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -55,6 +66,9 @@ import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
@@ -508,6 +522,36 @@ class OfferControllerTest {
 			// then
 			assertThat(offerRepository.findAll()).isEmpty();
 			assertThat(imageRepository.findAll()).isEmpty();
+		}
+	}
+}
+
+	@Nested
+	@DisplayName("deleteOffer")
+	class DeleteOffer {
+		@Test
+		@WithMockUser
+		@DisplayName("Success - offer 를 삭제한다. - deleteOffer")
+		void deleteOfferSuccess() throws Exception {
+			//given
+
+			//when //then
+			mockMvc.perform(delete("/api/v1/offers/{offerId}", 1L)
+							//TODO 헤더추가
+							// 		.headers("access_token", "asdfad")
+							.with(csrf())
+					).andExpect(status().isNoContent())
+					.andDo(print())
+					.andDo(document(
+							"offer/offer 삭제",
+							requestHeaders(
+									//	TODO 멤버 헤더
+									// headerWithName("access_token").description("access token")
+							),
+							pathParameters(
+									parameterWithName("offerId").description("offer id")
+							)
+					));
 		}
 	}
 }
