@@ -14,5 +14,5 @@ public interface MarketRepository extends JpaRepository<Market, Long> {
 	Optional<Market> findByMember(Member member);
 
 	@Query("SELECT m FROM Market m JOIN FETCH m.marketEnrollment WHERE m.id = :marketId")
-	Optional<Market> findByIdFetchWithMarketEnrollment(@Param(value = "marketId") Long marketId);
+	Optional<Market> findByIdFetchWithMarketEnrollment(@Param("marketId") Long marketId);
 }

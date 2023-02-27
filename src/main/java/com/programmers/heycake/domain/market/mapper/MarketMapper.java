@@ -7,7 +7,7 @@ import com.programmers.heycake.domain.market.model.entity.Market;
 
 public class MarketMapper {
 
-	public static MarketResponse toResponse(Market market) {
+	public static MarketResponse toControllerResponse(Market market) {
 		return MarketResponse.builder()
 				.phoneNumber(market.getPhoneNumber())
 				.address(market.getMarketAddress())
@@ -20,7 +20,7 @@ public class MarketMapper {
 				.build();
 	}
 
-	public static MarketControllerResponse toResponse(MarketResponse market, ImageResponse image) {
+	public static MarketControllerResponse toControllerResponse(MarketResponse market, ImageResponse image) {
 		return MarketControllerResponse.builder()
 				.phoneNumber(market.phoneNumber())
 				.address(market.address())
@@ -30,7 +30,7 @@ public class MarketMapper {
 				.marketName(market.marketName())
 				.businessNumber(market.businessNumber())
 				.ownerName(market.ownerName())
-				.marketImage(image.imageUrl())
+				.marketImage(image.imageUrls().get(0))
 				.build();
 	}
 }

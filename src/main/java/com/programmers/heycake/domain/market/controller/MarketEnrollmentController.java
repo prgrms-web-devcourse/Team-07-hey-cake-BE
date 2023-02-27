@@ -5,11 +5,14 @@ import java.net.URI;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentControllerResponse;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
 import com.programmers.heycake.domain.market.service.MarketEnrollmentFacade;
 
@@ -28,5 +31,11 @@ public class MarketEnrollmentController {
 		Long enrollmentId = marketEnrollmentFacade.enrollMarket(request);
 		URI location = URI.create("/api/v1/enrollments/" + enrollmentId);
 		return ResponseEntity.created(location).build();
+	}
+
+	@GetMapping("/{enrollmentId}")
+	public ResponseEntity<MarketEnrollmentControllerResponse> getMarketEnrollment(@PathVariable Long enrollmentId) {
+		MarketEnrollmentControllerResponse enrollment = marketEnrollmentFacade.getMarketEnrollment(enrollmentId);
+		return ResponseEntity.ok(enrollment);
 	}
 }
