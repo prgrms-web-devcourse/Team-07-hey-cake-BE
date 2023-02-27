@@ -12,11 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.order.facade.OrderFacade;
+import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
-import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
-import com.programmers.heycake.domain.order.model.dto.request.GetOrderRequest;
-import com.programmers.heycake.domain.order.model.dto.response.GetOrderResponseList;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,8 +35,8 @@ public class OrderController {
 
 	@GetMapping("/my")
 	public ResponseEntity<MyOrderResponseList> getOrderList(@RequestBody @Valid MyOrderRequest getOrderRequest) {
-		MyOrderResponseList orderList = orderFacade.getMyOrderList(getOrderRequest);
+		MyOrderResponseList myOrderList = orderFacade.getMyOrderList(getOrderRequest);
 
-		return ResponseEntity.ok(orderList);
+		return ResponseEntity.ok(myOrderList);
 	}
 }

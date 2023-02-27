@@ -2,13 +2,11 @@ package com.programmers.heycake.domain.order.facade;
 
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
-import com.programmers.heycake.domain.order.model.dto.request.GetOrderRequest;
-import com.programmers.heycake.domain.order.model.dto.response.GetOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.service.HistoryService;
