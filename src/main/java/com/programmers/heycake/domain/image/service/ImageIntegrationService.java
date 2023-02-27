@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.programmers.heycake.common.exception.BusinessException;
+import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.image.event.DeleteEvent;
 import com.programmers.heycake.domain.image.event.UploadRollbackEvent;
 import com.programmers.heycake.domain.image.model.entity.Image;
@@ -22,6 +24,9 @@ public class ImageIntegrationService {
 
 	@Transactional
 	public void createAndUploadImage(MultipartFile multipartFile, String subPath, Long referenceId, ImageType imageType) {
+		if (multipartFile.isEmpty()) {
+			throw new BusinessException(ErrorCode.BAD_REQUEST);
+		}
 		String savedUrl = imageUploadService.upload(multipartFile, subPath);
 		Image image = new Image(referenceId, imageType, savedUrl);
 		applicationEventPublisher.publishEvent(new UploadRollbackEvent(subPath, image.getFilename()));
