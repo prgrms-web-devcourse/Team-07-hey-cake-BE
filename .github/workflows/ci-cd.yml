@@ -2,9 +2,7 @@ name: Java CI/CD with Gradle
 
 on:
   push:
-    branches: [ "develop" ]
-  pull_request:
-    branches: [ "develop" ]
+    branches: [ "temp" ]
 
 permissions:
   contents: read
