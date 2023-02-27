@@ -9,6 +9,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.request.GetOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.response.GetOrderResponseList;
@@ -56,7 +58,7 @@ public class OrderService {
 	}
 
 	@Transactional(readOnly = true)
-	public GetOrderResponseList getOrderList(GetOrderRequest getOrderRequest, Long memberId) {
+	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long memberId) {
 		List<Order> orderList = orderCustomRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
 				getOrderRequest.orderStatus(),
@@ -67,6 +69,6 @@ public class OrderService {
 		LocalDateTime lastTime =
 				orderList.size() == 0 ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).getVisitDate();
 
-		return toGetOrderResponseList(orderList, lastTime);
+		return toGetOrderResponseListForMember(orderList, lastTime);
 	}
 }

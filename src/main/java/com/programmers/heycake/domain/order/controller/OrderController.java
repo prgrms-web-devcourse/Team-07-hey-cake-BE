@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.order.facade.OrderFacade;
+import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.request.GetOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.response.GetOrderResponseList;
@@ -34,8 +36,9 @@ public class OrderController {
 	}
 
 	@GetMapping("/my")
-	public ResponseEntity<GetOrderResponseList> getOrderList(@RequestBody @Valid GetOrderRequest getOrderRequest) {
-		GetOrderResponseList orderList = orderFacade.getOrderList(getOrderRequest);
+	public ResponseEntity<MyOrderResponseList> getOrderList(@RequestBody @Valid MyOrderRequest getOrderRequest) {
+		MyOrderResponseList orderList = orderFacade.getMyOrderList(getOrderRequest);
+
 		return ResponseEntity.ok(orderList);
 	}
 }

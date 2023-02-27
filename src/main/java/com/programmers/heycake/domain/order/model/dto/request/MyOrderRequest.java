@@ -6,7 +6,7 @@ import javax.validation.constraints.Positive;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-public record GetOrderRequest(
+public record MyOrderRequest(
 		@DateTimeFormat(pattern = "yyyy-MM-dd' 'HH:mm:ss")
 		LocalDateTime cursorTime,
 		@Positive
