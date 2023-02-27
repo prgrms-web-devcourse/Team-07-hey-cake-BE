@@ -44,19 +44,23 @@ public class TestUtil {
 				.build();
 	}
 
-	public static MarketEnrollment getMarketEnrollment() {
-		return MarketEnrollment.builder()
-				.businessNumber("0123456789")
-				.ownerName("Owner.Kong")
-				.openDate(LocalDate.now())
-				.marketName("서울 제과점")
-				.phoneNumber("01012345678")
-				.marketAddress(new MarketAddress("서울", "성동구", "응봉동"))
-				.openTime(LocalTime.now())
-				.endTime(LocalTime.now())
-				.description("업장 설명")
-				.enrollmentStatus(EnrollmentStatus.APPROVED)
-				.build();
+	public static MarketEnrollment getMarketEnrollment(EnrollmentStatus enrollmentStatus) {
+		MarketEnrollment marketEnrollment =
+				MarketEnrollment.builder()
+						.businessNumber("0123456789")
+						.ownerName("Owner.Kong")
+						.openDate(LocalDate.now())
+						.marketName("서울 제과점")
+						.phoneNumber("01012345678")
+						.marketAddress(new MarketAddress("서울", "성동구", "응봉동"))
+						.openTime(LocalTime.now())
+						.endTime(LocalTime.now())
+						.description("업장 설명")
+						.build();
+
+		marketEnrollment.updateEnrollmentStatus(enrollmentStatus);
+
+		return marketEnrollment;
 	}
 
 	public static Order getOrder() {

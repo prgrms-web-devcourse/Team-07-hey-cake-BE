@@ -1,5 +1,12 @@
 package com.programmers.heycake.domain.offer.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.programmers.heycake.domain.offer.facade.OfferFacade;
 import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
@@ -20,6 +27,12 @@ import lombok.RequiredArgsConstructor;
 public class OfferController {
 
 	private final OfferFacade offerFacade;
+
+	@DeleteMapping("{offerId}")
+	public ResponseEntity<Void> deleteOffer(@PathVariable Long offerId) {
+		offerFacade.deleteOffer(offerId);
+		return ResponseEntity.noContent().build();
+	}
 
 	@PostMapping
 	public ResponseEntity<Void> saveOffer(@ModelAttribute OfferSaveRequest offerSaveRequest,

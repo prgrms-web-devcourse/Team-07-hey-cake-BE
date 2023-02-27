@@ -2,7 +2,10 @@ package com.programmers.heycake.domain.offer.service;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
@@ -21,11 +24,16 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class OfferService {
-
 	private final OfferRepository offerRepository;
 	private final MemberRepository memberRepository;
 	private final OrderRepository orderRepository;
 	private final MarketRepository marketRepository;
+
+	@Transactional
+	public void deleteOffer(Long offerId) {
+		//Todo Context 에서 유저 가져다가 권한 확인
+		offerRepository.deleteById(offerId);
+	}
 
 	public Long saveOffer(Long memberId, Long orderId, int expectedPrice, String content) {
 
@@ -72,4 +80,14 @@ public class OfferService {
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
+	//Todo DTO로 변경
+	@Transactional(readOnly = true)
+	public Offer getById(Long offerId) {
+		return offerRepository
+				.findByIdWithFetchJoin(offerId)
+				.orElseThrow(
+						() -> {
+							throw new EntityNotFoundException(ErrorCode.ENTITY_NOT_FOUND.getMessage());
+						});
+	}
 }
