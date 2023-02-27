@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -23,17 +23,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -53,6 +42,7 @@ import com.programmers.heycake.domain.image.repository.ImageRepository;
 import com.programmers.heycake.domain.image.service.ImageUploadService;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
+import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
@@ -66,9 +56,6 @@ import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
@@ -112,7 +99,7 @@ class OfferControllerTest {
 			Member marketOwnerMember = getMember("owner", "owner@naver.com");
 			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
+			MarketEnrollment marketEnrollment = getMarketEnrollment(EnrollmentStatus.APPROVED);
 			marketEnrollment.setMember(marketOwnerMember);
 			marketEnrollmentRepository.save(marketEnrollment);
 
@@ -329,7 +316,7 @@ class OfferControllerTest {
 			Member marketOwnerMember = getMember("owner", "owner@naver.com");
 			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
+			MarketEnrollment marketEnrollment = getMarketEnrollment(EnrollmentStatus.APPROVED);
 			marketEnrollment.setMember(marketOwnerMember);
 			marketEnrollmentRepository.save(marketEnrollment);
 
@@ -397,7 +384,7 @@ class OfferControllerTest {
 			Member marketOwnerMember = getMember("owner", "owner@naver.com");
 			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
+			MarketEnrollment marketEnrollment = getMarketEnrollment(EnrollmentStatus.APPROVED);
 			marketEnrollment.setMember(marketOwnerMember);
 			marketEnrollmentRepository.save(marketEnrollment);
 
@@ -465,7 +452,7 @@ class OfferControllerTest {
 			Member marketOwnerMember = getMember("owner", "owner@naver.com");
 			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
+			MarketEnrollment marketEnrollment = getMarketEnrollment(EnrollmentStatus.APPROVED);
 			marketEnrollment.setMember(marketOwnerMember);
 			marketEnrollmentRepository.save(marketEnrollment);
 
@@ -524,14 +511,13 @@ class OfferControllerTest {
 			assertThat(imageRepository.findAll()).isEmpty();
 		}
 	}
-}
 
 	@Nested
 	@DisplayName("deleteOffer")
 	class DeleteOffer {
 		@Test
 		@WithMockUser
-		@DisplayName("Success - offer 를 삭제한다. - deleteOffer")
+		@DisplayName("Success - offer 를 삭제한다.")
 		void deleteOfferSuccess() throws Exception {
 			//given
 

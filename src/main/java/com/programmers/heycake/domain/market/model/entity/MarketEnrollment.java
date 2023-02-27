@@ -100,6 +100,10 @@ public class MarketEnrollment extends BaseEntity {
 		this.enrollmentStatus = EnrollmentStatus.WAITING;
 	}
 
+	public void updateEnrollmentStatus(EnrollmentStatus enrollmentStatus) {
+		this.enrollmentStatus = enrollmentStatus;
+	}
+
 	public void setMember(Member member) {
 		this.member = member;
 	}
