@@ -77,4 +77,12 @@ public class Order extends BaseEntity {
 		this.visitDate = visitDate;
 		this.cakeInfo = cakeInfo;
 	}
+
+	public boolean isPassedVisitDate(LocalDateTime targetDate) {
+		return this.visitDate.isBefore(targetDate);
+	}
+
+	public boolean isClosed() {
+		return this.orderStatus != OrderStatus.NEW;
+	}
 }
