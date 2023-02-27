@@ -20,13 +20,10 @@ import io.findify.s3mock.S3Mock;
 @SpringBootTest
 class ImageS3UploadServiceTest {
 
-	private static final String BASE_URL = "http://localhost:8001";
+	private static final String BASE_URL = "http://localhost:";
 
 	@Value("${cloud.aws.s3.bucket}")
 	private String BUCKET_NAME;
-
-	@Autowired
-	private AmazonS3 amazonS3;
 
 	@Autowired
 	private ImageS3UploadService imageS3UploadService;
@@ -42,7 +39,8 @@ class ImageS3UploadServiceTest {
 	);
 
 	@AfterAll
-	static void tearDown(@Autowired S3Mock s3Mock) {
+	static void tearDown(@Autowired S3Mock s3Mock, @Autowired AmazonS3 amazonS3) {
+		amazonS3.shutdown();
 		s3Mock.stop();
 	}
 
@@ -53,6 +51,7 @@ class ImageS3UploadServiceTest {
 		String url = imageS3UploadService.upload(mockMultipartFile, subPath);
 
 		// then
-		assertThat(url).contains(BASE_URL + "/" + BUCKET_NAME + "/" + subPath);
+		assertThat(url).contains(BASE_URL);
+		assertThat(url).contains(BUCKET_NAME + "/" + subPath);
 	}
 }
