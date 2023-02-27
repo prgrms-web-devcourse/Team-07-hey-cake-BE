@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
+import com.programmers.heycake.domain.image.mapper.ImageMapper;
+import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
@@ -44,5 +46,14 @@ public class ImageService {
 	public void createImages(List<Image> images) {
 		images.stream()
 				.forEach(this::createImage);
+	}
+
+	@Transactional(readOnly = true)
+	public ImageResponse getImage(Long referenceId, ImageType imageType) {
+		Image image = imageRepository.findByReferenceIdAndImageType(referenceId, imageType)
+				.orElseThrow(() -> {
+					throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
+				});
+		return ImageMapper.toResponse(image);
 	}
 }
