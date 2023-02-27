@@ -1,6 +1,6 @@
 package com.programmers.heycake.domain.image.repository;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,5 +9,5 @@ import com.programmers.heycake.domain.image.model.vo.ImageType;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
 
-	Optional<Image> findByReferenceIdAndImageType(Long referenceId, ImageType imageType);
+	List<Image> findAllByReferenceIdAndImageType(Long referenceId, ImageType imageType);
 }
