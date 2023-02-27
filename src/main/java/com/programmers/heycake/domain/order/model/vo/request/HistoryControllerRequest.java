@@ -1,13 +1,13 @@
 package com.programmers.heycake.domain.order.model.vo.request;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 public record HistoryControllerRequest(
-		@NotBlank
+		@NotNull
 		@Positive
 		Long orderId,
-		@NotBlank
+		@NotNull
 		@Positive
 		Long offerId
 ) {
