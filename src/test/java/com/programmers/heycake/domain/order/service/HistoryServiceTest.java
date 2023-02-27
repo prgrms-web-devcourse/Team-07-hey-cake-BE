@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.entity.OrderHistory;
-import com.programmers.heycake.domain.order.model.vo.request.HistoryRequest;
+import com.programmers.heycake.domain.order.model.vo.request.HistoryFacadeRequest;
 import com.programmers.heycake.domain.order.repository.HistoryRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,10 +27,10 @@ class HistoryServiceTest {
 	@DisplayName("createHistory")
 	class CreateHistoryTest {
 		@Test
-		@DisplayName("Success - orderHistory 를 생성한다. - createHistory")
+		@DisplayName("Success - orderHistory 를 생성한다.")
 		public void createHistorySuccess() {
 			//given
-			HistoryRequest historyRequest = new HistoryRequest(1L, 1L, Order.builder().build());
+			HistoryFacadeRequest historyRequest = new HistoryFacadeRequest(1L, 1L, Order.builder().build());
 
 			//when
 			when(historyRepository.save(any(OrderHistory.class)))

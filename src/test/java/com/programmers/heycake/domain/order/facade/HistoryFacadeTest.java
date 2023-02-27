@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.service.OfferService;
 import com.programmers.heycake.domain.order.model.vo.request.HistoryControllerRequest;
-import com.programmers.heycake.domain.order.model.vo.request.HistoryRequest;
+import com.programmers.heycake.domain.order.model.vo.request.HistoryFacadeRequest;
 import com.programmers.heycake.domain.order.service.HistoryService;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,20 +32,20 @@ public class HistoryFacadeTest {
 	@DisplayName("createHistory")
 	class CreateHistoryTest {
 		@Test
-		@DisplayName("Success - orderHistory 를 생성한다. - createHistory")
+		@DisplayName("Success - orderHistory 를 생성한다.")
 		void createHistorySuccess() {
 			//given
 			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(1L, 1L);
 			Offer offer = new Offer(1L, 100, "content");
 
 			//when
-			when(offerService.findById(anyLong()))
+			when(offerService.getById(anyLong()))
 					.thenReturn(offer);
 			historyFacade.createHistory(historyControllerRequest);
 
 			//then
-			verify(offerService).findById(anyLong());
-			verify(historyService).createHistory(any(HistoryRequest.class));
+			verify(offerService).getById(anyLong());
+			verify(historyService).createHistory(any(HistoryFacadeRequest.class));
 		}
 	}
 }

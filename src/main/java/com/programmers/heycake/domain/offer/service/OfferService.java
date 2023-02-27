@@ -91,9 +91,9 @@ public class OfferService {
 
 	//Todo DTO로 변경
 	@Transactional(readOnly = true)
-	public Offer findById(Long offerId) {
+	public Offer getById(Long offerId) {
 		return offerRepository
-				.findById(offerId)
+				.findByIdWithFetchJoin(offerId)
 				.orElseThrow(
 						() -> {
 							throw new EntityNotFoundException(ErrorCode.ENTITY_NOT_FOUND.getMessage());

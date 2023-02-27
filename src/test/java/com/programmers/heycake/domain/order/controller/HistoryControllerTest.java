@@ -53,7 +53,7 @@ class HistoryControllerTest {
 	class CreateHistory {
 		@Test
 		@WithMockUser
-		@DisplayName("Success - orderHistory 를 생성한다. - createHistory")
+		@DisplayName("Success - orderHistory 를 생성한다.")
 		void createHistorySuccess() throws Exception {
 			//given
 			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(1L, 1L);

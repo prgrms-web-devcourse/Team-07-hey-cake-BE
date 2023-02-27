@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.service.OfferService;
 import com.programmers.heycake.domain.order.model.vo.request.HistoryControllerRequest;
-import com.programmers.heycake.domain.order.model.vo.request.HistoryRequest;
+import com.programmers.heycake.domain.order.model.vo.request.HistoryFacadeRequest;
 import com.programmers.heycake.domain.order.service.HistoryService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,10 +20,10 @@ public class HistoryFacade {
 		//Todo 컨텍스트 memberId와 order의 작성자 같은지 체크
 
 		// DTO로 변경
-		Offer offer = offerService.findById(historyControllerRequest.offerId());
+		Offer offer = offerService.getById(historyControllerRequest.offerId());
 
 		//memberId, orderDto로 변경
-		HistoryRequest historyRequest = new HistoryRequest(1L, offer.getMarketId(), offer.getOrder());
+		HistoryFacadeRequest historyRequest = new HistoryFacadeRequest(1L, offer.getMarketId(), offer.getOrder());
 
 		return historyService.createHistory(historyRequest);
 	}
