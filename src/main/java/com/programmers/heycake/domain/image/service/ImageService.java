@@ -33,13 +33,16 @@ public class ImageService {
 
 	@Transactional
 	public void deleteImage(Long referenceId, ImageType imageType) {
-		imageRepository.findByReferenceIdAndImageType(referenceId, imageType)
-				.ifPresentOrElse(
-						imageRepository::delete,
-						() -> {
-							throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
-						}
-				);
+		List<Image> images = imageRepository.findAllByReferenceIdAndImageType(referenceId, imageType);
+
+		if (images.isEmpty()) {
+			throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
+		}
+
+		images.stream()
+				.forEach(image -> {
+					imageRepository.delete(image);
+				});
 	}
 
 	@Transactional
@@ -50,10 +53,7 @@ public class ImageService {
 
 	@Transactional(readOnly = true)
 	public ImageResponse getImage(Long referenceId, ImageType imageType) {
-		Image image = imageRepository.findByReferenceIdAndImageType(referenceId, imageType)
-				.orElseThrow(() -> {
-					throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
-				});
-		return ImageMapper.toResponse(image);
+		List<Image> images = imageRepository.findAllByReferenceIdAndImageType(referenceId, imageType);
+		return ImageMapper.toResponse(images);
 	}
 }

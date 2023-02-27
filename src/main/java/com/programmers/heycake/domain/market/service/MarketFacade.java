@@ -23,6 +23,6 @@ public class MarketFacade {
 	public MarketControllerResponse getMarket(Long marketId) {
 		MarketResponse market = marketService.getMarket(marketId);
 		ImageResponse image = imageService.getImage(marketId, ImageType.MARKET);
-		return MarketMapper.toResponse(market, image);
+		return MarketMapper.toControllerResponse(market, image);
 	}
 }

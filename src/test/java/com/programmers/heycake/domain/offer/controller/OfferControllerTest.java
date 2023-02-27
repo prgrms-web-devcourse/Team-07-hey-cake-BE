@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -42,6 +42,7 @@ import com.programmers.heycake.domain.image.repository.ImageRepository;
 import com.programmers.heycake.domain.image.service.ImageUploadService;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
+import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
@@ -98,7 +99,7 @@ class OfferControllerTest {
 			Member marketOwnerMember = getMember("owner", "owner@naver.com");
 			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
+			MarketEnrollment marketEnrollment = getMarketEnrollment(EnrollmentStatus.APPROVED);
 			marketEnrollment.setMember(marketOwnerMember);
 			marketEnrollmentRepository.save(marketEnrollment);
 
@@ -315,7 +316,7 @@ class OfferControllerTest {
 			Member marketOwnerMember = getMember("owner", "owner@naver.com");
 			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
+			MarketEnrollment marketEnrollment = getMarketEnrollment(EnrollmentStatus.APPROVED);
 			marketEnrollment.setMember(marketOwnerMember);
 			marketEnrollmentRepository.save(marketEnrollment);
 
@@ -383,7 +384,7 @@ class OfferControllerTest {
 			Member marketOwnerMember = getMember("owner", "owner@naver.com");
 			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
+			MarketEnrollment marketEnrollment = getMarketEnrollment(EnrollmentStatus.APPROVED);
 			marketEnrollment.setMember(marketOwnerMember);
 			marketEnrollmentRepository.save(marketEnrollment);
 
@@ -451,7 +452,7 @@ class OfferControllerTest {
 			Member marketOwnerMember = getMember("owner", "owner@naver.com");
 			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
+			MarketEnrollment marketEnrollment = getMarketEnrollment(EnrollmentStatus.APPROVED);
 			marketEnrollment.setMember(marketOwnerMember);
 			marketEnrollmentRepository.save(marketEnrollment);
 
@@ -508,6 +509,35 @@ class OfferControllerTest {
 			// then
 			assertThat(offerRepository.findAll()).isEmpty();
 			assertThat(imageRepository.findAll()).isEmpty();
+		}
+	}
+
+	@Nested
+	@DisplayName("deleteOffer")
+	class DeleteOffer {
+		@Test
+		@WithMockUser
+		@DisplayName("Success - offer 를 삭제한다.")
+		void deleteOfferSuccess() throws Exception {
+			//given
+
+			//when //then
+			mockMvc.perform(delete("/api/v1/offers/{offerId}", 1L)
+							//TODO 헤더추가
+							// 		.headers("access_token", "asdfad")
+							.with(csrf())
+					).andExpect(status().isNoContent())
+					.andDo(print())
+					.andDo(document(
+							"offer/offer 삭제",
+							requestHeaders(
+									//	TODO 멤버 헤더
+									// headerWithName("access_token").description("access token")
+							),
+							pathParameters(
+									parameterWithName("offerId").description("offer id")
+							)
+					));
 		}
 	}
 }

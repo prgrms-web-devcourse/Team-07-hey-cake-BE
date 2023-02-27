@@ -1,6 +1,9 @@
 package com.programmers.heycake.domain.market.mapper;
 
+import com.programmers.heycake.domain.image.model.dto.ImageResponse;
+import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentControllerResponse;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
+import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponse;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 
@@ -25,6 +28,36 @@ public class MarketEnrollmentMapper {
 				.openTime(request.openTime())
 				.endTime(request.endTime())
 				.description(request.description())
+				.build();
+	}
+
+	public static MarketEnrollmentResponse toResponse(MarketEnrollment enrollment) {
+		return MarketEnrollmentResponse.builder()
+				.phoneNumber(enrollment.getPhoneNumber())
+				.marketAddress(enrollment.getMarketAddress())
+				.openTime(enrollment.getOpenTime())
+				.endTime(enrollment.getEndTime())
+				.description(enrollment.getDescription())
+				.marketName(enrollment.getMarketName())
+				.businessNumber(enrollment.getBusinessNumber())
+				.ownerName(enrollment.getOwnerName())
+				.build();
+	}
+
+	public static MarketEnrollmentControllerResponse toControllerResponse(
+			MarketEnrollmentResponse enrollment,
+			ImageResponse image
+	) {
+		return MarketEnrollmentControllerResponse.builder()
+				.phoneNumber(enrollment.phoneNumber())
+				.marketAddress(enrollment.marketAddress())
+				.openTime(enrollment.openTime())
+				.endTime(enrollment.endTime())
+				.description(enrollment.description())
+				.marketName(enrollment.marketName())
+				.businessNumber(enrollment.businessNumber())
+				.ownerName(enrollment.ownerName())
+				.marketImage(image.imageUrls().get(0))
 				.build();
 	}
 }

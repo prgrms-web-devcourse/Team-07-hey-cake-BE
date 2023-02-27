@@ -1,5 +1,8 @@
 package com.programmers.heycake.domain.offer.service;
 
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 import static com.programmers.heycake.utils.TestUtil.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,13 +31,11 @@ import com.programmers.heycake.domain.order.model.repository.OrderRepository;
 @ExtendWith(MockitoExtension.class)
 class OfferServiceTest {
 
-	private static final String ERROR_CODE = "errorCode";
-
 	@InjectMocks
-	private OfferService offerService;
+	OfferService offerService;
 
 	@Mock
-	private OfferRepository offerRepository;
+	OfferRepository offerRepository;
 
 	@Mock
 	private MemberRepository memberRepository;
@@ -50,6 +51,27 @@ class OfferServiceTest {
 
 	@Mock
 	private Order order;
+
+	private static final String ERROR_CODE = "errorCode";
+
+	@Nested
+	@DisplayName("deleteOffer")
+	class DeleteOffer {
+
+		@Test
+		@DisplayName("Success - offer를 삭제한다. - deleteOffer")
+		void deleteOfferSuccess() {
+			//given
+			//TODO 저장 로직 추가되면 값도 테스트하기
+
+			// when
+			offerService.deleteOffer(1L);
+
+			//then
+			//TODO 값 test
+			verify(offerRepository).deleteById(anyLong());
+		}
+	}
 
 	@Nested
 	@Transactional

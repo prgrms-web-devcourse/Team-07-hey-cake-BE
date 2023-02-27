@@ -1,8 +1,12 @@
 package com.programmers.heycake.domain.offer.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
@@ -11,6 +15,7 @@ import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
+import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
@@ -21,11 +26,16 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class OfferService {
-
 	private final OfferRepository offerRepository;
 	private final MemberRepository memberRepository;
 	private final OrderRepository orderRepository;
 	private final MarketRepository marketRepository;
+
+	@Transactional
+	public void deleteOffer(Long offerId) {
+		//Todo Context 에서 유저 가져다가 권한 확인
+		offerRepository.deleteById(offerId);
+	}
 
 	public Long saveOffer(Long memberId, Long orderId, int expectedPrice, String content) {
 
@@ -57,6 +67,15 @@ public class OfferService {
 		}
 	}
 
+	public List<OfferResponse> getOffersWithComments(Long orderId) {
+		Order order = getOrder(orderId);
+
+		return offerRepository.findAllByOrderFetchComments(order)
+				.stream()
+				.map(OfferMapper::toOfferResponse)
+				.toList();
+	}
+
 	private Market getMarket(Member member) {
 		return marketRepository.findByMember(member)
 				.orElseThrow(() -> new BusinessException(ErrorCode.FORBIDDEN));
@@ -72,4 +91,14 @@ public class OfferService {
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
+	//Todo DTO로 변경
+	@Transactional(readOnly = true)
+	public Offer getById(Long offerId) {
+		return offerRepository
+				.findByIdWithFetchJoin(offerId)
+				.orElseThrow(
+						() -> {
+							throw new EntityNotFoundException(ErrorCode.ENTITY_NOT_FOUND.getMessage());
+						});
+	}
 }
