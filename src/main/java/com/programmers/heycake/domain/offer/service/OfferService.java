@@ -1,6 +1,7 @@
 package com.programmers.heycake.domain.offer.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -14,6 +15,7 @@ import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
+import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
@@ -63,6 +65,15 @@ public class OfferService {
 		if (order.isClosed()) {
 			throw new BusinessException(ErrorCode.ORDER_CLOSED);
 		}
+	}
+
+	public List<OfferResponse> getOffersWithComments(Long orderId) {
+		Order order = getOrder(orderId);
+
+		return offerRepository.findAllByOrderFetchComments(order)
+				.stream()
+				.map(OfferMapper::toOfferResponse)
+				.toList();
 	}
 
 	private Market getMarket(Member member) {
