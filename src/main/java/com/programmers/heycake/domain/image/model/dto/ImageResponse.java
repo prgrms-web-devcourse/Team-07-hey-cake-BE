@@ -1,4 +1,6 @@
 package com.programmers.heycake.domain.image.model.dto;
 
-public record ImageResponse(String imageUrl) {
+import java.util.List;
+
+public record ImageResponse(List<String> imageUrls) {
 }
