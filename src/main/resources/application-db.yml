@@ -12,6 +12,3 @@ spring:
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
-    # 푸시 할 때 빼기
-    hibernate:
-      ddl-auto: create
