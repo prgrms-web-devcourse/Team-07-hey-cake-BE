@@ -45,15 +45,15 @@ public class CakeInfo {
 	private String requirements;
 
 	@Builder
-	public CakeInfo(
-			CakeCategory cakeCategory, CakeSize cakeSize, CakeHeight cakeHeight,
-			BreadFlavor breadFlavor, CreamFlavor creamFlavor, String requirements
+	private CakeInfo(
+			String cakeCategory, String cakeSize, String cakeHeight,
+			String breadFlavor, String creamFlavor, String requirements
 	) {
-		this.cakeCategory = cakeCategory;
-		this.cakeSize = cakeSize;
-		this.cakeHeight = cakeHeight;
-		this.breadFlavor = breadFlavor;
-		this.creamFlavor = creamFlavor;
+		this.cakeCategory = CakeCategory.valueOf(cakeCategory);
+		this.cakeSize = CakeSize.valueOf(cakeSize);
+		this.cakeHeight = CakeHeight.valueOf(cakeHeight);
+		this.breadFlavor = BreadFlavor.valueOf(breadFlavor);
+		this.creamFlavor = CreamFlavor.valueOf(creamFlavor);
 		this.requirements = requirements;
 	}
 }
