@@ -1,0 +1,11 @@
+spring:
+  config:
+    import:
+      - optional:file:env/jwt.env[.properties]
+      - optional:file:env/oauth2.env[.properties]
+
+jwt:
+  client-secret: ${JWT_CLIENT_SECRET}
+  token-expire: ${JWT_TOKEN_EXPIRE}
+  refresh-token-expire: ${JWT_REFRESH_TOKEN_EXPIRE}
+  issuer: ${JWT_ISSUER}
