@@ -41,6 +41,15 @@ public class OfferService {
 		if (!Objects.equals(getOfferById(offerId).marketId(), marketId)) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
+		if (isReservedOffer(offerId)) {
+			throw new BusinessException(ErrorCode.DELETE_ERROR);
+		}
+
+		deleteOfferWithoutAuth(offerId);
+	}
+
+	@Transactional
+	public void deleteOfferWithoutAuth(Long offerId) {
 		offerRepository.deleteById(offerId);
 	}
 

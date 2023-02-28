@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.programmers.heycake.common.exception.BusinessException;
-import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OfferMapper;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
@@ -78,20 +76,29 @@ public class OfferFacade {
 
 	@Transactional
 	public void deleteOffer(Long offerId) {
-		if (offerService.isReservedOffer(offerId)) {
-			throw new BusinessException(ErrorCode.DELETE_ERROR);
-		}
-		List<String> imageUrlList = imageService.getImages(offerId, ImageType.OFFER).images()
-				.stream()
-				.map(ImageResponse::imageUrls)
-				.toList();
-
+		List<String> imageUrlList = imageService.getImage(offerId, ImageType.OFFER).imageUrls();
 		imageUrlList.forEach(
 				imageUrl ->
 						imageIntegrationService.deleteImage(offerId, ImageType.OFFER, OFFER_IMAGE_SUB_PATH, imageUrl));
 
+		//TODO 엔티티 가져다 쓰는거 뭔가 마음엠 안듦
 		Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(getMemberId()));
 		offerService.deleteOffer(offerId, marketId);
+
+		//comment service
+		//offerid로 Comment 리스트 조회
+		//Comment list stream 으로 삭제 메서드 호출
+		// coment(db+s3) 삭제
+	}
+
+	@Transactional
+	public void deleteOfferWithoutAuth(Long offerId) {
+		List<String> imageUrlList = imageService.getImage(offerId, ImageType.OFFER).imageUrls();
+		offerService.deleteOfferWithoutAuth(offerId);
+
+		imageUrlList.forEach(
+				imageUrl ->
+						imageIntegrationService.deleteImage(offerId, ImageType.OFFER, OFFER_IMAGE_SUB_PATH, imageUrl));
 
 		//comment service
 		//offerid로 Comment 리스트 조회

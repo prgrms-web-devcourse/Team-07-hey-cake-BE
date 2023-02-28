@@ -23,7 +23,6 @@ public class HistoryFacade {
 	private final OrderService orderService;
 
 	public Long createHistory(HistoryControllerRequest historyControllerRequest) {
-		//Todo 컨텍스트 memberId와 order의 작성자 같은지 체크
 		Long memberId = getMemberId();
 		if (!orderService.isAuthor(historyControllerRequest.orderId(), memberId)) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
