@@ -1,5 +1,5 @@
 package com.programmers.heycake.domain.order.model.vo;
 
 public enum CreamFlavor {
-	CHOCO
+	WHIPPED_CREAM, CREAM_CHEESE, CHOCO, OREO, ETC
 }

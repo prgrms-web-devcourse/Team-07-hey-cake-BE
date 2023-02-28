@@ -19,7 +19,7 @@ import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
-import com.programmers.heycake.domain.order.model.repository.OrderRepository;
+import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
 
