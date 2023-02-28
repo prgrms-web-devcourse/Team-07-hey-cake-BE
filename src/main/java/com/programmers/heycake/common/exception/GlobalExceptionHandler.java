@@ -55,6 +55,13 @@ public class GlobalExceptionHandler {
 				.body(ErrorResponse.of(e.getMessage(), request.getRequestURI(), null));
 	}
 
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponse> handleException(HttpServletRequest request, Exception e) {
+		return ResponseEntity
+				.badRequest()
+				.body(ErrorResponse.of(e.getMessage(), request.getRequestURI(), null));
+	}
+
 	private List<ErrorResponse.FieldError> makeFieldErrors(BindingResult bindingResult) {
 
 		return bindingResult.getFieldErrors()
