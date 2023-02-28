@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.entity.QOrder;
+import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -33,11 +34,42 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 				.fetch();
 	}
 
+	@Override
+	public List<Order> findAllByRegionAndCategoryOrderByCreatedAtAsc(
+			Long cursorId,
+			int pageSize,
+			CakeCategory cakeCategory,
+			String region
+	) {
+		return jpaQueryFactory
+				.selectFrom(qOrder)
+				.where(
+						gtOrderId(cursorId),
+						eqRegion(region),
+						eqCakeCategory(cakeCategory)
+				)
+				.limit(pageSize)
+				.orderBy(qOrder.createdAt.desc())
+				.fetch();
+	}
+
 	private BooleanExpression gtOrderTime(LocalDateTime cursorTime) {
 		return cursorTime == null ? null : qOrder.visitDate.gt(cursorTime);
 	}
 
 	private BooleanExpression orderStatus(String option) {
 		return option == null ? null : qOrder.orderStatus.eq(OrderStatus.valueOf(option));
+	}
+
+	private BooleanExpression eqRegion(String region) {
+		return region == null ? null : qOrder.region.eq(region);
+	}
+
+	private BooleanExpression eqCakeCategory(CakeCategory category) {
+		return category == null ? null : qOrder.cakeInfo.cakeCategory.eq(category);
+	}
+
+	private BooleanExpression gtOrderId(Long cursorId) {
+		return cursorId == null ? null : qOrder.id.gt(cursorId);
 	}
 }

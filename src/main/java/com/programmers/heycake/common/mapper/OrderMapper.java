@@ -3,9 +3,12 @@ package com.programmers.heycake.common.mapper;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleServiceResponse;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.entity.OrderHistory;
 
@@ -42,7 +45,7 @@ public class OrderMapper {
 		return toGetOrderResponseListForMember(orderList, lastTime);
 	}
 
-	public static OrderGetResponse toGetOrderResponse(Order order) {
+	public static OrderGetResponse toOrderGetResponse(Order order) {
 		return OrderGetResponse.builder()
 				.orderId(order.getId())
 				.memberId(order.getMemberId())
@@ -55,6 +58,34 @@ public class OrderMapper {
 				.offerCount(order.getOffers().size())
 				.createdAt(order.getCreatedAt())
 				.updatedAt(order.getUpdatedAt())
+				.build();
+	}
+
+	public static OrderGetSimpleServiceResponse toOrderSimpleGetServiceResponse(Order order) {
+		return OrderGetSimpleServiceResponse.builder()
+				.orderId(order.getId())
+				.title(order.getTitle())
+				.cakeInfo(order.getCakeInfo())
+				.orderStatus(order.getOrderStatus())
+				.hopePrice(order.getHopePrice())
+				.region(order.getRegion())
+				.createdAt(order.getCreatedAt())
+				.build();
+	}
+
+	public static OrderGetSimpleResponse toOrderSimpleGetResponse(
+			OrderGetSimpleServiceResponse orderSimpleGetServiceResponse,
+			ImageResponse imageResponse
+	) {
+		return OrderGetSimpleResponse.builder()
+				.orderId(orderSimpleGetServiceResponse.orderId())
+				.title(orderSimpleGetServiceResponse.title())
+				.cakeInfo(orderSimpleGetServiceResponse.cakeInfo())
+				.orderStatus(orderSimpleGetServiceResponse.orderStatus())
+				.hopePrice(orderSimpleGetServiceResponse.hopePrice())
+				.image(imageResponse.imageUrls().get(0))
+				.region(orderSimpleGetServiceResponse.region())
+				.createdAt(orderSimpleGetServiceResponse.createdAt())
 				.build();
 	}
 }

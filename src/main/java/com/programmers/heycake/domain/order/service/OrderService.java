@@ -1,24 +1,26 @@
 package com.programmers.heycake.domain.order.service;
 
 import static com.programmers.heycake.common.mapper.OrderMapper.*;
+import static com.programmers.heycake.common.utils.JwtUtil.*;
 import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.common.exception.BusinessException;
+import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OrderMapper;
-import com.programmers.heycake.domain.offer.service.OfferService;
 import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleServiceResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
+import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 import com.programmers.heycake.domain.order.repository.OrderCustomRepository;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 
@@ -83,4 +85,37 @@ public class OrderService {
 				.orElseThrow(EntityNotFoundException::new);
 		return OrderMapper.toGetOrderResponse(order);
 	}
+
+	public List<OrderGetSimpleServiceResponse> getOrders(
+			Long cursorId, int pageSize, CakeCategory cakeCategory, String region
+	) {
+		return orderCustomRepository
+				.findAllByRegionAndCategoryOrderByCreatedAtAsc(cursorId, pageSize, cakeCategory, region)
+				.stream()
+				.map(OrderMapper::toOrderSimpleGetServiceResponse)
+				.collect(Collectors.toList());
+	}
+
+	@Transactional
+	public void deleteOrder(Long orderId) {
+		if (!Objects.equals(getEntityById(orderId).getMemberId(), getMemberId())) {
+			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
+		if (!isNewOrder(orderId)) {
+			throw new BusinessException(ErrorCode.DELETE_ERROR);
+		}
+		orderRepository.deleteById(orderId);
+	}
+
+	private Order getEntityById(Long orderId) {
+		return orderRepository.findById(orderId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+	}
+
+	private boolean isNewOrder(Long orderId) {
+		return getEntityById(orderId)
+				.getOrderStatus()
+				.equals(NEW);
+	}
+
 }
