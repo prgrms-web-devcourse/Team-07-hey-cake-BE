@@ -7,12 +7,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.common.exception.BusinessException;
+import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OrderMapper;
+import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
@@ -60,7 +62,7 @@ public class OrderService {
 		return savedOrder.getId();
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long memberId) {
 		List<Order> orderList = orderCustomRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
@@ -75,7 +77,7 @@ public class OrderService {
 		return toGetOrderResponseListForMember(orderList, lastTime);
 	}
 
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRED)
 	public OrderGetResponse getOrder(Long orderId) {
 		Order order = getEntity(orderId);
 		return OrderMapper.toGetOrderResponse(order);
@@ -87,8 +89,32 @@ public class OrderService {
 		return Objects.equals(order.getMemberId(), memberId);
 	}
 
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void deleteOrder(Long orderId, Long memberId) {
+		if (!Objects.equals(getOrder(orderId).memberId(), memberId)) {
+			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
+		if (!isNew(orderId)) {
+			throw new BusinessException(ErrorCode.DELETE_ERROR);
+		}
+		orderRepository.deleteById(orderId);
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public List<Long> getOrderOfferIdList(Long orderId) {
+		return getEntity(orderId)
+				.getOffers()
+				.stream()
+				.map(Offer::getId)
+				.toList();
+	}
+
+	private boolean isNew(Long orderId) {
+		return getEntity(orderId).getOrderStatus().equals(NEW);
+	}
+
 	private Order getEntity(Long orderId) {
 		return orderRepository.findById(orderId)
-				.orElseThrow(EntityNotFoundException::new);
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 }
