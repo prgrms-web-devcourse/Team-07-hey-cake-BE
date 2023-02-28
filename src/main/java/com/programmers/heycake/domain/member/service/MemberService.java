@@ -4,8 +4,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -48,7 +47,7 @@ public class MemberService {
 	private final InMemoryClientRegistrationRepository inMemoryClientRegistrationRepository;
 
 	@Transactional
-	public TokenResponse loginForKakao(String authorizedCode) throws JSONException {
+	public TokenResponse loginForKakao(String authorizedCode) {
 
 		String accessToken = getAccessToken(authorizedCode);
 		MemberInfo memberInfo = getMemberInfo(accessToken);
@@ -87,7 +86,7 @@ public class MemberService {
 		return tokenResponse;
 	}
 
-	private String getAccessToken(String authorizedCode) throws JSONException {
+	private String getAccessToken(String authorizedCode) {
 		HttpHeaders headers = getAccessTokenRequestHeader();
 
 		ClientRegistration kakaoRegistration = inMemoryClientRegistrationRepository.findByRegistrationId("kakao");
@@ -126,7 +125,7 @@ public class MemberService {
 		return body;
 	}
 
-	private MemberInfo getMemberInfo(String accessToken) throws JSONException {
+	private MemberInfo getMemberInfo(String accessToken) {
 		HttpHeaders headers = getMemberInfoRequestHeader(accessToken);
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
@@ -149,7 +148,7 @@ public class MemberService {
 		return headers;
 	}
 
-	private MemberInfo createMemberInfoFromKakaoResponse(ResponseEntity<String> response) throws JSONException {
+	private MemberInfo createMemberInfoFromKakaoResponse(ResponseEntity<String> response) {
 		JSONObject responseBody = new JSONObject(response.getBody());
 
 		String email = responseBody.getJSONObject("kakao_account")

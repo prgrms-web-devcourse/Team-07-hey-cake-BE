@@ -21,52 +21,52 @@ import com.programmers.heycake.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-@RestController
-@RequiredArgsConstructor
+// @Slf4j
+// @RestController
+// @RequiredArgsConstructor
 public class MemberController {
-	private final MemberService memberService;
-
-	@GetMapping("/login/oauth2/code/kakao")
-	public ResponseEntity<String> getAuthorizationCode(
-			@RequestParam String code, HttpServletResponse response
-	) throws JSONException {
-		TokenResponse tokenResponse = memberService.loginForKakao(code);
-		Cookie accessToken = new Cookie("access_token", tokenResponse.token());
-		accessToken.setPath("/");
-		accessToken.setHttpOnly(true);
-		response.addCookie(accessToken);
-		return ResponseEntity.ok(tokenResponse.refreshToken());
-	}
-
-	@PostMapping("/members/refresh")
-	public ResponseEntity<String> refreshToken(
-			@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest,
-			HttpServletResponse response
-	) {
-		TokenResponse tokenResponse = memberService.reissueToken(tokenRefreshRequest.refreshToken());
-		Cookie accessToken = new Cookie("access_token", tokenResponse.token());
-		accessToken.setPath("/");
-		accessToken.setHttpOnly(true);
-		response.addCookie(accessToken);
-		return ResponseEntity.ok(tokenResponse.refreshToken());
-	}
-
-	@GetMapping("/members/test")
-	public ResponseEntity<Void> testControl() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		System.out.println(authentication);
-		System.out.println(principal);
-		return null;
-	}
-
-	@GetMapping("/members/tmp")
-	public ResponseEntity<Void> tmpControl() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		System.out.println(authentication);
-		System.out.println(principal);
-		return null;
-	}
+	// private final MemberService memberService;
+	//
+	// @GetMapping("/login/oauth2/code/kakao")
+	// public ResponseEntity<String> getAuthorizationCode(
+	// 		@RequestParam String code, HttpServletResponse response
+	// ) throws JSONException {
+	// 	TokenResponse tokenResponse = memberService.loginForKakao(code);
+	// 	Cookie accessToken = new Cookie("access_token", tokenResponse.token());
+	// 	accessToken.setPath("/");
+	// 	accessToken.setHttpOnly(true);
+	// 	response.addCookie(accessToken);
+	// 	return ResponseEntity.ok(tokenResponse.refreshToken());
+	// }
+	//
+	// @PostMapping("/members/refresh")
+	// public ResponseEntity<String> refreshToken(
+	// 		@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest,
+	// 		HttpServletResponse response
+	// ) {
+	// 	TokenResponse tokenResponse = memberService.reissueToken(tokenRefreshRequest.refreshToken());
+	// 	Cookie accessToken = new Cookie("access_token", tokenResponse.token());
+	// 	accessToken.setPath("/");
+	// 	accessToken.setHttpOnly(true);
+	// 	response.addCookie(accessToken);
+	// 	return ResponseEntity.ok(tokenResponse.refreshToken());
+	// }
+	//
+	// @GetMapping("/members/test")
+	// public ResponseEntity<Void> testControl() {
+	// 	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	// 	Object principal = authentication.getPrincipal();
+	// 	System.out.println(authentication);
+	// 	System.out.println(principal);
+	// 	return null;
+	// }
+	//
+	// @GetMapping("/members/tmp")
+	// public ResponseEntity<Void> tmpControl() {
+	// 	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	// 	Object principal = authentication.getPrincipal();
+	// 	System.out.println(authentication);
+	// 	System.out.println(principal);
+	// 	return null;
+	// }
 }
