@@ -2,6 +2,8 @@ package com.programmers.heycake.domain.member.service;
 
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpEntity;
@@ -197,5 +199,16 @@ public class MemberService {
 		tokenRepository.save(token);
 
 		return tokenResponse;
+	}
+
+	@Transactional(readOnly = true)
+	public boolean isMarketById(Long memberId) {
+		return getMemberById(memberId).isMarket();
+	}
+
+	private Member getMemberById(Long memberId) {
+		return memberRepository
+				.findById(memberId)
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 memberId : " + memberId));
 	}
 }

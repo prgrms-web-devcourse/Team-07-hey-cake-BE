@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.mapper.OrderMapper;
 import com.programmers.heycake.domain.offer.service.OfferService;
 import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
-import com.programmers.heycake.domain.order.model.dto.request.GetOrderRequest;
+import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
@@ -63,7 +63,7 @@ public class OrderService {
 	}
 
 	@Transactional(readOnly = true)
-	public MyOrderResponseList getMyOrderList(GetOrderRequest getOrderRequest, Long memberId) {
+	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long memberId) {
 		List<Order> orderList = orderCustomRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
 				getOrderRequest.orderStatus(),
@@ -74,7 +74,7 @@ public class OrderService {
 		LocalDateTime lastTime =
 				orderList.size() == 0 ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).getVisitDate();
 
-		return toGetMyOrderResponseList(orderList, lastTime);
+		return toGetOrderResponseListForMember(orderList, lastTime);
 	}
 
 	@Transactional

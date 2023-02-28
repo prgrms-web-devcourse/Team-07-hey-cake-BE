@@ -8,7 +8,7 @@ import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import lombok.Builder;
 
 @Builder
-public record GetOrderResponse(
+public record MyOrderResponse(
 		Long id,
 		String title,
 		OrderStatus orderStatus,
