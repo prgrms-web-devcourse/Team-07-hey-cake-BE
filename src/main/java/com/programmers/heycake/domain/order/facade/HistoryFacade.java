@@ -20,7 +20,7 @@ public class HistoryFacade {
 		//Todo 컨텍스트 memberId와 order의 작성자 같은지 체크
 
 		// DTO로 변경
-		Offer offer = offerService.getById(historyControllerRequest.offerId());
+		Offer offer = offerService.getOfferById(historyControllerRequest.offerId());
 
 		//memberId, orderDto로 변경
 		HistoryFacadeRequest historyRequest = new HistoryFacadeRequest(1L, offer.getMarketId(), offer.getOrder());

@@ -10,6 +10,7 @@ public enum ErrorCode {
 	DUPLICATED_OFFER(HttpStatus.CONFLICT, "이미 해당 주문에 제안 글을 작성하였습니다."),
 	VISIT_DATE_PASSED(HttpStatus.CONFLICT, "이미 날짜가 지난 주문입니다."),
 	ORDER_CLOSED(HttpStatus.CONFLICT, "이미 완료된 주문입니다."),
+	DELETE_ERROR(HttpStatus.CONFLICT, "삭제할 수 없습니다."),
 
 	BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 입력 값입니다."),
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),

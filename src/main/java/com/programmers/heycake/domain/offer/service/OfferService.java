@@ -2,6 +2,7 @@ package com.programmers.heycake.domain.offer.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -19,6 +20,7 @@ import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
+import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -32,8 +34,10 @@ public class OfferService {
 	private final MarketRepository marketRepository;
 
 	@Transactional
-	public void deleteOffer(Long offerId) {
-		//Todo Context 에서 유저 가져다가 권한 확인
+	public void deleteOffer(Long offerId, Long marketId) {
+		if (!Objects.equals(getOfferById(offerId).getMarketId(), marketId)) {
+			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
 		offerRepository.deleteById(offerId);
 	}
 
@@ -93,12 +97,20 @@ public class OfferService {
 
 	//Todo DTO로 변경
 	@Transactional(readOnly = true)
-	public Offer getById(Long offerId) {
+	public Offer getOfferById(Long offerId) {
 		return offerRepository
 				.findByIdWithFetchJoin(offerId)
 				.orElseThrow(
 						() -> {
 							throw new EntityNotFoundException(ErrorCode.ENTITY_NOT_FOUND.getMessage());
 						});
+	}
+
+	@Transactional(readOnly = true)
+	public boolean isReservedOffer(Long offerId) {
+		return !getOfferById(offerId)
+				.getOrder()
+				.getOrderStatus()
+				.equals(OrderStatus.NEW);
 	}
 }
