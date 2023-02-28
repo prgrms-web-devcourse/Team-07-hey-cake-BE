@@ -1,9 +1,12 @@
 package com.programmers.heycake.domain.order.controller;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,6 +24,7 @@ import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
 
 import lombok.RequiredArgsConstructor;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
@@ -49,7 +53,7 @@ public class OrderController {
 	}
 
 	@DeleteMapping("/{orderId}")
-	public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
+	public ResponseEntity<Void> deleteOrder(@PathVariable @NotNull @Positive Long orderId) {
 		orderFacade.deleteOrder(orderId);
 		return ResponseEntity.noContent().build();
 	}
