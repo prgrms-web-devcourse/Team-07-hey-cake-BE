@@ -6,12 +6,17 @@ import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.common.mapper.OrderMapper;
+import com.programmers.heycake.domain.offer.service.OfferService;
 import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.request.GetOrderRequest;
-import com.programmers.heycake.domain.order.model.dto.response.GetOrderResponseList;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.repository.OrderCustomRepository;
@@ -24,6 +29,8 @@ import lombok.RequiredArgsConstructor;
 public class OrderService {
 	private final OrderRepository orderRepository;
 	private final OrderCustomRepository orderCustomRepository;
+
+	private final OfferService offerService;
 
 	@Transactional
 	public Long create(OrderCreateRequest orderCreateRequest) {
@@ -56,7 +63,7 @@ public class OrderService {
 	}
 
 	@Transactional(readOnly = true)
-	public GetOrderResponseList getOrderList(GetOrderRequest getOrderRequest, Long memberId) {
+	public MyOrderResponseList getMyOrderList(GetOrderRequest getOrderRequest, Long memberId) {
 		List<Order> orderList = orderCustomRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
 				getOrderRequest.orderStatus(),
@@ -67,6 +74,13 @@ public class OrderService {
 		LocalDateTime lastTime =
 				orderList.size() == 0 ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).getVisitDate();
 
-		return toGetOrderResponseList(orderList, lastTime);
+		return toGetMyOrderResponseList(orderList, lastTime);
+	}
+
+	@Transactional
+	public OrderGetResponse getOrder(Long orderId) {
+		Order order = orderRepository.findById(orderId)
+				.orElseThrow(EntityNotFoundException::new);
+		return OrderMapper.toGetOrderResponse(order);
 	}
 }

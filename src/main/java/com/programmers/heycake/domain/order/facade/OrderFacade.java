@@ -8,7 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.request.GetOrderRequest;
-import com.programmers.heycake.domain.order.model.dto.response.GetOrderResponseList;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
 import com.programmers.heycake.domain.order.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class OrderFacade {
 	}
 
 	@Transactional
-	public GetOrderResponseList getOrderList(GetOrderRequest getOrderRequest) {
+	public MyOrderResponseList getMyOrderList(GetOrderRequest getOrderRequest) {
 		//TODO exist 쿼리 or authority 로 분기
 		//if(memberservice.isMarket(memberId)) {
 		// 업주일때
@@ -46,8 +47,13 @@ public class OrderFacade {
 		//if(!memberservice.isMarket(memberId)) {
 		//회원일때
 		//Todo memberId 찾아오기
-		GetOrderResponseList orderList = orderService.getOrderList(getOrderRequest, 1L);
+		MyOrderResponseList orderList = orderService.getMyOrderList(getOrderRequest, 1L);
 		return orderList;
+	}
+
+	@Transactional
+	public OrderGetResponse getOrder(Long orderId) {
+		return orderService.getOrder(orderId);
 	}
 }
 
