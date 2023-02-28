@@ -1,14 +1,16 @@
 package com.programmers.heycake.domain.market.service;
 
+import static com.programmers.heycake.common.exception.ErrorCode.*;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
-import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.market.mapper.MarketEnrollmentMapper;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponse;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
+import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
@@ -30,10 +32,10 @@ public class MarketEnrollmentService {
 		// todo 인증 완성 시 회원 조회 방식 변경
 		Member member = memberRepository.findById(request.memberId())
 				.orElseThrow(() -> {
-					throw new BusinessException(ErrorCode.UNAUTHORIZED);
+					throw new BusinessException(UNAUTHORIZED);
 				});
 		if (member.isMarket()) {
-			throw new BusinessException(ErrorCode.FORBIDDEN);
+			throw new BusinessException(FORBIDDEN);
 		}
 
 		enrollment.setMember(member);
@@ -46,8 +48,22 @@ public class MarketEnrollmentService {
 	public MarketEnrollmentResponse getMarketEnrollment(Long enrollmentId) {
 		MarketEnrollment enrollment = marketEnrollmentRepository.findById(enrollmentId)
 				.orElseThrow(() -> {
-					throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
+					throw new BusinessException(ENTITY_NOT_FOUND);
 				});
 		return MarketEnrollmentMapper.toResponse(enrollment);
 	}
+
+	@Transactional
+	public void changeEnrollmentStatus(Long enrollmentId, EnrollmentStatus status) {
+		MarketEnrollment enrollment = marketEnrollmentRepository.findById(enrollmentId)
+				.orElseThrow(() -> {
+					throw new BusinessException(ENTITY_NOT_FOUND);
+				});
+		if (enrollment.isSameStatus(status)) {
+			throw new BusinessException(DUPLICATED);
+		}
+
+		enrollment.updateEnrollmentStatus(status);
+	}
+
 }

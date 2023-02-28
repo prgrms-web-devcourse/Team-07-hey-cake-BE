@@ -100,6 +100,10 @@ public class MarketEnrollment extends BaseEntity {
 		this.enrollmentStatus = EnrollmentStatus.WAITING;
 	}
 
+	public boolean isSameStatus(EnrollmentStatus enrollmentStatus) {
+		return this.enrollmentStatus == enrollmentStatus;
+	}
+
 	public void updateEnrollmentStatus(EnrollmentStatus enrollmentStatus) {
 		this.enrollmentStatus = enrollmentStatus;
 	}

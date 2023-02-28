@@ -1,6 +1,6 @@
 package com.programmers.heycake.domain.market.mapper;
 
-import com.programmers.heycake.domain.image.model.dto.ImageResponse;
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentControllerResponse;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponse;
@@ -46,7 +46,7 @@ public class MarketEnrollmentMapper {
 
 	public static MarketEnrollmentControllerResponse toControllerResponse(
 			MarketEnrollmentResponse enrollment,
-			ImageResponse image
+			ImageResponses images
 	) {
 		return MarketEnrollmentControllerResponse.builder()
 				.phoneNumber(enrollment.phoneNumber())
@@ -57,7 +57,7 @@ public class MarketEnrollmentMapper {
 				.marketName(enrollment.marketName())
 				.businessNumber(enrollment.businessNumber())
 				.ownerName(enrollment.ownerName())
-				.marketImage(image.imageUrls().get(0))
+				.marketImage(images.images().get(0).imageUrls())
 				.build();
 	}
 }
