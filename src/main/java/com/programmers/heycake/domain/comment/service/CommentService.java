@@ -58,6 +58,25 @@ public class CommentService {
 				.toList();
 	}
 
+	public void deleteComment(Long commentId, Long memberId) {
+		Comment comment = getComment(commentId);
+
+		verifyCommentDeleteAuthority(comment, memberId);
+
+		commentRepository.delete(comment);
+	}
+
+	private void verifyCommentDeleteAuthority(Comment comment, Long memberId) {
+		if (comment.isNotWriter(memberId)) {
+			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
+	}
+
+	private Comment getComment(Long commentId) {
+		return commentRepository.findById(commentId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+	}
+
 	private Offer getOffer(Long offerId) {
 		return offerRepository.findByIdWithFetchJoin(offerId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
