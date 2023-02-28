@@ -3,7 +3,6 @@ package com.programmers.heycake.domain.comment.facade;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.programmers.heycake.common.utils.JwtUtil;
 import com.programmers.heycake.domain.comment.model.dto.request.CommentSaveRequest;
 import com.programmers.heycake.domain.comment.service.CommentService;
 import com.programmers.heycake.domain.image.model.vo.ImageType;

@@ -1,7 +1,7 @@
 package com.programmers.heycake.common.mapper;
 
-import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
+import com.programmers.heycake.domain.comment.model.entity.Comment;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
