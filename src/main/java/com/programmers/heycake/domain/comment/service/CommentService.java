@@ -2,10 +2,14 @@ package com.programmers.heycake.domain.comment.service;
 
 import static com.programmers.heycake.common.mapper.CommentMapper.*;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
+import com.programmers.heycake.common.mapper.CommentMapper;
+import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.comment.repository.CommentRepository;
 import com.programmers.heycake.domain.market.model.entity.Market;
@@ -13,7 +17,6 @@ import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
-import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 public class CommentService {
 
 	private final CommentRepository commentRepository;
-	private final OrderRepository orderRepository;
 	private final OfferRepository offerRepository;
 	private final MarketRepository marketRepository;
 
@@ -47,6 +49,13 @@ public class CommentService {
 		if ((order.isNotWriter(memberId)) && market.isNotMarketMember(memberId)) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
+	}
+
+	public List<CommentResponse> getComments(Long offerId) {
+		return commentRepository.findByOfferId(offerId)
+				.stream()
+				.map(CommentMapper::toCommentResponse)
+				.toList();
 	}
 
 	private Offer getOffer(Long offerId) {
