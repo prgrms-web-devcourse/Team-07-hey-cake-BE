@@ -2,7 +2,7 @@ package com.programmers.heycake.domain.offer.model.dto.response;
 
 import java.util.List;
 
-import com.programmers.heycake.domain.comment.model.entity.response.CommentResponse;
+import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 
 import lombok.Builder;
 

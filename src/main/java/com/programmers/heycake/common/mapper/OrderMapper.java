@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.entity.OrderHistory;
 
@@ -39,5 +40,19 @@ public class OrderMapper {
 						.toList();
 
 		return toGetOrderResponseListForMember(orderList, lastTime);
+	}
+
+	public static OrderGetResponse toGetOrderResponse(Order order) {
+		return OrderGetResponse.builder()
+				.orderId(order.getId())
+				.memberId(order.getMemberId())
+				.title(order.getTitle())
+				.cakeInfo(order.getCakeInfo())
+				.orderStatus(order.getOrderStatus())
+				.visitDate(order.getVisitDate())
+				.hopePrice(order.getHopePrice())
+				.region(order.getRegion())
+				.offerCount(order.getOffers().size())
+				.build();
 	}
 }

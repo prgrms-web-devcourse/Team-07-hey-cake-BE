@@ -9,6 +9,7 @@ import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
 import com.programmers.heycake.domain.order.service.HistoryService;
 import com.programmers.heycake.domain.order.service.OrderService;
 
@@ -54,4 +55,10 @@ public class OrderFacade {
 
 		return myOrderList;
 	}
+
+	@Transactional
+	public OrderGetResponse getOrder(Long orderId) {
+		return orderService.getOrder(orderId);
+	}
 }
+
