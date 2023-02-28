@@ -1,7 +1,9 @@
 package com.programmers.heycake.common.mapper;
 
+import com.programmers.heycake.domain.comment.model.dto.response.CommentSummaryResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
+import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -15,5 +17,16 @@ public class CommentMapper {
 
 	public static CommentResponse toCommentResponse(Comment comment) {
 		return new CommentResponse(comment.getId(), comment.getMemberId(), comment.getContent());
+	}
+
+	public static CommentSummaryResponse toCommentSummaryResponse(CommentResponse commentResponse,
+			ImageResponse imageResponse) {
+		String imageUrl = imageResponse.imageUrls()
+				.stream()
+				.findAny()
+				.orElse(null);
+
+		return new CommentSummaryResponse(commentResponse.commentId(), commentResponse.content(), imageUrl,
+				commentResponse.memberId());
 	}
 }
