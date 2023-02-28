@@ -5,6 +5,7 @@ import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -12,9 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.mapper.OrderMapper;
-import com.programmers.heycake.domain.offer.service.OfferService;
-import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
+import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
@@ -29,8 +29,6 @@ import lombok.RequiredArgsConstructor;
 public class OrderService {
 	private final OrderRepository orderRepository;
 	private final OrderCustomRepository orderCustomRepository;
-
-	private final OfferService offerService;
 
 	@Transactional
 	public Long create(OrderCreateRequest orderCreateRequest) {
@@ -79,8 +77,18 @@ public class OrderService {
 
 	@Transactional
 	public OrderGetResponse getOrder(Long orderId) {
-		Order order = orderRepository.findById(orderId)
-				.orElseThrow(EntityNotFoundException::new);
+		Order order = getEntity(orderId);
 		return OrderMapper.toGetOrderResponse(order);
+	}
+
+	@Transactional(readOnly = true)
+	public boolean isAuthor(Long orderId, Long memberId) {
+		Order order = getEntity(orderId);
+		return Objects.equals(order.getMemberId(), memberId);
+	}
+
+	private Order getEntity(Long orderId) {
+		return orderRepository.findById(orderId)
+				.orElseThrow(EntityNotFoundException::new);
 	}
 }

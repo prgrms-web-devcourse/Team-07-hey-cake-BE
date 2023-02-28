@@ -7,7 +7,11 @@ import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse
 import lombok.Builder;
 
 @Builder
-public record OfferResponse(Long offerId, Long marketId, int expectedPrice, String content,
-														List<CommentResponse> commentResponses) {
+public record OfferResponse(
+		Long offerId,
+		Long marketId,
+		int expectedPrice,
+		String content,
+		List<CommentResponse> commentResponses) {
 
 }
