@@ -9,6 +9,7 @@ import java.util.Objects;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
@@ -36,12 +37,34 @@ public class OfferService {
 	private final OrderRepository orderRepository;
 	private final MarketRepository marketRepository;
 
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRED)
 	public void deleteOffer(Long offerId, Long marketId) {
 		if (!Objects.equals(getOfferById(offerId).marketId(), marketId)) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
+		if (isReservedOffer(offerId)) {
+			throw new BusinessException(ErrorCode.DELETE_ERROR);
+		}
+
+		deleteOfferWithoutAuth(offerId);
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void deleteOfferWithoutAuth(Long offerId) {
 		offerRepository.deleteById(offerId);
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public OfferDto getOfferById(Long offerId) {
+		return toOfferDto(getOffer(offerId));
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public boolean isReservedOffer(Long offerId) {
+		return !getOfferById(offerId)
+				.orderDto()
+				.orderStatus()
+				.equals(OrderStatus.NEW);
 	}
 
 	public Long saveOffer(Long memberId, Long orderId, int expectedPrice, String content) {
@@ -98,11 +121,6 @@ public class OfferService {
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
-	@Transactional(readOnly = true)
-	public OfferDto getOfferById(Long offerId) {
-		return toOfferDto(getOffer(offerId));
-	}
-
 	private Offer getOffer(Long offerId) {
 		return offerRepository
 				.findByIdWithFetchJoin(offerId)
@@ -110,13 +128,5 @@ public class OfferService {
 						() -> {
 							throw new EntityNotFoundException(ErrorCode.ENTITY_NOT_FOUND.getMessage());
 						});
-	}
-
-	@Transactional(readOnly = true)
-	public boolean isReservedOffer(Long offerId) {
-		return !getOfferById(offerId)
-				.orderDto()
-				.orderStatus()
-				.equals(OrderStatus.NEW);
 	}
 }

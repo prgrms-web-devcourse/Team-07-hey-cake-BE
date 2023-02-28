@@ -3,11 +3,17 @@ package com.programmers.heycake.domain.order.facade;
 import static com.programmers.heycake.common.utils.JwtUtil.*;
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
+import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
+import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.member.service.MemberService;
+import com.programmers.heycake.domain.offer.facade.OfferFacade;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
@@ -24,8 +30,10 @@ public class OrderFacade {
 	private final HistoryService historyService;
 	private final OrderService orderService;
 	private final MemberService memberService;
-	private static final String SUB_PATH = "image";
+	private static final String ORDER_IMAGE_SUB_PATH = "images/order";
 	private final ImageIntegrationService imageIntegrationService;
+	private final ImageService imageService;
+	private final OfferFacade offerFacade;
 
 	@Transactional
 	public void createOrder(OrderCreateRequest orderCreateRequest) {
@@ -34,7 +42,7 @@ public class OrderFacade {
 			for (int i = 0; i < orderCreateRequest.cakeImages().size(); i++) {
 				imageIntegrationService.createAndUploadImage(
 						orderCreateRequest.cakeImages().get(i),
-						SUB_PATH,
+						ORDER_IMAGE_SUB_PATH,
 						orderId,
 						ORDER
 				);
@@ -57,6 +65,20 @@ public class OrderFacade {
 	@Transactional
 	public OrderGetResponse getOrder(Long orderId) {
 		return orderService.getOrder(orderId);
+	}
+
+	@Transactional
+	public void deleteOrder(Long orderId) {
+		ImageResponses images = imageService.getImages(orderId, ORDER);
+		images.images()
+				.forEach(
+						image -> imageIntegrationService.deleteImage(
+								orderId, ImageType.OFFER, ORDER_IMAGE_SUB_PATH, image.savedFilename()));
+
+		List<Long> orderOfferIdList = orderService.getOrderOfferIdList(orderId);
+		orderOfferIdList.forEach(offerFacade::deleteOfferWithoutAuth);
+
+		orderService.deleteOrder(orderId, getMemberId());
 	}
 }
 

@@ -10,6 +10,7 @@ import com.programmers.heycake.domain.comment.model.dto.request.CommentSaveReque
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentSummaryResponse;
 import com.programmers.heycake.domain.comment.service.CommentService;
+import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
@@ -51,5 +52,21 @@ public class CommentFacade {
 							return CommentMapper.toCommentSummaryResponse(commentResponse, imageResponse);
 						}
 				).toList();
+	}
+
+	@Transactional
+	public void deleteComment(Long commentId) {
+		// TODO : memberId 헤더에서 받기
+		Long memberId = 1L;
+		commentService.deleteComment(commentId, memberId);
+
+		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
+		if (commentImageResponse.size() > 0) {
+			commentImageResponse
+					.forEach(imageResponse ->
+							imageIntegrationService.deleteImage(commentId, ImageType.COMMENT, COMMENT_SUB_PATH,
+									imageResponse.savedFilename()))
+			;
+		}
 	}
 }
