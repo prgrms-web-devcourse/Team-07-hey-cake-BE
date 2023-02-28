@@ -39,6 +39,8 @@ public class OrderMapper {
 				.hopePrice(order.getHopePrice())
 				.region(order.getRegion())
 				.offerCount(order.getOffers().size())
+				.createdAt(order.getCreatedAt())
+				.updatedAt(order.getUpdatedAt())
 				.build();
 	}
 }
