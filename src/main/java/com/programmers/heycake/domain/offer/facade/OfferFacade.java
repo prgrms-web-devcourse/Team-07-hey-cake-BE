@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.mapper.OfferMapper;
-import com.programmers.heycake.domain.image.model.dto.ImageResponse;
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
@@ -59,9 +59,9 @@ public class OfferFacade {
 		return offerResponses.stream()
 				.map(
 						offerResponse -> {
-							ImageResponse imageResponse = imageService.getImage(offerResponse.offerId(), ImageType.OFFER);
+							ImageResponses imageResponses = imageService.getImages(offerResponse.offerId(), ImageType.OFFER);
 							MarketResponse marketResponse = marketService.getMarket(offerResponse.marketId());
-							return OfferMapper.toOfferSummaryResponse(offerResponse, imageResponse, marketResponse);
+							return OfferMapper.toOfferSummaryResponse(offerResponse, imageResponses, marketResponse);
 						}
 				)
 				.toList();
@@ -70,7 +70,7 @@ public class OfferFacade {
 	@Transactional
 	public void deleteOffer(Long offerId) {
 		offerService.deleteOffer(offerId);
-		String imageUrl = imageService.getImage(offerId, ImageType.OFFER).imageUrls().get(0);
+		String imageUrl = imageService.getImages(offerId, ImageType.OFFER).images().get(0).imageUrls();
 		imageIntegrationService.deleteImage(offerId, ImageType.OFFER, OFFER_IMAGE_SUB_PATH, imageUrl);
 
 		//comment service

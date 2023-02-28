@@ -1,9 +1,12 @@
 package com.programmers.heycake.common.mapper;
 
+import java.util.List;
+
+import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentSummaryResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
-import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -20,8 +23,12 @@ public class CommentMapper {
 	}
 
 	public static CommentSummaryResponse toCommentSummaryResponse(CommentResponse commentResponse,
-			ImageResponse imageResponse) {
-		String imageUrl = imageResponse.imageUrls()
+			ImageResponses imageResponse) {
+		List<String> imageUrls = imageResponse.images().stream()
+				.map(ImageResponse::imageUrls)
+				.toList();
+
+		String imageUrl = imageUrls
 				.stream()
 				.findAny()
 				.orElse(null);

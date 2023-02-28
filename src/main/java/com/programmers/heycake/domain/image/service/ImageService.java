@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.image.mapper.ImageMapper;
-import com.programmers.heycake.domain.image.model.dto.ImageResponse;
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
@@ -52,7 +52,7 @@ public class ImageService {
 	}
 
 	@Transactional(readOnly = true)
-	public ImageResponse getImage(Long referenceId, ImageType imageType) {
+	public ImageResponses getImages(Long referenceId, ImageType imageType) {
 		List<Image> images = imageRepository.findAllByReferenceIdAndImageType(referenceId, imageType);
 		return ImageMapper.toResponse(images);
 	}

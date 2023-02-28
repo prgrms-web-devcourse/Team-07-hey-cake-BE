@@ -9,6 +9,7 @@ import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.image.event.DeleteEvent;
 import com.programmers.heycake.domain.image.event.UploadRollbackEvent;
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 
@@ -39,4 +40,8 @@ public class ImageIntegrationService {
 		applicationEventPublisher.publishEvent(new DeleteEvent(subPath, savedFilename));
 	}
 
+	@Transactional(readOnly = true)
+	public ImageResponses getImages(Long referenceId, ImageType imageType) {
+		return imageService.getImages(referenceId, imageType);
+	}
 }
