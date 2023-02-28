@@ -14,7 +14,7 @@ public class EnrollmentEventListener {
 
 	private final MarketService marketService;
 
-	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	@TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
 	public void changeEnrollmentStatus(EnrollmentStatusEvent event) {
 		if (event.isApproved()) {
 			marketService.enrollMarket(event.getEnrollmentId());

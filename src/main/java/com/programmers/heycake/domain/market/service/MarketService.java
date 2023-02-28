@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
-import com.programmers.heycake.common.utils.JwtUtil;
 import com.programmers.heycake.domain.market.mapper.MarketMapper;
 import com.programmers.heycake.domain.market.model.dto.MarketResponse;
 import com.programmers.heycake.domain.market.model.entity.Market;
@@ -15,7 +14,6 @@ import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
-import com.programmers.heycake.domain.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,21 +21,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MarketService {
 
-	private final MemberRepository memberRepository;
 	private final MarketRepository marketRepository;
 	private final MarketEnrollmentRepository marketEnrollmentRepository;
 
 	@Transactional
 	public Long enrollMarket(Long enrollmentId) {
-		Long memberId = JwtUtil.getMemberId();
-		Member member = getMember(memberId);
+
+		MarketEnrollment enrollment = getMarketEnrollment(enrollmentId);
+		Member member = enrollment.getMember();
 
 		if (member.isMarket()) {
 			throw new BusinessException(FORBIDDEN);
 		}
 		member.changeAuthority(MARKET);
 
-		MarketEnrollment enrollment = getMarketEnrollment(enrollmentId);
 		Market market = Market.builder()
 				.phoneNumber(enrollment.getPhoneNumber())
 				.marketAddress(enrollment.getMarketAddress())
@@ -47,7 +44,6 @@ public class MarketService {
 				.build();
 		market.setMarketEnrollment(enrollment);
 		market.setMember(member);
-
 		Market savedMarket = marketRepository.save(market);
 
 		return savedMarket.getId();
@@ -76,14 +72,6 @@ public class MarketService {
 					throw new BusinessException(ENTITY_NOT_FOUND);
 				});
 		return enrollment;
-	}
-
-	private Member getMember(Long memberId) {
-		Member member = memberRepository.findById(memberId)
-				.orElseThrow(() -> {
-					throw new BusinessException(ENTITY_NOT_FOUND);
-				});
-		return member;
 	}
 
 }
