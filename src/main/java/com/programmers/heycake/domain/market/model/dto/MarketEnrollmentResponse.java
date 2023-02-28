@@ -8,6 +8,7 @@ import lombok.Builder;
 
 @Builder
 public record MarketEnrollmentResponse(
+		Long enrollmentId,
 		String phoneNumber,
 		MarketAddress marketAddress,
 		LocalTime openTime,

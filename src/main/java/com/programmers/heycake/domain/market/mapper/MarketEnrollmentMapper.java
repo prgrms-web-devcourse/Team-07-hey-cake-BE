@@ -1,9 +1,12 @@
 package com.programmers.heycake.domain.market.mapper;
 
+import java.util.List;
+
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentControllerResponse;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponse;
+import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponses;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 
@@ -33,6 +36,7 @@ public class MarketEnrollmentMapper {
 
 	public static MarketEnrollmentResponse toResponse(MarketEnrollment enrollment) {
 		return MarketEnrollmentResponse.builder()
+				.enrollmentId(enrollment.getId())
 				.phoneNumber(enrollment.getPhoneNumber())
 				.marketAddress(enrollment.getMarketAddress())
 				.openTime(enrollment.getOpenTime())
@@ -59,5 +63,12 @@ public class MarketEnrollmentMapper {
 				.ownerName(enrollment.ownerName())
 				.marketImage(images.images().get(0).imageUrls())
 				.build();
+	}
+
+	public static MarketEnrollmentResponses toResponse(List<MarketEnrollment> marketEnrollments) {
+		List<MarketEnrollmentResponse> enrollments = marketEnrollments.stream()
+				.map(MarketEnrollmentMapper::toResponse)
+				.toList();
+		return new MarketEnrollmentResponses(enrollments);
 	}
 }

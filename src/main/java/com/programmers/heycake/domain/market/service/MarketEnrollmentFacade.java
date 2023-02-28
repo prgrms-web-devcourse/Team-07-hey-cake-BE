@@ -11,8 +11,10 @@ import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.market.event.EnrollmentStatusEvent;
 import com.programmers.heycake.domain.market.mapper.MarketEnrollmentMapper;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentControllerResponse;
+import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentListRequest;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
 import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponse;
+import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponses;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 
 import lombok.RequiredArgsConstructor;
@@ -55,7 +57,12 @@ public class MarketEnrollmentFacade {
 
 	@Transactional
 	public void changeEnrollmentStatus(Long enrollmentId, EnrollmentStatus status) {
-		marketEnrollmentService.changeEnrollmentStatus(enrollmentId, status);
 		applicationEventPublisher.publishEvent(new EnrollmentStatusEvent(enrollmentId, status));
+		marketEnrollmentService.changeEnrollmentStatus(enrollmentId, status);
+	}
+
+	@Transactional(readOnly = true)
+	public MarketEnrollmentResponses getMarketEnrollments(MarketEnrollmentListRequest request) {
+		return marketEnrollmentService.getMarketEnrollments(request);
 	}
 }
