@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.domain.comment.model.entity.response.CommentResponse;
+import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.market.model.dto.MarketResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
