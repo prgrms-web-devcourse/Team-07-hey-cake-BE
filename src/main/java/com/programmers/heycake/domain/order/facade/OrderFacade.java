@@ -47,9 +47,9 @@ public class OrderFacade {
 		Long memberId = getMemberId();
 
 		if (memberService.isMarketById(memberId)) {
-			return historyService.getMyOrderList(getOrderRequest, 1L);
+			return historyService.getMyOrderList(getOrderRequest, memberId);
 		} else {
-			return orderService.getMyOrderList(getOrderRequest, 1L);
+			return orderService.getMyOrderList(getOrderRequest, memberId);
 		}
 
 	}
