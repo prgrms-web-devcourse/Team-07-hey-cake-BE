@@ -58,13 +58,13 @@ public class MarketEnrollmentController {
 	@GetMapping
 	public ResponseEntity<MarketEnrollmentResponses> getMarketEnrollments(
 			@RequestParam(required = false) Long cursor,
-			@RequestParam(required = false) Integer pageSize,
-			@RequestParam(required = false) EnrollmentStatus enrollmentStatus
+			@RequestParam Integer pageSize,
+			@RequestParam(required = false) EnrollmentStatus status
 	) {
 		MarketEnrollmentListRequest request = new MarketEnrollmentListRequest(
 				cursor,
 				pageSize,
-				enrollmentStatus
+				status
 		);
 		MarketEnrollmentResponses marketEnrollments = marketEnrollmentFacade.getMarketEnrollments(request);
 		return ResponseEntity.ok(marketEnrollments);
