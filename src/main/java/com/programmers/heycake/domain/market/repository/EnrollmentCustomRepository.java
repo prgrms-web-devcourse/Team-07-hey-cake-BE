@@ -5,7 +5,7 @@ import java.util.List;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 
-public interface MarketEnrollmentCustomRepository {
+public interface EnrollmentCustomRepository {
 
 	List<MarketEnrollment> findAllOrderByCreatedAtDesc(
 			Long cursorEnrollmentId,

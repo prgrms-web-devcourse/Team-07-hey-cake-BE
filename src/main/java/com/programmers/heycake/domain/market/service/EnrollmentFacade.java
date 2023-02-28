@@ -9,30 +9,30 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.market.event.EnrollmentStatusEvent;
-import com.programmers.heycake.domain.market.mapper.MarketEnrollmentMapper;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentControllerResponse;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentListRequest;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponse;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponses;
+import com.programmers.heycake.domain.market.mapper.EnrollmentMapper;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentControllerResponse;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentResponse;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentResponses;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class MarketEnrollmentFacade {
+public class EnrollmentFacade {
 
 	private static final String ENROLLMENT_IMAGE_PATH = "image/marketEnrollment";
 
-	private final MarketEnrollmentService marketEnrollmentService;
+	private final EnrollmentService enrollmentService;
 	private final ImageIntegrationService imageIntegrationService;
 	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional
-	public Long enrollMarket(MarketEnrollmentRequest request) {
+	public Long enrollMarket(EnrollmentRequest request) {
 
-		Long enrollmentId = marketEnrollmentService.enrollMarket(request);
+		Long enrollmentId = enrollmentService.enrollMarket(request);
 
 		imageIntegrationService.createAndUploadImage(
 				request.businessLicenseImage(),
@@ -49,20 +49,20 @@ public class MarketEnrollmentFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public MarketEnrollmentControllerResponse getMarketEnrollment(Long enrollmentId) {
-		MarketEnrollmentResponse enrollment = marketEnrollmentService.getMarketEnrollment(enrollmentId);
+	public EnrollmentControllerResponse getMarketEnrollment(Long enrollmentId) {
+		EnrollmentResponse enrollment = enrollmentService.getMarketEnrollment(enrollmentId);
 		ImageResponses images = imageIntegrationService.getImages(enrollmentId, ENROLLMENT_MARKET);
-		return MarketEnrollmentMapper.toControllerResponse(enrollment, images);
+		return EnrollmentMapper.toControllerResponse(enrollment, images);
 	}
 
 	@Transactional
 	public void changeEnrollmentStatus(Long enrollmentId, EnrollmentStatus status) {
 		applicationEventPublisher.publishEvent(new EnrollmentStatusEvent(enrollmentId, status));
-		marketEnrollmentService.changeEnrollmentStatus(enrollmentId, status);
+		enrollmentService.changeEnrollmentStatus(enrollmentId, status);
 	}
 
 	@Transactional(readOnly = true)
-	public MarketEnrollmentResponses getMarketEnrollments(MarketEnrollmentListRequest request) {
-		return marketEnrollmentService.getMarketEnrollments(request);
+	public EnrollmentResponses getMarketEnrollments(EnrollmentListRequest request) {
+		return enrollmentService.getMarketEnrollments(request);
 	}
 }

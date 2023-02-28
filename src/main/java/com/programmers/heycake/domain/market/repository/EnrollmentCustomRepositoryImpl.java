@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class MarketEnrollmentCustomRepositoryImpl implements MarketEnrollmentCustomRepository {
+public class EnrollmentCustomRepositoryImpl implements EnrollmentCustomRepository {
 
 	private final JPAQueryFactory jpaQueryFactory;
 	QMarketEnrollment qMarketEnrollment = QMarketEnrollment.marketEnrollment;
