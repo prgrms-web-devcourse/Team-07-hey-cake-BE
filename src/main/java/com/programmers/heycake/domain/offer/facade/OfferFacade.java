@@ -77,13 +77,13 @@ public class OfferFacade {
 	@Transactional
 	public void deleteOffer(Long offerId) {
 		List<String> imageUrlList = imageService.getImage(offerId, ImageType.OFFER).imageUrls();
+		Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(getMemberId()));
+		offerService.deleteOffer(offerId, marketId);
 		imageUrlList.forEach(
 				imageUrl ->
 						imageIntegrationService.deleteImage(offerId, ImageType.OFFER, OFFER_IMAGE_SUB_PATH, imageUrl));
 
 		//TODO 엔티티 가져다 쓰는거 뭔가 마음엠 안듦
-		Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(getMemberId()));
-		offerService.deleteOffer(offerId, marketId);
 
 		//comment service
 		//offerid로 Comment 리스트 조회
