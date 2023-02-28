@@ -205,7 +205,8 @@ public class MemberService {
 		return getMemberById(memberId).isMarket();
 	}
 
-	private Member getMemberById(Long memberId) {
+	@Transactional(readOnly = true)
+	public Member getMemberById(Long memberId) {
 		return memberRepository
 				.findById(memberId)
 				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 memberId : " + memberId));

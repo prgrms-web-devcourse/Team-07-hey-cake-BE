@@ -9,10 +9,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.domain.order.model.dto.request.HistoryFacadeRequest;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.entity.OrderHistory;
-import com.programmers.heycake.domain.order.model.vo.request.HistoryFacadeRequest;
 import com.programmers.heycake.domain.order.repository.HistoryCustomRepository;
 import com.programmers.heycake.domain.order.repository.HistoryRepository;
 

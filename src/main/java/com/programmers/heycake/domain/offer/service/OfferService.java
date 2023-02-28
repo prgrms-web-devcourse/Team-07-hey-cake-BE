@@ -1,7 +1,10 @@
 package com.programmers.heycake.domain.offer.service;
 
+import static com.programmers.heycake.common.mapper.OfferMapper.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -15,10 +18,12 @@ import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
+import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
+import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -32,8 +37,10 @@ public class OfferService {
 	private final MarketRepository marketRepository;
 
 	@Transactional
-	public void deleteOffer(Long offerId) {
-		//Todo Context 에서 유저 가져다가 권한 확인
+	public void deleteOffer(Long offerId, Long marketId) {
+		if (!Objects.equals(getOfferById(offerId).marketId(), marketId)) {
+			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
 		offerRepository.deleteById(offerId);
 	}
 
@@ -91,14 +98,25 @@ public class OfferService {
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
-	//Todo DTO로 변경
 	@Transactional(readOnly = true)
-	public Offer getById(Long offerId) {
+	public OfferDto getOfferById(Long offerId) {
+		return toOfferDto(getOffer(offerId));
+	}
+
+	private Offer getOffer(Long offerId) {
 		return offerRepository
 				.findByIdWithFetchJoin(offerId)
 				.orElseThrow(
 						() -> {
 							throw new EntityNotFoundException(ErrorCode.ENTITY_NOT_FOUND.getMessage());
 						});
+	}
+
+	@Transactional(readOnly = true)
+	public boolean isReservedOffer(Long offerId) {
+		return !getOfferById(offerId)
+				.orderDto()
+				.orderStatus()
+				.equals(OrderStatus.NEW);
 	}
 }
