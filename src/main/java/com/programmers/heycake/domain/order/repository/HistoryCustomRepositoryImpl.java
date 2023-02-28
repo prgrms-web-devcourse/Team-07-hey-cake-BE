@@ -29,7 +29,7 @@ public class HistoryCustomRepositoryImpl implements HistoryCustomRepository {
 		return jpaQueryFactory
 				.selectFrom(qOrderHistory)
 				.where(
-						ltOrderTime(cursorTime),
+						gtOrderTime(cursorTime),
 						orderStatus(option),
 						qOrderHistory.marketId.eq(memberId)
 				).orderBy(qOrderHistory.order.visitDate.asc())
@@ -38,7 +38,7 @@ public class HistoryCustomRepositoryImpl implements HistoryCustomRepository {
 
 	}
 
-	private BooleanExpression ltOrderTime(LocalDateTime cursorTime) {
+	private BooleanExpression gtOrderTime(LocalDateTime cursorTime) {
 		return cursorTime == null ? null : qOrderHistory.order.visitDate.gt(cursorTime);
 	}
 

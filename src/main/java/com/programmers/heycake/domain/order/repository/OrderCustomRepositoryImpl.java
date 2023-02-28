@@ -25,7 +25,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 		return jpaQueryFactory
 				.selectFrom(qOrder)
 				.where(
-						ltOrderTime(cursorTime),
+						gtOrderTime(cursorTime),
 						orderStatus(option),
 						qOrder.memberId.eq(memberId)
 				).orderBy(qOrder.visitDate.asc())
@@ -33,7 +33,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 				.fetch();
 	}
 
-	private BooleanExpression ltOrderTime(LocalDateTime cursorTime) {
+	private BooleanExpression gtOrderTime(LocalDateTime cursorTime) {
 		return cursorTime == null ? null : qOrder.visitDate.gt(cursorTime);
 	}
 
