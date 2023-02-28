@@ -1,11 +1,13 @@
 package com.programmers.heycake.domain.order.facade;
 
+import static com.programmers.heycake.common.utils.JwtUtil.*;
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
+import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
@@ -21,7 +23,7 @@ public class OrderFacade {
 
 	private final HistoryService historyService;
 	private final OrderService orderService;
-	// private final MemberService memberService; //TODO 추가요망
+	private final MemberService memberService;
 	private static final String SUB_PATH = "image";
 	private final ImageIntegrationService imageIntegrationService;
 
@@ -42,18 +44,14 @@ public class OrderFacade {
 
 	@Transactional
 	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest) {
-		//TODO exist쿼리 or authority로 분기
-		//if(memberservice.isMarket(memberId)) {
-		// 업주일때
-		//TODO marketID 찾아오기
-		MyOrderResponseList myOrderList = historyService.getMyOrderList(getOrderRequest, 1L);
-		// }
-		//if(!memberservice.isMarket(memberId)) {
-		//회원일때
-		//Todo memberId 찾아오기
-		// MyOrderResponseList myOrderList = orderService.getMyOrderList(getOrderRequest, 1L);
+		Long memberId = getMemberId();
 
-		return myOrderList;
+		if (memberService.isMarketById(memberId)) {
+			return historyService.getMyOrderList(getOrderRequest, 1L);
+		} else {
+			return orderService.getMyOrderList(getOrderRequest, 1L);
+		}
+
 	}
 
 	@Transactional
