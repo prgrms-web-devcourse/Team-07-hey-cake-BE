@@ -1,9 +1,13 @@
 package com.programmers.heycake.domain.market.repository;
 
+import static com.programmers.heycake.common.exception.ErrorCode.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.entity.QMarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
@@ -25,10 +29,18 @@ public class MarketEnrollmentCustomRepositoryImpl implements MarketEnrollmentCus
 			Integer pageSize,
 			EnrollmentStatus status
 	) {
+		MarketEnrollment cursorEnrollment = jpaQueryFactory.selectFrom(qMarketEnrollment)
+				.where(getCursorEnrollment(cursorEnrollmentId))
+				.stream()
+				.findFirst()
+				.orElseThrow(() -> {
+					throw new BusinessException(ENTITY_NOT_FOUND);
+				});
+
 		return jpaQueryFactory
 				.selectFrom(qMarketEnrollment)
 				.where(
-						getCursorEnrollment(cursorEnrollmentId),
+						gtCursorCreatedAt(cursorEnrollment.getCreatedAt()),
 						enrollmentStatus(status)
 				).orderBy(qMarketEnrollment.createdAt.desc())
 				.limit(pageSize)
@@ -37,6 +49,10 @@ public class MarketEnrollmentCustomRepositoryImpl implements MarketEnrollmentCus
 
 	private BooleanExpression getCursorEnrollment(Long cursorEnrollmentId) {
 		return cursorEnrollmentId == null ? null : qMarketEnrollment.id.eq(cursorEnrollmentId);
+	}
+
+	private BooleanExpression gtCursorCreatedAt(LocalDateTime cursorCreatedAt) {
+		return cursorCreatedAt == null ? null : qMarketEnrollment.createdAt.gt(cursorCreatedAt);
 	}
 
 	private BooleanExpression enrollmentStatus(EnrollmentStatus status) {
