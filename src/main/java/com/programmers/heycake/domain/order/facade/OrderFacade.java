@@ -8,6 +8,8 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
+import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.member.service.MemberService;
@@ -67,13 +69,16 @@ public class OrderFacade {
 
 	@Transactional
 	public void deleteOrder(Long orderId) {
-		List<String> imageUrlList = imageService.getImage(orderId, ORDER).imageUrls();
+		ImageResponses images = imageService.getImages(orderId, ORDER);
+		images.images()
+				.forEach(
+						image -> imageIntegrationService.deleteImage(
+								orderId, ImageType.OFFER, ORDER_IMAGE_SUB_PATH, image.savedFilename()));
+
 		List<Long> orderOfferIdList = orderService.getOrderOfferIdList(orderId);
-		orderService.deleteOrder(orderId, getMemberId());
-		imageUrlList.forEach(
-				imageUrl ->
-						imageIntegrationService.deleteImage(orderId, ORDER, ORDER_IMAGE_SUB_PATH, imageUrl));
 		orderOfferIdList.forEach(offerFacade::deleteOfferWithoutAuth);
+
+		orderService.deleteOrder(orderId, getMemberId());
 	}
 }
 
