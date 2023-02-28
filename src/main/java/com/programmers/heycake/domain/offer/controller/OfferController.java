@@ -3,6 +3,8 @@ package com.programmers.heycake.domain.offer.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +33,7 @@ public class OfferController {
 	}
 
 	@PostMapping("/api/v1/offers")
-	public ResponseEntity<Void> saveOffer(@ModelAttribute OfferSaveRequest offerSaveRequest,
+	public ResponseEntity<Void> saveOffer(@ModelAttribute @Valid OfferSaveRequest offerSaveRequest,
 			@RequestParam Long memberId) {
 
 		Long savedOfferId = offerFacade.saveOffer(offerSaveRequest, memberId);
