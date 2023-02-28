@@ -1,5 +1,8 @@
 package com.programmers.heycake.common.mapper;
 
+import static com.programmers.heycake.common.mapper.CommentMapper.*;
+import static com.programmers.heycake.common.mapper.OrderMapper.*;
+
 import java.util.List;
 
 import com.programmers.heycake.common.exception.BusinessException;
@@ -8,6 +11,7 @@ import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.market.model.dto.MarketResponse;
+import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
@@ -55,6 +59,17 @@ public class OfferMapper {
 				.imageUrl(imageUrl)
 				.content(offerResponse.content())
 				.commentCount(offerResponse.commentResponses().size())
+				.build();
+	}
+
+	public static OfferDto toOfferDto(Offer offer) {
+		return OfferDto.builder()
+				.id(offer.getId())
+				.marketId(offer.getMarketId())
+				.expectedPrice(offer.getExpectedPrice())
+				.content(offer.getContent())
+				.orderDto(toOrderDto(offer.getOrder()))
+				.commentResponseList(toCommentResponseList(offer.getComments()))
 				.build();
 	}
 }

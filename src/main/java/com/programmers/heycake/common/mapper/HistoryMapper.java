@@ -1,7 +1,9 @@
 package com.programmers.heycake.common.mapper;
 
+import static com.programmers.heycake.common.mapper.OrderMapper.*;
+
+import com.programmers.heycake.domain.order.model.dto.request.HistoryFacadeRequest;
 import com.programmers.heycake.domain.order.model.entity.OrderHistory;
-import com.programmers.heycake.domain.order.model.vo.request.HistoryFacadeRequest;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -11,7 +13,7 @@ public class HistoryMapper {
 
 	public static OrderHistory toOrderHistory(HistoryFacadeRequest historyRequest) {
 		OrderHistory orderHistory = new OrderHistory(historyRequest.memberId(), historyRequest.marketId());
-		orderHistory.setOrder(historyRequest.order());
+		orderHistory.setOrder(toEntity(historyRequest.orderDto()));
 		return orderHistory;
 	}
 }

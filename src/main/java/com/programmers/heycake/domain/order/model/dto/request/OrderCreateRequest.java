@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.order.model.dto;
+package com.programmers.heycake.domain.order.model.dto.request;
 
 import java.time.LocalDateTime;
 import java.util.List;

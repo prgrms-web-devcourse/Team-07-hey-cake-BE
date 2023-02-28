@@ -1,17 +1,24 @@
 package com.programmers.heycake.domain.offer.facade;
 
+import static com.programmers.heycake.common.utils.JwtUtil.*;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.common.exception.BusinessException;
+import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OfferMapper;
+import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.model.dto.MarketResponse;
 import com.programmers.heycake.domain.market.service.MarketService;
+import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferSaveRequest;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
@@ -29,6 +36,8 @@ public class OfferFacade {
 	private final ImageService imageService;
 	private final ImageIntegrationService imageIntegrationService;
 	private final MarketService marketService;
+
+	private final MemberService memberService;
 
 	// 임시
 	// private final MemberRepository memberRepository;
@@ -69,9 +78,20 @@ public class OfferFacade {
 
 	@Transactional
 	public void deleteOffer(Long offerId) {
-		offerService.deleteOffer(offerId);
-		String imageUrl = imageService.getImages(offerId, ImageType.OFFER).images().get(0).imageUrls();
-		imageIntegrationService.deleteImage(offerId, ImageType.OFFER, OFFER_IMAGE_SUB_PATH, imageUrl);
+		if (offerService.isReservedOffer(offerId)) {
+			throw new BusinessException(ErrorCode.DELETE_ERROR);
+		}
+		List<String> imageUrlList = imageService.getImages(offerId, ImageType.OFFER).images()
+				.stream()
+				.map(ImageResponse::imageUrls)
+				.toList();
+
+		imageUrlList.forEach(
+				imageUrl ->
+						imageIntegrationService.deleteImage(offerId, ImageType.OFFER, OFFER_IMAGE_SUB_PATH, imageUrl));
+
+		Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(getMemberId()));
+		offerService.deleteOffer(offerId, marketId);
 
 		//comment service
 		//offerid로 Comment 리스트 조회

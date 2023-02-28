@@ -18,6 +18,12 @@ public class CommentMapper {
 		return new Comment(memberId, content);
 	}
 
+	public static List<CommentResponse> toCommentResponseList(List<Comment> commentList) {
+		return commentList.stream()
+				.map(CommentMapper::toCommentResponse)
+				.toList();
+	}
+
 	public static CommentResponse toCommentResponse(Comment comment) {
 		return new CommentResponse(comment.getId(), comment.getMemberId(), comment.getContent());
 	}
