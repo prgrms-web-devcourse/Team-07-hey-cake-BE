@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.Builder;
 
 @Builder
-public record MarketEnrollmentRequest(
+public record EnrollmentRequest(
 		// todo 인증 구현 시 marketId 제거
 		@NotNull @Positive Long memberId,
 		@NotBlank String businessNumber,

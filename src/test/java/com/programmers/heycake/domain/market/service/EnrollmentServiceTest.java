@@ -19,14 +19,14 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
 
 @ExtendWith(MockitoExtension.class)
-class MarketEnrollmentServiceTest {
+class EnrollmentServiceTest {
 
 	@Mock
 	private MarketEnrollmentRepository marketEnrollmentRepository;
@@ -38,7 +38,7 @@ class MarketEnrollmentServiceTest {
 	private MarketEnrollment savedEnrollment;
 
 	@InjectMocks
-	private MarketEnrollmentService marketEnrollmentService;
+	private EnrollmentService enrollmentService;
 
 	private MockMultipartFile businessLicenseImg = new MockMultipartFile(
 			"businessLicense",
@@ -52,7 +52,7 @@ class MarketEnrollmentServiceTest {
 			".jpg",
 			"market".getBytes()
 	);
-	private MarketEnrollmentRequest request = MarketEnrollmentRequest.builder()
+	private EnrollmentRequest request = EnrollmentRequest.builder()
 			.memberId(1L)
 			.businessNumber("1234567890")
 			.ownerName("권성준")
@@ -83,7 +83,7 @@ class MarketEnrollmentServiceTest {
 			when(savedEnrollment.getId()).thenReturn(anyLong());
 
 			// when
-			marketEnrollmentService.enrollMarket(request);
+			enrollmentService.enrollMarket(request);
 
 			// then
 			verify(memberRepository).findById(1L);
@@ -98,7 +98,7 @@ class MarketEnrollmentServiceTest {
 			when(memberRepository.findById(anyLong())).thenReturn(Optional.empty());
 
 			// when & then
-			Assertions.assertThatThrownBy(() -> marketEnrollmentService.enrollMarket(request))
+			Assertions.assertThatThrownBy(() -> enrollmentService.enrollMarket(request))
 					.isExactlyInstanceOf(BusinessException.class)
 					.hasFieldOrPropertyWithValue("errorCode", ErrorCode.UNAUTHORIZED);
 		}
@@ -111,7 +111,7 @@ class MarketEnrollmentServiceTest {
 			when(memberRepository.findById(anyLong())).thenReturn(Optional.of(member));
 
 			// when & then
-			Assertions.assertThatThrownBy(() -> marketEnrollmentService.enrollMarket(request))
+			Assertions.assertThatThrownBy(() -> enrollmentService.enrollMarket(request))
 					.isExactlyInstanceOf(BusinessException.class)
 					.hasFieldOrPropertyWithValue("errorCode", ErrorCode.FORBIDDEN);
 		}

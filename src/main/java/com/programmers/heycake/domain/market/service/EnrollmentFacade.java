@@ -6,32 +6,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class MarketEnrollmentFacade {
+public class EnrollmentFacade {
 
 	private static final String ENROLLMENT_IMAGE_PATH = "image/marketEnrollment";
 
-	private final MarketEnrollmentService marketEnrollmentService;
+	private final EnrollmentService enrollmentService;
 	private final ImageIntegrationService imageIntegrationService;
 
 	@Transactional
-	public Long enrollMarket(MarketEnrollmentRequest request) {
+	public Long enrollMarket(EnrollmentRequest request) {
 
-		Long enrollmentId = marketEnrollmentService.enrollMarket(request);
+		Long enrollmentId = enrollmentService.enrollMarket(request);
 
 		imageIntegrationService.createAndUploadImage(
 				request.businessLicenseImage(),
-				ENROLLMENT_IMAGE_PATH, enrollmentId,
+				ENROLLMENT_IMAGE_PATH,
+				enrollmentId,
 				ENROLLMENT_LICENSE
 		);
 		imageIntegrationService.createAndUploadImage(
 				request.marketImage(),
-				ENROLLMENT_IMAGE_PATH, enrollmentId,
+				ENROLLMENT_IMAGE_PATH,
+				enrollmentId,
 				ENROLLMENT_MARKET
 		);
 

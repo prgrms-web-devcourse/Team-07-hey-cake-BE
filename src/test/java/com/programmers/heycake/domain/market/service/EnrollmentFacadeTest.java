@@ -15,19 +15,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
 
 @ExtendWith(MockitoExtension.class)
-class MarketEnrollmentFacadeTest {
+class EnrollmentFacadeTest {
 
 	@Mock
-	private MarketEnrollmentService marketEnrollmentService;
+	private EnrollmentService enrollmentService;
 
 	@Mock
 	private ImageIntegrationService imageIntegrationService;
 
 	@InjectMocks
-	private MarketEnrollmentFacade marketEnrollmentFacade;
+	private EnrollmentFacade enrollmentFacade;
 
 	private MockMultipartFile businessLicenseImg = new MockMultipartFile(
 			"businessLicense",
@@ -41,7 +41,7 @@ class MarketEnrollmentFacadeTest {
 			".jpg",
 			"market".getBytes()
 	);
-	private MarketEnrollmentRequest request = MarketEnrollmentRequest.builder()
+	private EnrollmentRequest request = EnrollmentRequest.builder()
 			.memberId(1L)
 			.businessNumber("1234567890")
 			.ownerName("권성준")
@@ -64,17 +64,17 @@ class MarketEnrollmentFacadeTest {
 		// given
 		Long enrollmentId = 1L;
 		String subPath = "image/marketEnrollment";
-		when(marketEnrollmentService.enrollMarket(request)).thenReturn(enrollmentId);
+		when(enrollmentService.enrollMarket(request)).thenReturn(enrollmentId);
 		doNothing().when(imageIntegrationService)
 				.createAndUploadImage(request.businessLicenseImage(), subPath, enrollmentId, ENROLLMENT_LICENSE);
 		doNothing().when(imageIntegrationService)
 				.createAndUploadImage(request.marketImage(), subPath, enrollmentId, ENROLLMENT_MARKET);
 
 		// when
-		marketEnrollmentFacade.enrollMarket(request);
+		enrollmentFacade.enrollMarket(request);
 
 		// then
-		verify(marketEnrollmentService).enrollMarket(request);
+		verify(enrollmentService).enrollMarket(request);
 		verify(imageIntegrationService)
 				.createAndUploadImage(request.businessLicenseImage(), subPath, enrollmentId, ENROLLMENT_LICENSE);
 		verify(imageIntegrationService)

@@ -37,7 +37,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.programmers.heycake.common.config.S3MockConfig;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
@@ -68,7 +68,7 @@ class MarketEnrollmentControllerTest {
 
 	private MockMultipartFile businessLicenseImg;
 	private MockMultipartFile marketImg;
-	private MarketEnrollmentRequest userRequest;
+	private EnrollmentRequest userRequest;
 
 	@BeforeEach
 	void setUp() {
@@ -87,7 +87,7 @@ class MarketEnrollmentControllerTest {
 				".jpg",
 				"market".getBytes()
 		);
-		userRequest = MarketEnrollmentRequest.builder()
+		userRequest = EnrollmentRequest.builder()
 				.memberId(savedUser.getId())
 				.businessNumber("1234567890")
 				.ownerName("권성준")
