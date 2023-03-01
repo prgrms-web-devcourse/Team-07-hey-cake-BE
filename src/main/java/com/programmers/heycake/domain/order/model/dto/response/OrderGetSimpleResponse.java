@@ -3,7 +3,7 @@ package com.programmers.heycake.domain.order.model.dto.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.programmers.heycake.domain.image.model.dto.ImageResponse;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 
@@ -18,6 +18,6 @@ public record OrderGetSimpleResponse(
 		List<String> images,
 		OrderStatus orderStatus,
 		int hopePrice,
-		LocalDateTime createdAt
+		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime createdAt
 ) {
 }
