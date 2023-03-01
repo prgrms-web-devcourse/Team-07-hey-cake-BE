@@ -12,5 +12,6 @@ public record CommentSaveRequest(
 		Long offerId,
 		@NotBlank
 		String content,
-		MultipartFile image) {
+		MultipartFile image,
+		Long memberId) {
 }
