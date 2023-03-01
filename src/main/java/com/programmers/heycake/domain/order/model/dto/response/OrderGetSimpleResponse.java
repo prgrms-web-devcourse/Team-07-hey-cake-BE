@@ -19,6 +19,8 @@ public record OrderGetSimpleResponse(
 		OrderStatus orderStatus,
 		int hopePrice,
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+		LocalDateTime visitTime,
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 		LocalDateTime createdAt
 ) {
 }

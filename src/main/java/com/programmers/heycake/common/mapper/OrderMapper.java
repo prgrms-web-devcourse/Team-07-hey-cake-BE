@@ -11,8 +11,8 @@ import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSimpleResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponse;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleServiceResponse;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.entity.OrderHistory;
 
@@ -62,7 +62,7 @@ public class OrderMapper {
 		return toGetOrderResponseListForMember(orderList, lastTime);
 	}
 
-	public static OrderGetDetailServiceResponse toOrderGetResponse(Order order) {
+	public static OrderGetDetailServiceResponse toOrderGetServiceDetailResponse(Order order) {
 		return OrderGetDetailServiceResponse.builder()
 				.orderId(order.getId())
 				.memberId(order.getMemberId())
@@ -78,20 +78,21 @@ public class OrderMapper {
 				.build();
 	}
 
-	public static OrderGetSimpleServiceResponse toOrderSimpleGetServiceResponse(Order order) {
-		return OrderGetSimpleServiceResponse.builder()
+	public static OrderGetServiceSimpleResponse toOrderGetServiceSimpleResponse(Order order) {
+		return OrderGetServiceSimpleResponse.builder()
 				.orderId(order.getId())
 				.title(order.getTitle())
 				.cakeInfo(order.getCakeInfo())
 				.orderStatus(order.getOrderStatus())
 				.hopePrice(order.getHopePrice())
 				.region(order.getRegion())
+				.visitDate(order.getVisitDate())
 				.createdAt(order.getCreatedAt())
 				.build();
 	}
 
-	public static OrderGetSimpleResponse toOrderSimpleGetResponse(
-			OrderGetSimpleServiceResponse orderSimpleGetServiceResponse,
+	public static OrderGetSimpleResponse toOrderGetSimpleResponse(
+			OrderGetServiceSimpleResponse orderSimpleGetServiceResponse,
 			ImageResponses imageResponses
 	) {
 		return OrderGetSimpleResponse.builder()
@@ -100,20 +101,25 @@ public class OrderMapper {
 				.cakeInfo(orderSimpleGetServiceResponse.cakeInfo())
 				.orderStatus(orderSimpleGetServiceResponse.orderStatus())
 				.hopePrice(orderSimpleGetServiceResponse.hopePrice())
-				.images(imageResponses.images().stream().map(ImageResponse::imageUrls)
-						.collect(Collectors.toList()))
+				.images(imageResponses.images()
+						.stream()
+						.map(ImageResponse::imageUrls)
+						.collect(Collectors.toList())
+				)
 				.region(orderSimpleGetServiceResponse.region())
+				.visitTime(orderSimpleGetServiceResponse.visitDate())
 				.createdAt(orderSimpleGetServiceResponse.createdAt())
 				.build()
 				;
 	}
 
-	public static OrderGetDetailResponse toOrderDetailGetResponse(
+	public static OrderGetDetailResponse toOrderGetDetailResponse(
 			OrderGetDetailServiceResponse orderGetDetailServiceResponse,
 			ImageResponses imageResponses
 	) {
 		return OrderGetDetailResponse.builder()
 				.orderId(orderGetDetailServiceResponse.orderId())
+				.memberId(orderGetDetailServiceResponse.memberId())
 				.title(orderGetDetailServiceResponse.title())
 				.region(orderGetDetailServiceResponse.region())
 				.orderStatus(orderGetDetailServiceResponse.orderStatus())

@@ -19,7 +19,7 @@ import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailResponse;
-import com.programmers.heycake.domain.order.model.dto.response.OrdersGetResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponses;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class OrderController {
 	}
 
 	@GetMapping
-	public ResponseEntity<OrdersGetResponse> getOrders(
+	public ResponseEntity<OrderGetSimpleResponses> getOrders(
 			@RequestParam(required = false) Long cursorId,
 			@RequestParam int pageSize,
 			@RequestParam(required = false) CakeCategory cakeCategory,

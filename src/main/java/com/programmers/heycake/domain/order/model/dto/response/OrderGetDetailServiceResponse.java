@@ -2,7 +2,6 @@ package com.programmers.heycake.domain.order.model.dto.response;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 
@@ -16,13 +15,10 @@ public record OrderGetDetailServiceResponse(
 		String region,
 		OrderStatus orderStatus,
 		int hopePrice,
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 		LocalDateTime visitDate,
 		CakeInfo cakeInfo,
 		int offerCount,
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 		LocalDateTime createdAt,
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 		LocalDateTime updatedAt
 ) {
 }
