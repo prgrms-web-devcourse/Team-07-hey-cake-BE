@@ -83,7 +83,7 @@ public class OrderMapper {
 				.cakeInfo(orderSimpleGetServiceResponse.cakeInfo())
 				.orderStatus(orderSimpleGetServiceResponse.orderStatus())
 				.hopePrice(orderSimpleGetServiceResponse.hopePrice())
-				.image(imageResponse.imageUrls().get(0))
+				.images(imageResponse.imageUrls())
 				.region(orderSimpleGetServiceResponse.region())
 				.createdAt(orderSimpleGetServiceResponse.createdAt())
 				.build();

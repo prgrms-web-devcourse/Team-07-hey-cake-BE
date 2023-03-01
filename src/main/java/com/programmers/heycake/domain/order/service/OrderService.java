@@ -6,6 +6,10 @@ import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OrderMapper;
+import com.programmers.heycake.domain.offer.service.OfferService;
 import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
@@ -83,7 +88,7 @@ public class OrderService {
 	public OrderGetResponse getOrder(Long orderId) {
 		Order order = orderRepository.findById(orderId)
 				.orElseThrow(EntityNotFoundException::new);
-		return OrderMapper.toGetOrderResponse(order);
+		return OrderMapper.toOrderGetResponse(order);
 	}
 
 	public List<OrderGetSimpleServiceResponse> getOrders(
@@ -102,7 +107,8 @@ public class OrderService {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
 		if (!isNewOrder(orderId)) {
-			throw new BusinessException(ErrorCode.DELETE_ERROR);
+			// throw new BusinessException(ErrorCode.DELETE_ERROR);
+			throw new RuntimeException("");
 		}
 		orderRepository.deleteById(orderId);
 	}

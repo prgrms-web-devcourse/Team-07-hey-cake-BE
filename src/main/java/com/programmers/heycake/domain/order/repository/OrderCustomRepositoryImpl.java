@@ -44,7 +44,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 		return jpaQueryFactory
 				.selectFrom(qOrder)
 				.where(
-						gtOrderId(cursorId),
+						ltOrderId(cursorId),
 						eqRegion(region),
 						eqCakeCategory(cakeCategory)
 				)
@@ -69,7 +69,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 		return category == null ? null : qOrder.cakeInfo.cakeCategory.eq(category);
 	}
 
-	private BooleanExpression gtOrderId(Long cursorId) {
-		return cursorId == null ? null : qOrder.id.gt(cursorId);
+	private BooleanExpression ltOrderId(Long cursorId) {
+		return cursorId == null ? null : qOrder.id.lt(cursorId);
 	}
 }
