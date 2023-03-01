@@ -9,7 +9,8 @@ import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.order.model.dto.OrderDto;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleServiceResponse;
 import com.programmers.heycake.domain.order.model.entity.Order;
@@ -61,8 +62,8 @@ public class OrderMapper {
 		return toGetOrderResponseListForMember(orderList, lastTime);
 	}
 
-	public static OrderGetResponse toOrderGetResponse(Order order) {
-		return OrderGetResponse.builder()
+	public static OrderGetDetailServiceResponse toOrderGetResponse(Order order) {
+		return OrderGetDetailServiceResponse.builder()
 				.orderId(order.getId())
 				.memberId(order.getMemberId())
 				.title(order.getTitle())
@@ -105,6 +106,30 @@ public class OrderMapper {
 				.createdAt(orderSimpleGetServiceResponse.createdAt())
 				.build()
 				;
+	}
+
+	public static OrderGetDetailResponse toOrderDetailGetResponse(
+			OrderGetDetailServiceResponse orderGetDetailServiceResponse,
+			ImageResponses imageResponses
+	) {
+		return OrderGetDetailResponse.builder()
+				.orderId(orderGetDetailServiceResponse.orderId())
+				.title(orderGetDetailServiceResponse.title())
+				.region(orderGetDetailServiceResponse.region())
+				.orderStatus(orderGetDetailServiceResponse.orderStatus())
+				.hopePrice(orderGetDetailServiceResponse.hopePrice())
+				.visitDate(orderGetDetailServiceResponse.visitDate())
+				.cakeInfo(orderGetDetailServiceResponse.cakeInfo())
+				.offerCount(orderGetDetailServiceResponse.offerCount())
+				.images(imageResponses.images()
+						.stream()
+						.map(ImageResponse::imageUrls)
+						.collect(Collectors.toList())
+				)
+				.offerCount(orderGetDetailServiceResponse.offerCount())
+				.createdAt(orderGetDetailServiceResponse.createdAt())
+				.updatedAt(orderGetDetailServiceResponse.updatedAt())
+				.build();
 	}
 
 	public static OrderDto toOrderDto(Order order) {

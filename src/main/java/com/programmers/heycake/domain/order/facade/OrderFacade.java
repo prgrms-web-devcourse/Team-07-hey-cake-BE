@@ -19,7 +19,8 @@ import com.programmers.heycake.domain.offer.facade.OfferFacade;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleServiceResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrdersGetResponse;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
@@ -68,8 +69,10 @@ public class OrderFacade {
 	}
 
 	@Transactional
-	public OrderGetResponse getOrder(Long orderId) {
-		return orderService.getOrder(orderId);
+	public OrderGetDetailResponse getOrder(Long orderId) {
+		OrderGetDetailServiceResponse orderGetDetailServiceResponse = orderService.getOrder(orderId);
+		ImageResponses imageResponses = imageService.getImages(orderGetDetailServiceResponse.orderId(), ORDER);
+		return OrderMapper.toOrderDetailGetResponse(orderGetDetailServiceResponse, imageResponses);
 	}
 
 	@Transactional

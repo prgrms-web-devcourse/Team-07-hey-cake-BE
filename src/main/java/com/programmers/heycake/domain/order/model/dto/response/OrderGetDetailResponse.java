@@ -10,15 +10,21 @@ import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import lombok.Builder;
 
 @Builder
-public record OrderGetSimpleResponse(
+public record OrderGetDetailResponse(
 		Long orderId,
+		Long memberId,
 		String title,
 		String region,
-		CakeInfo cakeInfo,
-		List<String> images,
 		OrderStatus orderStatus,
 		int hopePrice,
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-		LocalDateTime createdAt
+		LocalDateTime visitDate,
+		CakeInfo cakeInfo,
+		List<String> images,
+		int offerCount,
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+		LocalDateTime createdAt,
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+		LocalDateTime updatedAt
 ) {
 }

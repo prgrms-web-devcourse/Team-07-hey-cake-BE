@@ -18,7 +18,7 @@ import com.programmers.heycake.domain.order.facade.OrderFacade;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrdersGetResponse;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 
@@ -52,12 +52,12 @@ public class OrderController {
 			@RequestParam int pageSize,
 			@RequestParam(required = false) CakeCategory cakeCategory,
 			@RequestParam(required = false) String region
-			) {
+	) {
 		return ResponseEntity.ok(orderFacade.getOrders(cursorId, pageSize, cakeCategory, region));
 	}
 
 	@GetMapping("/{orderId}")
-	public ResponseEntity<OrderGetResponse> getOrder(@PathVariable Long orderId) {
+	public ResponseEntity<OrderGetDetailResponse> getOrder(@PathVariable Long orderId) {
 		return ResponseEntity.ok(orderFacade.getOrder(orderId));
 	}
 

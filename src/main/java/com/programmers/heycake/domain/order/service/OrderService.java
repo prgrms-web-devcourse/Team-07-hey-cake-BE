@@ -21,7 +21,7 @@ import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleServiceResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
@@ -83,7 +83,7 @@ public class OrderService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
-	public OrderGetResponse getOrder(Long orderId) {
+	public OrderGetDetailServiceResponse getOrder(Long orderId) {
 		Order order = orderRepository.findById(orderId)
 				.orElseThrow(EntityNotFoundException::new);
 		return OrderMapper.toOrderGetResponse(order);
