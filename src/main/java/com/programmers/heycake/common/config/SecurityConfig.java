@@ -1,5 +1,7 @@
 package com.programmers.heycake.common.config;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +11,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.programmers.heycake.common.exception.CustomAccessDeniedHandler;
 import com.programmers.heycake.common.exception.CustomAuthenticationEntryPoint;
@@ -33,6 +38,17 @@ public class SecurityConfig {
 				jwtProperties.getTokenExpire(),
 				jwtProperties.getRefreshTokenExpire()
 		);
+	}
+
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"));
+		configuration.setAllowedHeaders(Arrays.asList("Content-Type"));
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
 	}
 
 	@Bean
@@ -73,6 +89,7 @@ public class SecurityConfig {
 				.accessDeniedHandler(accessDeniedHandler())
 				.and()
 				.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+				.cors()
 		;
 		return http.build();
 	}

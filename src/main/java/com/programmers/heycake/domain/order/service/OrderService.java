@@ -1,7 +1,6 @@
 package com.programmers.heycake.domain.order.service;
 
 import static com.programmers.heycake.common.mapper.OrderMapper.*;
-import static com.programmers.heycake.common.utils.JwtUtil.*;
 import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 
 import java.time.LocalDateTime;
@@ -12,14 +11,15 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OrderMapper;
-import com.programmers.heycake.domain.offer.service.OfferService;
-import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
+import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
+import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleServiceResponse;
@@ -36,8 +36,6 @@ import lombok.RequiredArgsConstructor;
 public class OrderService {
 	private final OrderRepository orderRepository;
 	private final OrderCustomRepository orderCustomRepository;
-
-	private final OfferService offerService;
 
 	@Transactional
 	public Long create(OrderCreateRequest orderCreateRequest) {
@@ -69,7 +67,7 @@ public class OrderService {
 		return savedOrder.getId();
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long memberId) {
 		List<Order> orderList = orderCustomRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
@@ -84,7 +82,7 @@ public class OrderService {
 		return toGetOrderResponseListForMember(orderList, lastTime);
 	}
 
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRED)
 	public OrderGetResponse getOrder(Long orderId) {
 		Order order = orderRepository.findById(orderId)
 				.orElseThrow(EntityNotFoundException::new);
@@ -101,27 +99,38 @@ public class OrderService {
 				.collect(Collectors.toList());
 	}
 
-	@Transactional
-	public void deleteOrder(Long orderId) {
-		if (!Objects.equals(getEntityById(orderId).getMemberId(), getMemberId())) {
+	@Transactional(readOnly = true)
+	public boolean isAuthor(Long orderId, Long memberId) {
+		Order order = getEntity(orderId);
+		return Objects.equals(order.getMemberId(), memberId);
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void deleteOrder(Long orderId, Long memberId) {
+		if (!Objects.equals(getOrder(orderId).memberId(), memberId)) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
-		if (!isNewOrder(orderId)) {
-			// throw new BusinessException(ErrorCode.DELETE_ERROR);
-			throw new RuntimeException("");
+		if (!isNew(orderId)) {
+			throw new BusinessException(ErrorCode.DELETE_ERROR);
 		}
 		orderRepository.deleteById(orderId);
 	}
 
-	private Order getEntityById(Long orderId) {
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public List<Long> getOrderOfferIdList(Long orderId) {
+		return getEntity(orderId)
+				.getOffers()
+				.stream()
+				.map(Offer::getId)
+				.toList();
+	}
+
+	private boolean isNew(Long orderId) {
+		return getEntity(orderId).getOrderStatus().equals(NEW);
+	}
+
+	private Order getEntity(Long orderId) {
 		return orderRepository.findById(orderId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
-
-	private boolean isNewOrder(Long orderId) {
-		return getEntityById(orderId)
-				.getOrderStatus()
-				.equals(NEW);
-	}
-
 }

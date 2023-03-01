@@ -10,12 +10,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.mapper.OrderMapper;
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.member.service.MemberService;
-import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
+import com.programmers.heycake.domain.offer.facade.OfferFacade;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
+import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleServiceResponse;
@@ -33,10 +35,12 @@ public class OrderFacade {
 	private final HistoryService historyService;
 	private final OrderService orderService;
 	private final MemberService memberService;
-	private static final String SUB_PATH = "image/order";
-	private final ImageIntegrationService imageIntegrationService;
 
+	private static final String ORDER_IMAGE_SUB_PATH = "image/order";
+
+	private final ImageIntegrationService imageIntegrationService;
 	private final ImageService imageService;
+	private final OfferFacade offerFacade;
 
 	@Transactional
 	public void createOrder(OrderCreateRequest orderCreateRequest) {
@@ -45,7 +49,7 @@ public class OrderFacade {
 			for (int i = 0; i < orderCreateRequest.cakeImages().size(); i++) {
 				imageIntegrationService.createAndUploadImage(
 						orderCreateRequest.cakeImages().get(i),
-						SUB_PATH,
+						ORDER_IMAGE_SUB_PATH,
 						orderId,
 						ORDER
 				);
@@ -57,9 +61,9 @@ public class OrderFacade {
 	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest) {
 		Long memberId = getMemberId();
 		if (memberService.isMarketById(memberId)) {
-			return historyService.getMyOrderList(getOrderRequest, 1L);
+			return historyService.getMyOrderList(getOrderRequest, memberId);
 		} else {
-			return orderService.getMyOrderList(getOrderRequest, 1L);
+			return orderService.getMyOrderList(getOrderRequest, memberId);
 		}
 	}
 
@@ -80,7 +84,7 @@ public class OrderFacade {
 						orderSimpleGetServiceResponse ->
 								OrderMapper.toOrderSimpleGetResponse(
 										orderSimpleGetServiceResponse,
-										imageService.getImage(orderSimpleGetServiceResponse.orderId(), ORDER)
+										imageService.getImages(orderSimpleGetServiceResponse.orderId(), ORDER)
 								))
 				.collect(Collectors.toList())
 		;
@@ -89,12 +93,15 @@ public class OrderFacade {
 
 	@Transactional
 	public void deleteOrder(Long orderId) {
-		List<String> imageUrlList = imageService.getImage(orderId, ImageType.ORDER).imageUrls();
-		orderService.deleteOrder(orderId);
-		imageUrlList.forEach(
-				imageUrl ->
-						imageIntegrationService.deleteImage(orderId, ORDER, SUB_PATH, imageUrl));
-		//관련 스레드 삭제
-		// offerFacade
+		ImageResponses images = imageService.getImages(orderId, ORDER);
+		images.images()
+				.forEach(
+						image -> imageIntegrationService.deleteImage(
+								orderId, ImageType.OFFER, ORDER_IMAGE_SUB_PATH, image.savedFilename()));
+
+		List<Long> orderOfferIdList = orderService.getOrderOfferIdList(orderId);
+		orderOfferIdList.forEach(offerFacade::deleteOfferWithoutAuth);
+
+		orderService.deleteOrder(orderId, getMemberId());
 	}
 }

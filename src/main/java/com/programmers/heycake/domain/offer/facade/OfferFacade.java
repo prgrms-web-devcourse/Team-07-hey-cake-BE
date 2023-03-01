@@ -1,17 +1,20 @@
 package com.programmers.heycake.domain.offer.facade;
 
+import static com.programmers.heycake.common.utils.JwtUtil.*;
+import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
+
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.mapper.OfferMapper;
-import com.programmers.heycake.domain.image.model.dto.ImageResponse;
-import com.programmers.heycake.domain.image.model.vo.ImageType;
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.model.dto.MarketResponse;
 import com.programmers.heycake.domain.market.service.MarketService;
+import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferSaveRequest;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
@@ -30,6 +33,8 @@ public class OfferFacade {
 	private final ImageIntegrationService imageIntegrationService;
 	private final MarketService marketService;
 
+	private final MemberService memberService;
+
 	// 임시
 	// private final MemberRepository memberRepository;
 	// private final CommentService commentService;
@@ -47,7 +52,7 @@ public class OfferFacade {
 		);
 
 		imageIntegrationService.createAndUploadImage(offerSaveRequest.offerImage(), OFFER_IMAGE_SUB_PATH, savedOfferId,
-				ImageType.OFFER);
+				OFFER);
 
 		return savedOfferId;
 	}
@@ -59,9 +64,9 @@ public class OfferFacade {
 		return offerResponses.stream()
 				.map(
 						offerResponse -> {
-							ImageResponse imageResponse = imageService.getImage(offerResponse.offerId(), ImageType.OFFER);
+							ImageResponses imageResponses = imageService.getImages(offerResponse.offerId(), OFFER);
 							MarketResponse marketResponse = marketService.getMarket(offerResponse.marketId());
-							return OfferMapper.toOfferSummaryResponse(offerResponse, imageResponse, marketResponse);
+							return OfferMapper.toOfferSummaryResponse(offerResponse, imageResponses, marketResponse);
 						}
 				)
 				.toList();
@@ -69,10 +74,30 @@ public class OfferFacade {
 
 	@Transactional
 	public void deleteOffer(Long offerId) {
-		offerService.deleteOffer(offerId);
-		String imageUrl = imageService.getImage(offerId, ImageType.OFFER).imageUrls().get(0);
-		imageIntegrationService.deleteImage(offerId, ImageType.OFFER, OFFER_IMAGE_SUB_PATH, imageUrl);
+		ImageResponses images = imageService.getImages(offerId, OFFER);
+		images.images()
+				.forEach(
+						image -> imageIntegrationService.deleteImage(
+								offerId, OFFER, OFFER_IMAGE_SUB_PATH, image.savedFilename()));
 
+		//TODO 엔티티 가져다 쓰는거 뭔가 마음엠 안듦
+		Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(getMemberId()));
+		offerService.deleteOffer(offerId, marketId);
+
+		//comment service
+		//offerid로 Comment 리스트 조회
+		//Comment list stream 으로 삭제 메서드 호출
+		// coment(db+s3) 삭제
+	}
+
+	@Transactional
+	public void deleteOfferWithoutAuth(Long offerId) {
+		ImageResponses images = imageService.getImages(offerId, OFFER);
+		images.images()
+				.forEach(image -> imageIntegrationService.deleteImage(
+						offerId, OFFER, OFFER_IMAGE_SUB_PATH, image.savedFilename()));
+
+		offerService.deleteOfferWithoutAuth(offerId);
 		//comment service
 		//offerid로 Comment 리스트 조회
 		//Comment list stream 으로 삭제 메서드 호출

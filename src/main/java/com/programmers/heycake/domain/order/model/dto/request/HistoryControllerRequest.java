@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.order.model.vo.request;
+package com.programmers.heycake.domain.order.model.dto.request;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;

@@ -2,8 +2,11 @@ package com.programmers.heycake.common.mapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
+import com.programmers.heycake.domain.order.model.dto.OrderDto;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
@@ -17,6 +20,19 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderMapper {
+
+	public static Order toEntity(OrderDto orderDto) {
+		return Order.builder()
+				.memberId(orderDto.memberId())
+				.title(orderDto.title())
+				.orderStatus(orderDto.orderStatus())
+				.hopePrice(orderDto.hopePrice())
+				.region(orderDto.region())
+				.visitDate(orderDto.visitDate())
+				.cakeInfo(orderDto.cakeInfo())
+				.build();
+	}
+
 	public static MyOrderResponseList toGetOrderResponseListForMember(List<Order> orderList, LocalDateTime lastTime) {
 		List<MyOrderResponse> getOrderResponseList =
 				orderList
@@ -75,7 +91,7 @@ public class OrderMapper {
 
 	public static OrderGetSimpleResponse toOrderSimpleGetResponse(
 			OrderGetSimpleServiceResponse orderSimpleGetServiceResponse,
-			ImageResponse imageResponse
+			ImageResponses imageResponses
 	) {
 		return OrderGetSimpleResponse.builder()
 				.orderId(orderSimpleGetServiceResponse.orderId())
@@ -83,9 +99,24 @@ public class OrderMapper {
 				.cakeInfo(orderSimpleGetServiceResponse.cakeInfo())
 				.orderStatus(orderSimpleGetServiceResponse.orderStatus())
 				.hopePrice(orderSimpleGetServiceResponse.hopePrice())
-				.images(imageResponse.imageUrls())
+				.images(imageResponses.images().stream().map(ImageResponse::imageUrls)
+						.collect(Collectors.toList()))
 				.region(orderSimpleGetServiceResponse.region())
 				.createdAt(orderSimpleGetServiceResponse.createdAt())
+				.build()
+				;
+	}
+
+	public static OrderDto toOrderDto(Order order) {
+		return OrderDto.builder()
+				.id(order.getId())
+				.memberId(order.getMemberId())
+				.title(order.getTitle())
+				.orderStatus(order.getOrderStatus())
+				.hopePrice(order.getHopePrice())
+				.region(order.getRegion())
+				.visitDate(order.getVisitDate())
+				.cakeInfo(order.getCakeInfo())
 				.build();
 	}
 }

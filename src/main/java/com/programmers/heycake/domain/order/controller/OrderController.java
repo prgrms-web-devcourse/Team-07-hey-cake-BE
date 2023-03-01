@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.order.facade.OrderFacade;
-import com.programmers.heycake.domain.order.model.dto.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
+import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrdersGetResponse;
@@ -42,12 +42,8 @@ public class OrderController {
 	@GetMapping("/my")
 	public ResponseEntity<MyOrderResponseList> getOrderList(@RequestBody @Valid MyOrderRequest getOrderRequest) {
 		MyOrderResponseList myOrderList = orderFacade.getMyOrderList(getOrderRequest);
-		return ResponseEntity.ok(myOrderList);
-	}
 
-	@GetMapping("/{orderId}")
-	public ResponseEntity<OrderGetResponse> getOrder(@PathVariable Long orderId) {
-		return ResponseEntity.ok(orderFacade.getOrder(orderId));
+		return ResponseEntity.ok(myOrderList);
 	}
 
 	@GetMapping
@@ -56,8 +52,13 @@ public class OrderController {
 			@RequestParam int pageSize,
 			@RequestParam(required = false) CakeCategory cakeCategory,
 			@RequestParam(required = false) String region
-	) {
+			) {
 		return ResponseEntity.ok(orderFacade.getOrders(cursorId, pageSize, cakeCategory, region));
+	}
+
+	@GetMapping("/{orderId}")
+	public ResponseEntity<OrderGetResponse> getOrder(@PathVariable Long orderId) {
+		return ResponseEntity.ok(orderFacade.getOrder(orderId));
 	}
 
 	@DeleteMapping("/{orderId}")

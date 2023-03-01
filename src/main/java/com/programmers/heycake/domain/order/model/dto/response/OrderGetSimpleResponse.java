@@ -3,6 +3,7 @@ package com.programmers.heycake.domain.order.model.dto.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 
