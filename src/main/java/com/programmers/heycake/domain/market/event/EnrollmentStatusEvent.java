@@ -17,6 +17,6 @@ public class EnrollmentStatusEvent {
 	}
 
 	public boolean isRejected() {
-		return this.requestStatus == EnrollmentStatus.REJECTED;
+		return this.requestStatus == EnrollmentStatus.DELETED;
 	}
 }

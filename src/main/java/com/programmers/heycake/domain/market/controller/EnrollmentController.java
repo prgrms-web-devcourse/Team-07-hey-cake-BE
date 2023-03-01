@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.market.model.dto.EnrollmentControllerResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentListRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
-import com.programmers.heycake.domain.market.model.dto.EnrollmentResponses;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentStatusRequest;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 import com.programmers.heycake.domain.market.service.EnrollmentFacade;
@@ -56,7 +56,7 @@ public class EnrollmentController {
 	}
 
 	@GetMapping
-	public ResponseEntity<EnrollmentResponses> getMarketEnrollments(
+	public ResponseEntity<EnrollmentListResponse> getMarketEnrollments(
 			@RequestParam(required = false) Long cursor,
 			@RequestParam Integer pageSize,
 			@RequestParam(required = false) EnrollmentStatus status
@@ -66,7 +66,7 @@ public class EnrollmentController {
 				pageSize,
 				status
 		);
-		EnrollmentResponses marketEnrollments = enrollmentFacade.getMarketEnrollments(request);
+		EnrollmentListResponse marketEnrollments = enrollmentFacade.getMarketEnrollments(request);
 		return ResponseEntity.ok(marketEnrollments);
 	}
 }
