@@ -27,7 +27,7 @@ import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSi
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
-import com.programmers.heycake.domain.order.repository.OrderCustomRepository;
+import com.programmers.heycake.domain.order.repository.OrderQueryDslRepository;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderService {
 	private final OrderRepository orderRepository;
-	private final OrderCustomRepository orderCustomRepository;
+	private final OrderQueryDslRepository orderQueryDslRepository;
 
 	@Transactional
 	public Long create(OrderCreateRequest orderCreateRequest) {
@@ -66,7 +66,7 @@ public class OrderService {
 
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long memberId) {
-		List<Order> orderList = orderCustomRepository.findAllByMemberIdOrderByVisitDateAsc(
+		List<Order> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
 				getOrderRequest.orderStatus(),
 				getOrderRequest.cursorTime(),
@@ -89,7 +89,7 @@ public class OrderService {
 	public List<OrderGetServiceSimpleResponse> getOrders(
 			Long cursorId, int pageSize, CakeCategory cakeCategory, String region
 	) {
-		return orderCustomRepository
+		return orderQueryDslRepository
 				.findAllByRegionAndCategoryOrderByCreatedAtAsc(cursorId, pageSize, cakeCategory, region)
 				.stream()
 				.map(OrderMapper::toOrderGetServiceSimpleResponse)
