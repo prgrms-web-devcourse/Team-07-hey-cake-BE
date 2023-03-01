@@ -1,6 +1,6 @@
 package com.programmers.heycake.domain.order.facade;
 
-import static com.programmers.heycake.common.utils.JwtUtil.*;
+import static com.programmers.heycake.common.utils.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 
 import java.util.List;

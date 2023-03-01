@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -71,8 +72,23 @@ public class SecurityConfig {
 		http
 				.csrf().disable()
 				.authorizeRequests()
-				// .anyRequest().permitAll()
-				.antMatchers("/members/test").hasRole("USER")
+				.anyRequest().permitAll()
+				// .antMatchers("/api/v1/login").permitAll()
+				// .antMatchers(HttpMethod.POST, "/api/v1/orders").hasRole("USER")
+				// .antMatchers(HttpMethod.GET, "/api/v1/orders/**").permitAll()
+				// .antMatchers(HttpMethod.DELETE, "/api/v1/orders/**").hasAnyRole("ADMIN", "USER")
+				// .antMatchers(HttpMethod.POST, "/api/v1/histories").hasRole("USER")
+				// .antMatchers(HttpMethod.GET, "/api/v1/orders/my").hasAnyRole("USER", "MARKET")
+				// .antMatchers(HttpMethod.DELETE, "/api/v1/offers/**").hasAnyRole("ADMIN", "MARKET")
+				// .antMatchers(HttpMethod.POST, "/api/v1/offers").hasRole("MARKET")
+				// .antMatchers(HttpMethod.POST, "/api/v1/comments").hasAnyRole("ADMIN", "MARKET", "USER")
+				// .antMatchers(HttpMethod.DELETE, "/api/v1/comments/**").hasAnyRole("ADMIN", "MARKET", "USER")
+				// .antMatchers(HttpMethod.GET, "/api/v1/comments").permitAll()
+				// .antMatchers(HttpMethod.POST, "/api/v1/enrollments").hasRole("USER")
+				// .antMatchers(HttpMethod.GET, "/api/v1/enrollments/**").hasRole("ADMIN")
+				// .antMatchers(HttpMethod.PATCH, "/api/v1/enrollments/**").hasRole("ADMIN")
+				// .antMatchers(HttpMethod.GET, "/api/v1/markets/**").permitAll()
+				// .antMatchers(HttpMethod.PATCH, "/api/v1/markets/**").hasRole("MARKET")
 				.and()
 				.csrf().disable()
 				.headers().disable()
@@ -83,7 +99,6 @@ public class SecurityConfig {
 				.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
-
 				.exceptionHandling()
 				.authenticationEntryPoint(authenticationEntryPoint())
 				.accessDeniedHandler(accessDeniedHandler())
