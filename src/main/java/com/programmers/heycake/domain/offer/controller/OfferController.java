@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.programmers.heycake.common.utils.AuthenticationUtil;
 import com.programmers.heycake.domain.offer.facade.OfferFacade;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferSaveRequest;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
@@ -33,10 +34,8 @@ public class OfferController {
 	}
 
 	@PostMapping("/api/v1/offers")
-	public ResponseEntity<Void> saveOffer(@ModelAttribute @Valid OfferSaveRequest offerSaveRequest,
-			@RequestParam Long memberId) {
-
-		Long savedOfferId = offerFacade.saveOffer(offerSaveRequest, memberId);
+	public ResponseEntity<Void> saveOffer(@ModelAttribute @Valid OfferSaveRequest offerSaveRequest) {
+		Long savedOfferId = offerFacade.saveOffer(offerSaveRequest);
 		return ResponseEntity.created(URI.create("/api/v1/offers/" + savedOfferId)).build();
 	}
 

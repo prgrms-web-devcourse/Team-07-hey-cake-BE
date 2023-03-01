@@ -18,29 +18,33 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class EnrollmentCustomRepositoryImpl implements EnrollmentCustomRepository {
+public class EnrollmentQueryDslRepository {
 
 	private final JPAQueryFactory jpaQueryFactory;
 	QMarketEnrollment qMarketEnrollment = QMarketEnrollment.marketEnrollment;
 
-	@Override
 	public List<MarketEnrollment> findAllOrderByCreatedAtDesc(
 			Long cursorEnrollmentId,
 			Integer pageSize,
 			EnrollmentStatus status
 	) {
-		MarketEnrollment cursorEnrollment = jpaQueryFactory.selectFrom(qMarketEnrollment)
-				.where(getCursorEnrollment(cursorEnrollmentId))
-				.stream()
-				.findFirst()
-				.orElseThrow(() -> {
-					throw new BusinessException(ENTITY_NOT_FOUND);
-				});
+
+		LocalDateTime cursorCreatedAt = LocalDateTime.now();
+
+		if (cursorEnrollmentId != null) {
+			cursorCreatedAt = jpaQueryFactory.selectFrom(qMarketEnrollment)
+					.where(getCursorEnrollment(cursorEnrollmentId))
+					.stream()
+					.findFirst()
+					.orElseThrow(() -> {
+						throw new BusinessException(ENTITY_NOT_FOUND);
+					}).getCreatedAt();
+		}
 
 		return jpaQueryFactory
 				.selectFrom(qMarketEnrollment)
 				.where(
-						gtCursorCreatedAt(cursorEnrollment.getCreatedAt()),
+						gtCursorCreatedAt(cursorCreatedAt),
 						enrollmentStatus(status)
 				).orderBy(qMarketEnrollment.createdAt.desc())
 				.limit(pageSize)
@@ -52,7 +56,7 @@ public class EnrollmentCustomRepositoryImpl implements EnrollmentCustomRepositor
 	}
 
 	private BooleanExpression gtCursorCreatedAt(LocalDateTime cursorCreatedAt) {
-		return cursorCreatedAt == null ? null : qMarketEnrollment.createdAt.gt(cursorCreatedAt);
+		return cursorCreatedAt == null ? null : qMarketEnrollment.createdAt.lt(cursorCreatedAt);
 	}
 
 	private BooleanExpression enrollmentStatus(EnrollmentStatus status) {

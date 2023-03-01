@@ -3,10 +3,12 @@ package com.programmers.heycake.domain.market.mapper;
 import java.util.List;
 
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
+import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentControllerResponse;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListInfoResponse;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentResponse;
-import com.programmers.heycake.domain.market.model.dto.EnrollmentResponses;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 
@@ -65,10 +67,21 @@ public class EnrollmentMapper {
 				.build();
 	}
 
-	public static EnrollmentResponses toResponse(List<MarketEnrollment> marketEnrollments) {
-		List<EnrollmentResponse> enrollments = marketEnrollments.stream()
-				.map(EnrollmentMapper::toResponse)
-				.toList();
-		return new EnrollmentResponses(enrollments);
+	public static EnrollmentListInfoResponse toResponse(MarketEnrollment enrollment, List<Image> images) {
+		return EnrollmentListInfoResponse.builder()
+				.enrollmentId(enrollment.getId())
+				.imageUrl(images.get(0).getImageUrl())
+				.businessNumber(enrollment.getBusinessNumber())
+				.address(enrollment.getMarketAddress())
+				.marketName(enrollment.getMarketName())
+				.phoneNumber(enrollment.getPhoneNumber())
+				.ownerName(enrollment.getOwnerName())
+				.status(enrollment.getEnrollmentStatus())
+				.createdAt(enrollment.getCreatedAt())
+				.build();
+	}
+
+	public static EnrollmentListResponse toResponse(List<EnrollmentListInfoResponse> enrollments, Long nextCursor) {
+		return new EnrollmentListResponse(enrollments, nextCursor);
 	}
 }
