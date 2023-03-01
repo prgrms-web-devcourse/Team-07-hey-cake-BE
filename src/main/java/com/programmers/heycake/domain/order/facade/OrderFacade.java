@@ -4,10 +4,12 @@ import static com.programmers.heycake.common.utils.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.common.mapper.OrderMapper;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
@@ -18,6 +20,9 @@ import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleServiceResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrdersGetResponse;
+import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 import com.programmers.heycake.domain.order.service.HistoryService;
 import com.programmers.heycake.domain.order.service.OrderService;
 
@@ -30,7 +35,9 @@ public class OrderFacade {
 	private final HistoryService historyService;
 	private final OrderService orderService;
 	private final MemberService memberService;
-	private static final String ORDER_IMAGE_SUB_PATH = "images/order";
+
+	private static final String ORDER_IMAGE_SUB_PATH = "image/order";
+
 	private final ImageIntegrationService imageIntegrationService;
 	private final ImageService imageService;
 	private final OfferFacade offerFacade;
@@ -53,18 +60,35 @@ public class OrderFacade {
 	@Transactional
 	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest) {
 		Long memberId = getMemberId();
-
 		if (memberService.isMarketById(memberId)) {
 			return historyService.getMyOrderList(getOrderRequest, memberId);
 		} else {
 			return orderService.getMyOrderList(getOrderRequest, memberId);
 		}
-
 	}
 
 	@Transactional
 	public OrderGetResponse getOrder(Long orderId) {
 		return orderService.getOrder(orderId);
+	}
+
+	@Transactional
+	public OrdersGetResponse getOrders(
+			Long cursorId, int pageSize, CakeCategory cakeCategory, String region
+	) {
+		List<OrderGetSimpleServiceResponse> orders =
+				orderService.getOrders(cursorId, pageSize, cakeCategory, region);
+
+		orders.stream()
+				.map(
+						orderSimpleGetServiceResponse ->
+								OrderMapper.toOrderSimpleGetResponse(
+										orderSimpleGetServiceResponse,
+										imageService.getImages(orderSimpleGetServiceResponse.orderId(), ORDER)
+								))
+				.collect(Collectors.toList())
+		;
+		return new OrdersGetResponse(orders);
 	}
 
 	@Transactional
@@ -81,4 +105,3 @@ public class OrderFacade {
 		orderService.deleteOrder(orderId, getMemberId());
 	}
 }
-

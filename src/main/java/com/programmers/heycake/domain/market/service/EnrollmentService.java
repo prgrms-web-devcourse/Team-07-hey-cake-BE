@@ -1,21 +1,26 @@
 package com.programmers.heycake.domain.market.service;
 
 import static com.programmers.heycake.common.exception.ErrorCode.*;
+import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
-import com.programmers.heycake.domain.market.mapper.MarketEnrollmentMapper;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentListRequest;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponse;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponses;
+import com.programmers.heycake.domain.image.model.entity.Image;
+import com.programmers.heycake.domain.image.repository.ImageRepository;
+import com.programmers.heycake.domain.market.mapper.EnrollmentMapper;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListInfoResponse;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListResponse;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentResponse;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
-import com.programmers.heycake.domain.market.repository.MarketEnrollmentCustomRepository;
+import com.programmers.heycake.domain.market.repository.EnrollmentQueryDslRepository;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
@@ -24,16 +29,17 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class MarketEnrollmentService {
+public class EnrollmentService {
 
 	private final MarketEnrollmentRepository marketEnrollmentRepository;
-	private final MarketEnrollmentCustomRepository marketEnrollmentCustomRepository;
+	private final EnrollmentQueryDslRepository enrollmentQueryDslRepository;
 	private final MemberRepository memberRepository;
+	private final ImageRepository imageRepository;
 
 	@Transactional
-	public Long enrollMarket(MarketEnrollmentRequest request) {
+	public Long enrollMarket(EnrollmentRequest request) {
 
-		MarketEnrollment enrollment = MarketEnrollmentMapper.toEntity(request);
+		MarketEnrollment enrollment = EnrollmentMapper.toEntity(request);
 
 		// todo 인증 완성 시 회원 조회 방식 변경
 		Member member = memberRepository.findById(request.memberId())
@@ -51,12 +57,12 @@ public class MarketEnrollmentService {
 	}
 
 	@Transactional(readOnly = true)
-	public MarketEnrollmentResponse getMarketEnrollment(Long enrollmentId) {
+	public EnrollmentResponse getMarketEnrollment(Long enrollmentId) {
 		MarketEnrollment enrollment = marketEnrollmentRepository.findById(enrollmentId)
 				.orElseThrow(() -> {
 					throw new BusinessException(ENTITY_NOT_FOUND);
 				});
-		return MarketEnrollmentMapper.toResponse(enrollment);
+		return EnrollmentMapper.toResponse(enrollment);
 	}
 
 	@Transactional
@@ -73,12 +79,23 @@ public class MarketEnrollmentService {
 		enrollment.updateEnrollmentStatus(status);
 	}
 
-	public MarketEnrollmentResponses getMarketEnrollments(MarketEnrollmentListRequest request) {
-		List<MarketEnrollment> marketEnrollments = marketEnrollmentCustomRepository.findAllOrderByCreatedAtDesc(
+	public EnrollmentListResponse getMarketEnrollments(EnrollmentListRequest request) {
+		List<MarketEnrollment> marketEnrollments = enrollmentQueryDslRepository.findAllOrderByCreatedAtDesc(
 				request.cursorEnrollmentId(),
 				request.pageSize(),
 				request.status()
 		);
-		return MarketEnrollmentMapper.toResponse(marketEnrollments);
+		List<EnrollmentListInfoResponse> enrollmentResponses = marketEnrollments.stream()
+				.map(enrollment -> {
+					List<Image> images = imageRepository.findAllByReferenceIdAndImageType(enrollment.getId(), ENROLLMENT_MARKET);
+					return EnrollmentMapper.toResponse(enrollment, images);
+				})
+				.collect(Collectors.toList());
+
+		Long nextCursor =
+				marketEnrollments.size() < request.pageSize() ?
+						0 : marketEnrollments.get(marketEnrollments.size() - 1).getId();
+
+		return EnrollmentMapper.toResponse(enrollmentResponses, nextCursor);
 	}
 }

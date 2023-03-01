@@ -15,58 +15,58 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentControllerResponse;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentListRequest;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentRequest;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentResponses;
-import com.programmers.heycake.domain.market.model.dto.MarketEnrollmentStatusRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentControllerResponse;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListResponse;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentStatusRequest;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
-import com.programmers.heycake.domain.market.service.MarketEnrollmentFacade;
+import com.programmers.heycake.domain.market.service.EnrollmentFacade;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/enrollments")
 @RequiredArgsConstructor
-public class MarketEnrollmentController {
+public class EnrollmentController {
 
-	private final MarketEnrollmentFacade marketEnrollmentFacade;
+	private final EnrollmentFacade enrollmentFacade;
 
 	// todo 인증 로직 완료 시 입력 인자 수정 필요
 	@PostMapping
-	public ResponseEntity<Void> enrollMarket(@Valid @ModelAttribute MarketEnrollmentRequest request) {
-		Long enrollmentId = marketEnrollmentFacade.enrollMarket(request);
+	public ResponseEntity<Void> enrollMarket(@Valid @ModelAttribute EnrollmentRequest request) {
+		Long enrollmentId = enrollmentFacade.enrollMarket(request);
 		URI location = URI.create("/api/v1/enrollments/" + enrollmentId);
 		return ResponseEntity.created(location).build();
 	}
 
 	@GetMapping("/{enrollmentId}")
-	public ResponseEntity<MarketEnrollmentControllerResponse> getMarketEnrollment(@PathVariable Long enrollmentId) {
-		MarketEnrollmentControllerResponse enrollment = marketEnrollmentFacade.getMarketEnrollment(enrollmentId);
+	public ResponseEntity<EnrollmentControllerResponse> getMarketEnrollment(@PathVariable Long enrollmentId) {
+		EnrollmentControllerResponse enrollment = enrollmentFacade.getMarketEnrollment(enrollmentId);
 		return ResponseEntity.ok(enrollment);
 	}
 
 	@PatchMapping("/{enrollmentId}")
 	public ResponseEntity<Void> changeEnrollmentStatus(
 			@PathVariable Long enrollmentId,
-			@Valid @RequestBody MarketEnrollmentStatusRequest request
+			@Valid @RequestBody EnrollmentStatusRequest request
 	) {
-		marketEnrollmentFacade.changeEnrollmentStatus(enrollmentId, EnrollmentStatus.valueOf(request.status()));
+		enrollmentFacade.changeEnrollmentStatus(enrollmentId, EnrollmentStatus.valueOf(request.status()));
 		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping
-	public ResponseEntity<MarketEnrollmentResponses> getMarketEnrollments(
+	public ResponseEntity<EnrollmentListResponse> getMarketEnrollments(
 			@RequestParam(required = false) Long cursor,
 			@RequestParam Integer pageSize,
 			@RequestParam(required = false) EnrollmentStatus status
 	) {
-		MarketEnrollmentListRequest request = new MarketEnrollmentListRequest(
+		EnrollmentListRequest request = new EnrollmentListRequest(
 				cursor,
 				pageSize,
 				status
 		);
-		MarketEnrollmentResponses marketEnrollments = marketEnrollmentFacade.getMarketEnrollments(request);
+		EnrollmentListResponse marketEnrollments = enrollmentFacade.getMarketEnrollments(request);
 		return ResponseEntity.ok(marketEnrollments);
 	}
 }

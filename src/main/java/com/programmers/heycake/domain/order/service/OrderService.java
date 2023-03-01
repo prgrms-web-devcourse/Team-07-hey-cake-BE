@@ -6,6 +6,9 @@ import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -19,8 +22,10 @@ import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleServiceResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
+import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 import com.programmers.heycake.domain.order.repository.OrderCustomRepository;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 
@@ -79,8 +84,19 @@ public class OrderService {
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	public OrderGetResponse getOrder(Long orderId) {
-		Order order = getEntity(orderId);
-		return OrderMapper.toGetOrderResponse(order);
+		Order order = orderRepository.findById(orderId)
+				.orElseThrow(EntityNotFoundException::new);
+		return OrderMapper.toOrderGetResponse(order);
+	}
+
+	public List<OrderGetSimpleServiceResponse> getOrders(
+			Long cursorId, int pageSize, CakeCategory cakeCategory, String region
+	) {
+		return orderCustomRepository
+				.findAllByRegionAndCategoryOrderByCreatedAtAsc(cursorId, pageSize, cakeCategory, region)
+				.stream()
+				.map(OrderMapper::toOrderSimpleGetServiceResponse)
+				.collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)
