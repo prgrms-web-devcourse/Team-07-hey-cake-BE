@@ -21,8 +21,8 @@ import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetResponse;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleServiceResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSimpleResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
@@ -53,7 +53,7 @@ public class OrderService {
 				Order.builder()
 						.cakeInfo(cakeInfo)
 						.hopePrice(orderCreateRequest.hopePrice())
-						.memberId(1L) // TODO memberId 넣어주기
+						.memberId(1L) // TODO memberId 넣어주기 getMember()
 						.orderStatus(NEW)
 						.visitDate(orderCreateRequest.visitTime())
 						.title(orderCreateRequest.title())
@@ -83,19 +83,19 @@ public class OrderService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
-	public OrderGetResponse getOrder(Long orderId) {
+	public OrderGetDetailServiceResponse getOrder(Long orderId) {
 		Order order = orderRepository.findById(orderId)
 				.orElseThrow(EntityNotFoundException::new);
-		return OrderMapper.toOrderGetResponse(order);
+		return toOrderGetServiceDetailResponse(order);
 	}
 
-	public List<OrderGetSimpleServiceResponse> getOrders(
+	public List<OrderGetServiceSimpleResponse> getOrders(
 			Long cursorId, int pageSize, CakeCategory cakeCategory, String region
 	) {
 		return orderCustomRepository
 				.findAllByRegionAndCategoryOrderByCreatedAtAsc(cursorId, pageSize, cakeCategory, region)
 				.stream()
-				.map(OrderMapper::toOrderSimpleGetServiceResponse)
+				.map(OrderMapper::toOrderGetServiceSimpleResponse)
 				.collect(Collectors.toList());
 	}
 

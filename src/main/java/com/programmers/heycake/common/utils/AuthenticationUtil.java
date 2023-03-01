@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class JwtUtil {
+public class AuthenticationUtil {
 	public static Long getMemberId() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
@@ -22,6 +22,6 @@ public class JwtUtil {
 	}
 
 	public static boolean isValidAccess(Long memberId) {
-		return Objects.equals(JwtUtil.getMemberId(), memberId);
+		return Objects.equals(AuthenticationUtil.getMemberId(), memberId);
 	}
 }

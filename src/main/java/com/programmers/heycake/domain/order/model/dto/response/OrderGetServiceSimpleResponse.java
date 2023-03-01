@@ -8,13 +8,14 @@ import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import lombok.Builder;
 
 @Builder
-public record OrderGetSimpleServiceResponse(
+public record OrderGetServiceSimpleResponse(
 		Long orderId,
 		String title,
 		String region,
 		CakeInfo cakeInfo,
 		OrderStatus orderStatus,
 		int hopePrice,
+		LocalDateTime visitDate,
 		LocalDateTime createdAt
 ) {
 }

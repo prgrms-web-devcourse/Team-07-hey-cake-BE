@@ -9,11 +9,13 @@ import org.springframework.stereotype.Service;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.CommentMapper;
+import com.programmers.heycake.common.utils.AuthenticationUtil;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.comment.repository.CommentRepository;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
+import com.programmers.heycake.domain.member.repository.MemberRepository;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
@@ -27,8 +29,12 @@ public class CommentService {
 	private final CommentRepository commentRepository;
 	private final OfferRepository offerRepository;
 	private final MarketRepository marketRepository;
+	private final MemberRepository memberRepository;
 
 	public Long saveComment(String content, Long offerId, Long memberId) {
+		// Long memberId = AuthenticationUtil.getMemberId();
+		// verifyExistMember(memberId);
+
 		Offer offer = getOffer(offerId);
 		Order order = offer.getOrder();
 
@@ -59,6 +65,9 @@ public class CommentService {
 	}
 
 	public void deleteComment(Long commentId, Long memberId) {
+		// Long memberId = AuthenticationUtil.getMemberId();
+		verifyExistMember(memberId);
+
 		Comment comment = getComment(commentId);
 
 		verifyCommentDeleteAuthority(comment, memberId);
@@ -69,6 +78,12 @@ public class CommentService {
 	private void verifyCommentDeleteAuthority(Comment comment, Long memberId) {
 		if (comment.isNotWriter(memberId)) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
+	}
+
+	private void verifyExistMember(Long memberId) {
+		if (!memberRepository.existsById(memberId)) {
+			throw new BusinessException(ErrorCode.UNAUTHORIZED);
 		}
 	}
 

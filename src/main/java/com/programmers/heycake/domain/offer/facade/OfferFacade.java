@@ -1,6 +1,6 @@
 package com.programmers.heycake.domain.offer.facade;
 
-import static com.programmers.heycake.common.utils.JwtUtil.*;
+import static com.programmers.heycake.common.utils.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 
 import java.util.List;
@@ -40,15 +40,12 @@ public class OfferFacade {
 	// private final CommentService commentService;
 
 	@Transactional
-	public Long saveOffer(OfferSaveRequest offerSaveRequest, Long memberId) {
-
-		// TODO : 회원 검증 로직
-
+	public Long saveOffer(OfferSaveRequest offerSaveRequest) {
 		Long savedOfferId = offerService.saveOffer(
-				memberId,
 				offerSaveRequest.orderId(),
 				offerSaveRequest.expectedPrice(),
-				offerSaveRequest.content()
+				offerSaveRequest.content(),
+				offerSaveRequest.memberId()
 		);
 
 		imageIntegrationService.createAndUploadImage(offerSaveRequest.offerImage(), OFFER_IMAGE_SUB_PATH, savedOfferId,

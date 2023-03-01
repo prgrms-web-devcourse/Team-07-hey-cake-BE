@@ -30,12 +30,9 @@ public class CommentFacade {
 
 	@Transactional
 	public Long saveComment(CommentSaveRequest commentSaveRequest) {
-		// TODO : 맴버 검증 넣기
-		// Long memberId = JwtUtil.getMemberId();
-		Long memberId = 1L;
 
 		Long savedCommentId = commentService.saveComment(commentSaveRequest.content(), commentSaveRequest.offerId(),
-				memberId);
+				commentSaveRequest.memberId());
 		imageIntegrationService.createAndUploadImage(commentSaveRequest.image(), COMMENT_SUB_PATH, savedCommentId,
 				ImageType.COMMENT);
 
@@ -55,9 +52,7 @@ public class CommentFacade {
 	}
 
 	@Transactional
-	public void deleteComment(Long commentId) {
-		// TODO : memberId 헤더에서 받기
-		Long memberId = 1L;
+	public void deleteComment(Long commentId, Long memberId) {
 		commentService.deleteComment(commentId, memberId);
 
 		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
