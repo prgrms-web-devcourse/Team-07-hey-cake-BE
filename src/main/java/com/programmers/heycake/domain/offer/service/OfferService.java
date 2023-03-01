@@ -68,8 +68,8 @@ public class OfferService {
 				.equals(OrderStatus.NEW);
 	}
 
-	public Long saveOffer(Long orderId, int expectedPrice, String content) {
-		Long memberId = AuthenticationUtil.getMemberId();
+	public Long saveOffer(Long orderId, int expectedPrice, String content, Long memberId) {
+		// Long memberId = AuthenticationUtil.getMemberId();
 
 		Order order = getOrder(orderId);
 		Member member = getMember(memberId);

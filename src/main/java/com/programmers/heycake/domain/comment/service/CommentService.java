@@ -31,9 +31,9 @@ public class CommentService {
 	private final MarketRepository marketRepository;
 	private final MemberRepository memberRepository;
 
-	public Long saveComment(String content, Long offerId) {
-		Long memberId = AuthenticationUtil.getMemberId();
-		verifyExistMember(memberId);
+	public Long saveComment(String content, Long offerId, Long memberId) {
+		// Long memberId = AuthenticationUtil.getMemberId();
+		// verifyExistMember(memberId);
 
 		Offer offer = getOffer(offerId);
 		Order order = offer.getOrder();
@@ -64,8 +64,8 @@ public class CommentService {
 				.toList();
 	}
 
-	public void deleteComment(Long commentId) {
-		Long memberId = AuthenticationUtil.getMemberId();
+	public void deleteComment(Long commentId, Long memberId) {
+		// Long memberId = AuthenticationUtil.getMemberId();
 		verifyExistMember(memberId);
 
 		Comment comment = getComment(commentId);

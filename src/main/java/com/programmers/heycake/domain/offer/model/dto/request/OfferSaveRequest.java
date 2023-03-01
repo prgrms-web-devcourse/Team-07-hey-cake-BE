@@ -17,6 +17,7 @@ public record OfferSaveRequest(
 		@NotBlank
 		String content,
 		@NotNull
-		MultipartFile offerImage
+		MultipartFile offerImage,
+		Long memberId
 ) {
 }
