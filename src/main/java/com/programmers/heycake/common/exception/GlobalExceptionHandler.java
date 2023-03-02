@@ -3,16 +3,23 @@ package com.programmers.heycake.common.exception;
 import static com.programmers.heycake.common.exception.ErrorCode.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
 
+import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.programmers.heycake.common.dto.ErrorResponse;
 
 @RestControllerAdvice
@@ -36,9 +43,46 @@ public class GlobalExceptionHandler {
 						ErrorResponse.of(
 								BAD_REQUEST.getMessage(),
 								request.getRequestURI(),
-								makeFieldErrors(e.getBindingResult())
+								makeFieldErrorsFromBindingResult(e.getBindingResult())
 						)
 				);
+	}
+
+	@ExceptionHandler(ConstraintViolationException.class)
+	protected ResponseEntity<ErrorResponse> handleConstraintViolationException(
+			HttpServletRequest request,
+			ConstraintViolationException e
+	) {
+		return ResponseEntity.badRequest()
+				.body(ErrorResponse.of(
+						BAD_REQUEST.getMessage(),
+						request.getRequestURI()
+						, makeFieldErrorsFromConstraintViolations(e.getConstraintViolations())
+				));
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+			HttpServletRequest request, MethodArgumentTypeMismatchException e
+	) {
+		ErrorResponse errorResponse = ErrorResponse.of(
+				e.getMessage(),
+				request.getRequestURI(),
+				List.of(new ErrorResponse.FieldError(
+						e.getName(),
+						Objects.requireNonNull(e.getValue()).toString(),
+						e.getParameter().getParameterName()
+				))
+		);
+		return ResponseEntity.badRequest().body(errorResponse);
+	}
+
+	@ExceptionHandler(InvalidFormatException.class)
+	protected ResponseEntity<ErrorResponse> handleInvalidFormatException(
+			HttpServletRequest request, InvalidFormatException e) {
+
+		return ResponseEntity.badRequest()
+				.body(ErrorResponse.of(e.getMessage(), request.getRequestURI(), null));
 	}
 
 	@ExceptionHandler(BusinessException.class)
@@ -55,7 +99,7 @@ public class GlobalExceptionHandler {
 				.body(ErrorResponse.of(e.getMessage(), request.getRequestURI(), null));
 	}
 
-	private List<ErrorResponse.FieldError> makeFieldErrors(BindingResult bindingResult) {
+	private List<ErrorResponse.FieldError> makeFieldErrorsFromBindingResult(BindingResult bindingResult) {
 
 		return bindingResult.getFieldErrors()
 				.stream()
@@ -64,6 +108,23 @@ public class GlobalExceptionHandler {
 						error.getRejectedValue().toString(),
 						error.getDefaultMessage()
 				))
-				.collect(Collectors.toList());
+				.toList();
+	}
+
+	private List<ErrorResponse.FieldError> makeFieldErrorsFromConstraintViolations(
+			Set<ConstraintViolation<?>> constraintViolations
+	) {
+		return constraintViolations.stream()
+				.map(violation -> new ErrorResponse.FieldError(
+						getFieldFromPath(violation.getPropertyPath()),
+						violation.getInvalidValue().toString(),
+						violation.getMessage()
+				))
+				.toList();
+	}
+
+	private String getFieldFromPath(Path fieldPath) {
+		PathImpl pathImpl = (PathImpl)fieldPath;
+		return pathImpl.getLeafNode().toString();
 	}
 }
