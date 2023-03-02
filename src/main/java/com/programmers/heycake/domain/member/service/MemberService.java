@@ -72,9 +72,8 @@ public class MemberService {
 		);
 
 		Optional<Token> optionalToken = tokenRepository.findByMemberId(member.getId());
-
 		if (optionalToken.isPresent()) {
-			throw new RuntimeException("뭐시요? 왜 로그인 다시하는거요?");
+			throw new RuntimeException("토큰이 만료되지 않은 상태에서, 로그인을 다시 하였습니다.");
 		}
 
 		tokenRepository.save(
