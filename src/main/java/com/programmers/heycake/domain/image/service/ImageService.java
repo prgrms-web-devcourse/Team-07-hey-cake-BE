@@ -1,13 +1,11 @@
 package com.programmers.heycake.domain.image.service;
 
-import static com.programmers.heycake.common.exception.ErrorCode.*;
-
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.image.mapper.ImageMapper;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.entity.Image;
@@ -28,25 +26,13 @@ public class ImageService {
 	}
 
 	@Transactional
-	public void createImage(Image image) {
-		imageRepository.save(image);
-	}
+	public List<String> deleteImage(Long referenceId, ImageType imageType) {
+		List<Image> images = imageRepository.findAllByReferenceIdAndImageType(referenceId, imageType);
+		imageRepository.deleteAllByReferenceIdAndImageType(referenceId, imageType);
 
-	@Transactional
-	public void deleteImage(Long referenceId, ImageType imageType) {
-		Image image = imageRepository.findAllByReferenceIdAndImageType(referenceId, imageType)
-				.stream()
-				.findFirst()
-				.orElseThrow(() -> {
-					throw new BusinessException(ENTITY_NOT_FOUND);
-				});
-		imageRepository.delete(image);
-	}
-
-	@Transactional
-	public void createImages(List<Image> images) {
-		images.stream()
-				.forEach(this::createImage);
+		return images.stream()
+				.map(Image::getImageUrl)
+				.collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)

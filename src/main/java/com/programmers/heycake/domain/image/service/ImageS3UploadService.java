@@ -28,6 +28,9 @@ public class ImageS3UploadService implements ImageUploadService {
 
 	@Override
 	public String upload(MultipartFile multipartFile, String subPath) {
+		if (multipartFile.isEmpty()) {
+			throw new BusinessException(ErrorCode.BAD_REQUEST);
+		}
 		String originalFilename = multipartFile.getOriginalFilename();
 		String savedFilename = createSavedFilename(originalFilename);
 
