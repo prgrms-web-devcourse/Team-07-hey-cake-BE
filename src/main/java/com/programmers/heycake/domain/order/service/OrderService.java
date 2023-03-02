@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.order.model.service;
+package com.programmers.heycake.domain.order.service;
 
 import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;

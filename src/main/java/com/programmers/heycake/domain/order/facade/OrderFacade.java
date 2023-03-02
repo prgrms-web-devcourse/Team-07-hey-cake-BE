@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.order.model.facade;
+package com.programmers.heycake.domain.order.facade;
 
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 
@@ -9,7 +9,7 @@ import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.offer.facade.OfferFacade;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
-import com.programmers.heycake.domain.order.model.service.OrderService;
+import com.programmers.heycake.domain.order.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
 
