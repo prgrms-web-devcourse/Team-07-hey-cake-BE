@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.programmers.heycake.domain.image.event.DeleteEvent;
 import com.programmers.heycake.domain.image.event.UploadRollbackEvent;
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 
@@ -32,6 +33,11 @@ public class ImageIntegrationService {
 	public void deleteImage(Long referenceId, ImageType imageType, String subPath, String savedFilename) {
 		imageService.deleteImage(referenceId, imageType);
 		applicationEventPublisher.publishEvent(new DeleteEvent(subPath, savedFilename));
+	}
+
+	@Transactional(readOnly = true)
+	public ImageResponses getImages(Long referenceId, ImageType imageType) {
+		return imageService.getImages(referenceId, imageType);
 	}
 
 }

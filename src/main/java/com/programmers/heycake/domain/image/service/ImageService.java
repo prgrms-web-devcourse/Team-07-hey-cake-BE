@@ -1,12 +1,15 @@
 package com.programmers.heycake.domain.image.service;
 
+import static com.programmers.heycake.common.exception.ErrorCode.*;
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
-import com.programmers.heycake.common.exception.ErrorCode;
+import com.programmers.heycake.domain.image.mapper.ImageMapper;
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
@@ -31,18 +34,24 @@ public class ImageService {
 
 	@Transactional
 	public void deleteImage(Long referenceId, ImageType imageType) {
-		imageRepository.findByReferenceIdAndImageType(referenceId, imageType)
-				.ifPresentOrElse(
-						imageRepository::delete,
-						() -> {
-							throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
-						}
-				);
+		Image image = imageRepository.findAllByReferenceIdAndImageType(referenceId, imageType)
+				.stream()
+				.findFirst()
+				.orElseThrow(() -> {
+					throw new BusinessException(ENTITY_NOT_FOUND);
+				});
+		imageRepository.delete(image);
 	}
 
 	@Transactional
 	public void createImages(List<Image> images) {
 		images.stream()
 				.forEach(this::createImage);
+	}
+
+	@Transactional(readOnly = true)
+	public ImageResponses getImages(Long referenceId, ImageType imageType) {
+		List<Image> images = imageRepository.findAllByReferenceIdAndImageType(referenceId, imageType);
+		return ImageMapper.toResponse(images);
 	}
 }
