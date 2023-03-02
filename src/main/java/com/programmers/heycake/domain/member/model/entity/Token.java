@@ -21,14 +21,14 @@ public class Token {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "email", nullable = false, unique = true)
-	private String email;
+	@Column(name = "member_id", nullable = false, unique = true)
+	private Long memberId;
 
 	@Column(name = "refresh_token", length = 300, nullable = false, unique = true)
 	private String refreshToken;
 
-	public Token(String email, String refreshToken) {
-		this.email = email;
+	public Token(Long memberId, String refreshToken) {
+		this.memberId = memberId;
 		this.refreshToken = refreshToken;
 	}
 }
