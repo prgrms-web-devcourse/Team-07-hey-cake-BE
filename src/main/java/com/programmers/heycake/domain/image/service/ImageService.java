@@ -1,12 +1,14 @@
 package com.programmers.heycake.domain.image.service;
 
+import static com.programmers.heycake.common.exception.ErrorCode.*;
+
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
-import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.image.mapper.ImageMapper;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.entity.Image;
@@ -20,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class ImageService {
 
 	private final ImageRepository imageRepository;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Transactional
 	public void createImage(Long referenceId, ImageType imageType, String savedUrl) {
@@ -33,16 +36,13 @@ public class ImageService {
 
 	@Transactional
 	public void deleteImage(Long referenceId, ImageType imageType) {
-		List<Image> images = imageRepository.findAllByReferenceIdAndImageType(referenceId, imageType);
-
-		if (images.isEmpty()) {
-			throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
-		}
-
-		images.stream()
-				.forEach(image -> {
-					imageRepository.delete(image);
+		Image image = imageRepository.findAllByReferenceIdAndImageType(referenceId, imageType)
+				.stream()
+				.findFirst()
+				.orElseThrow(() -> {
+					throw new BusinessException(ENTITY_NOT_FOUND);
 				});
+		imageRepository.delete(image);
 	}
 
 	@Transactional
