@@ -1,5 +1,7 @@
 package com.programmers.heycake.domain.image.service;
 
+import java.util.List;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +12,6 @@ import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.image.event.DeleteEvent;
 import com.programmers.heycake.domain.image.event.UploadRollbackEvent;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 
 import lombok.RequiredArgsConstructor;
@@ -29,19 +30,26 @@ public class ImageIntegrationService {
 			throw new BusinessException(ErrorCode.BAD_REQUEST);
 		}
 		String savedUrl = imageUploadService.upload(multipartFile, subPath);
-		Image image = new Image(referenceId, imageType, savedUrl);
-		applicationEventPublisher.publishEvent(new UploadRollbackEvent(subPath, image.getFilename()));
-		imageService.createImage(image);
+		applicationEventPublisher.publishEvent(new UploadRollbackEvent(subPath, getImageFilename(savedUrl)));
+		imageService.createImage(referenceId, imageType, savedUrl);
 	}
 
 	@Transactional
-	public void deleteImage(Long referenceId, ImageType imageType, String subPath, String savedFilename) {
-		imageService.deleteImage(referenceId, imageType);
-		applicationEventPublisher.publishEvent(new DeleteEvent(subPath, savedFilename));
+	public void deleteImage(Long referenceId, ImageType imageType, String subPath) {
+		List<String> imageUrls = imageService.deleteImage(referenceId, imageType);
+		imageUrls
+				.forEach(imageUrl -> {
+					applicationEventPublisher.publishEvent(new DeleteEvent(subPath, getImageFilename(imageUrl)));
+				});
 	}
 
 	@Transactional(readOnly = true)
 	public ImageResponses getImages(Long referenceId, ImageType imageType) {
 		return imageService.getImages(referenceId, imageType);
+	}
+
+	private String getImageFilename(String imageUrl) {
+		int beforeFilenameIndex = imageUrl.lastIndexOf("/");
+		return imageUrl.substring(beforeFilenameIndex + 1);
 	}
 }
