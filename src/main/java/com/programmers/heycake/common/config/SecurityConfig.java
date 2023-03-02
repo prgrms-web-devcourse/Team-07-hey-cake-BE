@@ -44,7 +44,7 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+		configuration.setAllowedOrigins(Arrays.asList("*"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"));
 		configuration.setAllowedHeaders(Arrays.asList("Content-Type"));
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -72,23 +72,23 @@ public class SecurityConfig {
 		http
 				.csrf().disable()
 				.authorizeRequests()
-				.anyRequest().permitAll()
-				// .antMatchers("/api/v1/login").permitAll()
-				// .antMatchers(HttpMethod.POST, "/api/v1/orders").hasRole("USER")
-				// .antMatchers(HttpMethod.GET, "/api/v1/orders/**").permitAll()
-				// .antMatchers(HttpMethod.DELETE, "/api/v1/orders/**").hasAnyRole("ADMIN", "USER")
-				// .antMatchers(HttpMethod.POST, "/api/v1/histories").hasRole("USER")
-				// .antMatchers(HttpMethod.GET, "/api/v1/orders/my").hasAnyRole("USER", "MARKET")
-				// .antMatchers(HttpMethod.DELETE, "/api/v1/offers/**").hasAnyRole("ADMIN", "MARKET")
-				// .antMatchers(HttpMethod.POST, "/api/v1/offers").hasRole("MARKET")
-				// .antMatchers(HttpMethod.POST, "/api/v1/comments").hasAnyRole("ADMIN", "MARKET", "USER")
-				// .antMatchers(HttpMethod.DELETE, "/api/v1/comments/**").hasAnyRole("ADMIN", "MARKET", "USER")
-				// .antMatchers(HttpMethod.GET, "/api/v1/comments").permitAll()
-				// .antMatchers(HttpMethod.POST, "/api/v1/enrollments").hasRole("USER")
-				// .antMatchers(HttpMethod.GET, "/api/v1/enrollments/**").hasRole("ADMIN")
-				// .antMatchers(HttpMethod.PATCH, "/api/v1/enrollments/**").hasRole("ADMIN")
-				// .antMatchers(HttpMethod.GET, "/api/v1/markets/**").permitAll()
-				// .antMatchers(HttpMethod.PATCH, "/api/v1/markets/**").hasRole("MARKET")
+				// .anyRequest().permitAll()
+				.antMatchers("/api/v1/login").permitAll()
+				.antMatchers(HttpMethod.POST, "/api/v1/orders").hasRole("USER")
+				.antMatchers(HttpMethod.GET, "/api/v1/orders/**").permitAll()
+				.antMatchers(HttpMethod.DELETE, "/api/v1/orders/**").hasAnyRole("ADMIN", "USER")
+				.antMatchers(HttpMethod.POST, "/api/v1/histories").hasRole("USER")
+				.antMatchers(HttpMethod.GET, "/api/v1/orders/my").hasAnyRole("USER", "MARKET")
+				.antMatchers(HttpMethod.DELETE, "/api/v1/offers/**").hasAnyRole("ADMIN", "MARKET")
+				.antMatchers(HttpMethod.POST, "/api/v1/offers").hasRole("MARKET")
+				.antMatchers(HttpMethod.POST, "/api/v1/comments").hasAnyRole("ADMIN", "MARKET", "USER")
+				.antMatchers(HttpMethod.DELETE, "/api/v1/comments/**").hasAnyRole("ADMIN", "MARKET", "USER")
+				.antMatchers(HttpMethod.GET, "/api/v1/comments").permitAll()
+				.antMatchers(HttpMethod.POST, "/api/v1/enrollments").hasRole("USER")
+				.antMatchers(HttpMethod.GET, "/api/v1/enrollments/**").hasRole("ADMIN")
+				.antMatchers(HttpMethod.PATCH, "/api/v1/enrollments/**").hasRole("ADMIN")
+				.antMatchers(HttpMethod.GET, "/api/v1/markets/**").permitAll()
+				.antMatchers(HttpMethod.PATCH, "/api/v1/markets/**").hasRole("MARKET")
 				.and()
 				.csrf().disable()
 				.headers().disable()

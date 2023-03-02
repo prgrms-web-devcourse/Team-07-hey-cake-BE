@@ -112,7 +112,7 @@ public class OrderFacade {
 		images.images()
 				.forEach(
 						image -> imageIntegrationService.deleteImage(
-								orderId, ImageType.OFFER, ORDER_IMAGE_SUB_PATH, image.savedFilename())
+								orderId, ImageType.ORDER, ORDER_IMAGE_SUB_PATH, image.savedFilename())
 				);
 
 		List<Long> orderOfferIdList = orderService.getOrderOfferIdList(orderId);

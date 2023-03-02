@@ -31,8 +31,7 @@ public class CommentFacade {
 	@Transactional
 	public Long saveComment(CommentSaveRequest commentSaveRequest) {
 
-		Long savedCommentId = commentService.saveComment(commentSaveRequest.content(), commentSaveRequest.offerId(),
-				commentSaveRequest.memberId());
+		Long savedCommentId = commentService.saveComment(commentSaveRequest.content(), commentSaveRequest.offerId());
 		imageIntegrationService.createAndUploadImage(commentSaveRequest.image(), COMMENT_SUB_PATH, savedCommentId,
 				ImageType.COMMENT);
 
@@ -52,8 +51,8 @@ public class CommentFacade {
 	}
 
 	@Transactional
-	public void deleteComment(Long commentId, Long memberId) {
-		commentService.deleteComment(commentId, memberId);
+	public void deleteComment(Long commentId) {
+		commentService.deleteComment(commentId);
 
 		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
 		if (commentImageResponse.size() > 0) {
