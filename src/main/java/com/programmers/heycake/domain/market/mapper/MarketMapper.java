@@ -8,9 +8,13 @@ import com.programmers.heycake.domain.market.model.dto.MarketControllerResponse;
 import com.programmers.heycake.domain.market.model.dto.MarketResponse;
 import com.programmers.heycake.domain.market.model.entity.Market;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MarketMapper {
 
-	public static MarketResponse toControllerResponse(Market market) {
+	public static MarketResponse toResponse(Market market) {
 		return MarketResponse.builder()
 				.phoneNumber(market.getPhoneNumber())
 				.address(market.getMarketAddress())

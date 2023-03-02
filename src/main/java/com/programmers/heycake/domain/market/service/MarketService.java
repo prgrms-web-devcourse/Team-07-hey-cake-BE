@@ -25,7 +25,7 @@ public class MarketService {
 				.orElseThrow(() -> {
 					throw new BusinessException(ENTITY_NOT_FOUND);
 				});
-		return MarketMapper.toControllerResponse(market);
+		return MarketMapper.toResponse(market);
 	}
 
 }
