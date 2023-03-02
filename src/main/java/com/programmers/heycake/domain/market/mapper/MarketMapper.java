@@ -38,7 +38,7 @@ public class MarketMapper {
 								.findFirst()
 								.orElseThrow(() -> {
 									throw new BusinessException(ENTITY_NOT_FOUND);
-								}).imageUrls())
+								}).imageUrl())
 				.build();
 	}
 }
