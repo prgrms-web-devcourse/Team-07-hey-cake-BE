@@ -34,19 +34,24 @@ public class OrderMapper {
 				.build();
 	}
 
-	public static MyOrderResponseList toGetOrderResponseListForMember(List<Order> orderList, LocalDateTime lastTime) {
-		List<MyOrderResponse> getOrderResponseList =
-				orderList
-						.stream()
-						.map(order -> new MyOrderResponse(
-								order.getId(),
-								order.getTitle(),
-								order.getOrderStatus(),
-								order.getRegion(),
-								order.getVisitDate(),
-								order.getCreatedAt()
-						)).toList();
-		return new MyOrderResponseList(getOrderResponseList, lastTime);
+	// public static MyOrderResponseList toGetOrderResponseListForMember(List<Order> orderList, LocalDateTime lastTime) {
+	// 	List<MyOrderResponse> getOrderResponseList =
+	// 			orderList
+	// 					.stream()
+	// 					.map(order -> new MyOrderResponse(
+	// 							order.getId(),
+	// 							order.getTitle(),
+	// 							order.getOrderStatus(),
+	// 							order.getRegion(),
+	// 							order.getVisitDate(),
+	// 							order.getCreatedAt()
+	// 					)).toList();
+	// 	return new MyOrderResponseList(getOrderResponseList, lastTime);
+	// }
+
+	public static MyOrderResponseList toGetOrderResponseListForMember(List<MyOrderResponse> orderList,
+			LocalDateTime lastTime) {
+		return new MyOrderResponseList(orderList, lastTime);
 	}
 
 	public static MyOrderResponseList toGetOrderResponseListForMarket(
@@ -59,7 +64,8 @@ public class OrderMapper {
 						.map(OrderHistory::getOrder)
 						.toList();
 
-		return toGetOrderResponseListForMember(orderList, lastTime);
+		// return toGetOrderResponseListForMember(orderList, lastTime);
+		return null;
 	}
 
 	public static OrderGetDetailServiceResponse toOrderGetServiceDetailResponse(Order order) {

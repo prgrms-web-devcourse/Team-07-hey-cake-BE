@@ -21,6 +21,7 @@ import com.programmers.heycake.common.mapper.OrderMapper;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSimpleResponse;
@@ -66,7 +67,8 @@ public class OrderService {
 
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long memberId) {
-		List<Order> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
+		// List<Order> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
+		List<MyOrderResponse> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
 				getOrderRequest.orderStatus(),
 				getOrderRequest.cursorTime(),
@@ -74,8 +76,10 @@ public class OrderService {
 		);
 
 		LocalDateTime lastTime =
-				orderList.size() == 0 ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).getVisitDate();
+				// orderList.size() == 0 ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).getVisitDate();
+				orderList.size() == 0 ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).visitTime();
 
+		// return toGetOrderResponseListForMember(orderList, lastTime);
 		return toGetOrderResponseListForMember(orderList, lastTime);
 	}
 

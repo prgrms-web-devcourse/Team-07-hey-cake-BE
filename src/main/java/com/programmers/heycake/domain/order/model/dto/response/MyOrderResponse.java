@@ -16,6 +16,7 @@ public record MyOrderResponse(
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 		LocalDateTime visitTime,
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-		LocalDateTime createdAt
+		LocalDateTime createdAt,
+		String imageUrl
 ) {
 }
