@@ -52,7 +52,7 @@ import io.findify.s3mock.S3Mock;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-class MarketEnrollmentControllerTest {
+class EnrollmentControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
