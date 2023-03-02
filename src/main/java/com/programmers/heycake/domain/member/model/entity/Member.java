@@ -50,4 +50,8 @@ public class Member extends BaseEntity {
 		this.memberAuthority = memberAuthority;
 		this.birth = birth;
 	}
+
+	public boolean isMarket() {
+		return this.memberAuthority == MemberAuthority.MARKET;
+	}
 }
