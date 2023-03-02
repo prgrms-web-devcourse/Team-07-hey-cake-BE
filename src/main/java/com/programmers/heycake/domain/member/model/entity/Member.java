@@ -31,9 +31,6 @@ public class Member extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "nickname", length = 20, nullable = false)
-	private String nickname;
-
 	@Column(name = "email", length = 254, nullable = false, unique = true)
 	private String email;
 
@@ -44,8 +41,7 @@ public class Member extends BaseEntity {
 	@Column(name = "birth", nullable = true)
 	private String birth;
 
-	public Member(String nickname, String email, MemberAuthority memberAuthority, String birth) {
-		this.nickname = nickname;
+	public Member(String email, MemberAuthority memberAuthority, String birth) {
 		this.email = email;
 		this.memberAuthority = memberAuthority;
 		this.birth = birth;
