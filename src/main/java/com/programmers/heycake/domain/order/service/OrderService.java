@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OrderMapper;
+import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
@@ -38,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 public class OrderService {
 	private final OrderRepository orderRepository;
 	private final OrderQueryDslRepository orderQueryDslRepository;
+	private final ImageService imageService;
 
 	@Transactional
 	public Long create(OrderCreateRequest orderCreateRequest) {
@@ -75,12 +77,26 @@ public class OrderService {
 				getOrderRequest.pageSize()
 		);
 
+		//TODO 삭제
+		// List<MyOrderResponse> orderDtoWithImages = orderList.stream()
+		// 		.map(o ->
+		// 				MyOrderResponse.builder()
+		// 						.id(o.getId())
+		// 						.title(o.getTitle())
+		// 						.orderStatus(o.getOrderStatus())
+		// 						.hopePrice(o.getHopePrice())
+		// 						.region(o.getRegion())
+		// 						.visitDate(o.getVisitDate())
+		// 						.image(String.valueOf(
+		// 								imageService.getImages(o.getId(), ORDER).images().stream().findFirst())
+		// 						).build()
+		// 		).toList();
+		// return new MyOrderResponseList(orderDtoWithImages, lastTime);
+
 		LocalDateTime lastTime =
-				// orderList.size() == 0 ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).getVisitDate();
 				orderList.size() == 0 ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).visitTime();
 
-		// return toGetOrderResponseListForMember(orderList, lastTime);
-		return toGetOrderResponseListForMember(orderList, lastTime);
+		return toMyOrderResponseListForMember(orderList, lastTime);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)

@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.order.model.dto.request.HistoryFacadeRequest;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class HistoryService {
 	private final HistoryRepository historyRepository;
 	private final HistoryQueryDslRepository historyQueryDslRepository;
+	private final ImageService imageService;
 
 	public Long createHistory(HistoryFacadeRequest historyRequest) {
 		OrderHistory orderHistory = toOrderHistory(historyRequest);
