@@ -5,12 +5,13 @@ services:
     ports:
       - 3306:3306
     env_file:
-      - env/db.env
+      - ../env/db.env
     container_name: hey-cake
     environment:
       TZ: Asia/Seoul
     volumes:
       - hey-cake:/var/lib/hey-cake/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: always
 
 volumes:

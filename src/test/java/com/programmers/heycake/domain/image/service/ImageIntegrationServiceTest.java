@@ -16,7 +16,6 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import com.programmers.heycake.domain.image.event.DeleteEvent;
 import com.programmers.heycake.domain.image.event.UploadRollbackEvent;
-import com.programmers.heycake.domain.image.model.entity.Image;
 
 @ExtendWith(MockitoExtension.class)
 class ImageIntegrationServiceTest {
@@ -51,7 +50,7 @@ class ImageIntegrationServiceTest {
 		String savedUrl = subPath + "/" + UUID.randomUUID().toString() + ".jpg";
 		when(imageUploadService.upload(mockMultipartFile, subPath)).thenReturn(savedUrl);
 		doNothing().when(applicationEventPublisher).publishEvent(any(UploadRollbackEvent.class));
-		doNothing().when(imageService).createImage(any(Image.class));
+		doNothing().when(imageService).createImage(referenceId, MARKET, savedUrl);
 
 		// when
 		imageIntegrationService.createAndUploadImage(mockMultipartFile, subPath, referenceId, MARKET);
@@ -59,7 +58,7 @@ class ImageIntegrationServiceTest {
 		// then
 		verify(imageUploadService).upload(mockMultipartFile, subPath);
 		verify(applicationEventPublisher).publishEvent(any(UploadRollbackEvent.class));
-		verify(imageService).createImage(any(Image.class));
+		verify(imageService).createImage(referenceId, MARKET, savedUrl);
 	}
 
 	@Test
@@ -72,7 +71,7 @@ class ImageIntegrationServiceTest {
 		doNothing().when(applicationEventPublisher).publishEvent(any(DeleteEvent.class));
 
 		// when
-		imageIntegrationService.deleteImage(referenceId, MARKET, subPath, savedFilename);
+		imageIntegrationService.deleteImage(referenceId, MARKET, subPath);
 
 		// then
 		verify(imageService).deleteImage(referenceId, MARKET);
