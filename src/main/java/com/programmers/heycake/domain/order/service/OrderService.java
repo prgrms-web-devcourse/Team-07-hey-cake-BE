@@ -22,23 +22,6 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 
 	@Transactional
-	public void updateOrderState(Long orderId, OrderStatus orderStatus) {
-		isAuthor(orderId);
-		getOrder(orderId).upDateOrderStatus(orderStatus);
-	}
-
-	private Order getOrder(Long orderId) {
-		return orderRepository.findById(orderId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-	}
-
-	private void isAuthor(Long orderId) {
-		if (getOrder(orderId).isAuthor(getMemberId())) {
-			throw new BusinessException(ErrorCode.FORBIDDEN);
-		}
-	}
-
-	@Transactional
 	public Long create(OrderCreateRequest orderCreateRequest) {
 		CakeInfo cakeInfo = CakeInfo.builder()
 				.cakeCategory(orderCreateRequest.cakeCategory())
@@ -53,5 +36,23 @@ public class OrderService {
 				toEntity(orderCreateRequest, cakeInfo)
 		);
 		return savedOrder.getId();
+	}
+
+	@Transactional(readOnly = true)
+	private Order getOrder(Long orderId) {
+		return orderRepository.findById(orderId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+	}
+
+	@Transactional
+	public void updateOrderState(Long orderId, OrderStatus orderStatus) {
+		isAuthor(orderId);
+		getOrder(orderId).upDateOrderStatus(orderStatus);
+	}
+
+	private void isAuthor(Long orderId) {
+		if (getOrder(orderId).isAuthor(getMemberId())) {
+			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
 	}
 }
