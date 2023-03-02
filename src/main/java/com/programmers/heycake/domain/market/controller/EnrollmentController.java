@@ -7,13 +7,17 @@ import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.market.model.dto.EnrollmentControllerResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentStatusRequest;
+import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 import com.programmers.heycake.domain.market.service.EnrollmentFacade;
 
 import lombok.RequiredArgsConstructor;
@@ -37,5 +41,14 @@ public class EnrollmentController {
 	public ResponseEntity<EnrollmentControllerResponse> getMarketEnrollment(@PathVariable Long enrollmentId) {
 		EnrollmentControllerResponse enrollment = enrollmentFacade.getMarketEnrollment(enrollmentId);
 		return ResponseEntity.ok(enrollment);
+	}
+
+	@PatchMapping("/{enrollmentId}")
+	public ResponseEntity<Void> changeEnrollmentStatus(
+			@PathVariable Long enrollmentId,
+			@Valid @RequestBody EnrollmentStatusRequest request
+	) {
+		enrollmentFacade.changeEnrollmentStatus(enrollmentId, EnrollmentStatus.valueOf(request.status()));
+		return ResponseEntity.noContent().build();
 	}
 }
