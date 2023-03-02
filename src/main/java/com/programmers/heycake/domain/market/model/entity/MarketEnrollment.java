@@ -86,8 +86,7 @@ public class MarketEnrollment extends BaseEntity {
 			MarketAddress marketAddress,
 			LocalTime openTime,
 			LocalTime endTime,
-			String description,
-			EnrollmentStatus enrollmentStatus
+			String description
 	) {
 		this.businessNumber = businessNumber;
 		this.ownerName = ownerName;
@@ -98,7 +97,7 @@ public class MarketEnrollment extends BaseEntity {
 		this.openTime = openTime;
 		this.endTime = endTime;
 		this.description = description;
-		this.enrollmentStatus = enrollmentStatus;
+		this.enrollmentStatus = EnrollmentStatus.WAITING;
 	}
 
 	public void setMember(Member member) {
