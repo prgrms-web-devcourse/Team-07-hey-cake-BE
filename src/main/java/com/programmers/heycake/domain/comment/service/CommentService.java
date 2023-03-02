@@ -1,6 +1,7 @@
 package com.programmers.heycake.domain.comment.service;
 
 import static com.programmers.heycake.common.mapper.CommentMapper.*;
+import static com.programmers.heycake.common.utils.AuthenticationUtil.*;
 
 import java.util.List;
 
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.CommentMapper;
-import com.programmers.heycake.common.utils.AuthenticationUtil;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.comment.repository.CommentRepository;
@@ -31,9 +31,9 @@ public class CommentService {
 	private final MarketRepository marketRepository;
 	private final MemberRepository memberRepository;
 
-	public Long saveComment(String content, Long offerId, Long memberId) {
-		// Long memberId = AuthenticationUtil.getMemberId();
-		// verifyExistMember(memberId);
+	public Long saveComment(String content, Long offerId) {
+		Long memberId = getMemberId();
+		verifyExistMember(memberId);
 
 		Offer offer = getOffer(offerId);
 		Order order = offer.getOrder();
@@ -64,8 +64,8 @@ public class CommentService {
 				.toList();
 	}
 
-	public void deleteComment(Long commentId, Long memberId) {
-		// Long memberId = AuthenticationUtil.getMemberId();
+	public void deleteComment(Long commentId) {
+		Long memberId = getMemberId();
 		verifyExistMember(memberId);
 
 		Comment comment = getComment(commentId);

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
+import com.programmers.heycake.common.utils.AuthenticationUtil;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
 import com.programmers.heycake.domain.market.mapper.EnrollmentMapper;
@@ -38,11 +39,10 @@ public class EnrollmentService {
 
 	@Transactional
 	public Long enrollMarket(EnrollmentRequest request) {
-
+		Long memberId = AuthenticationUtil.getMemberId();
 		MarketEnrollment enrollment = EnrollmentMapper.toEntity(request);
 
-		// todo 인증 완성 시 회원 조회 방식 변경
-		Member member = memberRepository.findById(request.memberId())
+		Member member = memberRepository.findById(memberId)
 				.orElseThrow(() -> {
 					throw new BusinessException(UNAUTHORIZED);
 				});

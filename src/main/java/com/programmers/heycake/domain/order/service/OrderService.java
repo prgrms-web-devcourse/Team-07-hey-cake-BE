@@ -1,6 +1,7 @@
 package com.programmers.heycake.domain.order.service;
 
 import static com.programmers.heycake.common.mapper.OrderMapper.*;
+import static com.programmers.heycake.common.utils.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 
 import java.time.LocalDateTime;
@@ -39,6 +40,7 @@ public class OrderService {
 
 	@Transactional
 	public Long create(OrderCreateRequest orderCreateRequest) {
+		Long memberId = getMemberId();
 		CakeInfo cakeInfo = CakeInfo.builder()
 				.cakeCategory(orderCreateRequest.cakeCategory())
 				.cakeSize(orderCreateRequest.cakeSize())
@@ -48,22 +50,17 @@ public class OrderService {
 				.requirements(orderCreateRequest.requirements())
 				.build();
 
-		// try {
 		Order savedOrder = orderRepository.save(
 				Order.builder()
 						.cakeInfo(cakeInfo)
 						.hopePrice(orderCreateRequest.hopePrice())
-						.memberId(1L) // TODO memberId 넣어주기 getMember()
+						.memberId(memberId)
 						.orderStatus(NEW)
 						.visitDate(orderCreateRequest.visitTime())
 						.title(orderCreateRequest.title())
 						.region(orderCreateRequest.region())
 						.build()
 		);
-		// } catch (Exception e) {
-		// 	System.out.println("##### #######");
-		// 	e.printStackTrace();
-		// }
 		return savedOrder.getId();
 	}
 

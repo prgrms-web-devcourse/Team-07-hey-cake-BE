@@ -44,8 +44,7 @@ public class OfferFacade {
 		Long savedOfferId = offerService.saveOffer(
 				offerSaveRequest.orderId(),
 				offerSaveRequest.expectedPrice(),
-				offerSaveRequest.content(),
-				offerSaveRequest.memberId()
+				offerSaveRequest.content()
 		);
 
 		imageIntegrationService.createAndUploadImage(offerSaveRequest.offerImage(), OFFER_IMAGE_SUB_PATH, savedOfferId,
