@@ -1,0 +1,34 @@
+package com.programmers.heycake.domain.member.controller;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.programmers.heycake.domain.member.model.dto.response.TokenResponse;
+import com.programmers.heycake.domain.member.service.MemberService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RestController
+@RequiredArgsConstructor
+public class MemberController {
+	private final MemberService memberService;
+
+	@GetMapping("/login/oauth2/code/kakao")
+	public ResponseEntity<String> getAuthorizationCode(
+			@RequestParam String code, HttpServletResponse response
+	) {
+		TokenResponse tokenResponse = memberService.loginForKakao(code);
+		Cookie accessToken = new Cookie("access_token", tokenResponse.token());
+		accessToken.setPath("/");
+		accessToken.setHttpOnly(true);
+		response.addCookie(accessToken);
+		return ResponseEntity.ok(tokenResponse.refreshToken());
+	}
+}
