@@ -21,19 +21,28 @@ import lombok.Builder;
 
 @Builder
 public record OrderCreateRequest(
-		@NotNull @Positive Integer hopePrice,
-		@NotBlank String region,
-		@NotBlank @Length(max = 20) String title,
+		@NotNull @Positive
+		Integer hopePrice,
+		@NotBlank
+		String region,
+		@NotBlank @Length(max = 20)
+		String title,
 		@NotNull
 		@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 		LocalDateTime visitTime,
+		@NotNull
 		CakeCategory cakeCategory,
+		@NotNull
 		CakeSize cakeSize,
+		@NotNull
 		CakeHeight cakeHeight,
+		@NotNull
 		BreadFlavor breadFlavor,
+		@NotNull
 		CreamFlavor creamFlavor,
 		@NotBlank
 		String requirements,
+		@NotNull
 		List<MultipartFile> cakeImages
 ) {
 }
