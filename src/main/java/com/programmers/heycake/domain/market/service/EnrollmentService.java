@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.market.mapper.EnrollmentMapper;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentResponse;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
@@ -40,5 +41,14 @@ public class EnrollmentService {
 		MarketEnrollment savedEnrollment = marketEnrollmentRepository.save(enrollment);
 
 		return savedEnrollment.getId();
+	}
+
+	@Transactional(readOnly = true)
+	public EnrollmentResponse getMarketEnrollment(Long enrollmentId) {
+		MarketEnrollment enrollment = marketEnrollmentRepository.findById(enrollmentId)
+				.orElseThrow(() -> {
+					throw new BusinessException(ENTITY_NOT_FOUND);
+				});
+		return EnrollmentMapper.toResponse(enrollment);
 	}
 }

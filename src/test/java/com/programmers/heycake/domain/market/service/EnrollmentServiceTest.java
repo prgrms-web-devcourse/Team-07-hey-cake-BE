@@ -77,7 +77,7 @@ class EnrollmentServiceTest {
 		@DisplayName("Success - 업체 신청에 성공한다 - enrollMarket")
 		void enrollMarketSuccess() {
 			// given
-			Member member = new Member("제롬", "google@gmail.com", USER, "1010");
+			Member member = new Member("google@gmail.com", USER, "1010");
 			when(memberRepository.findById(anyLong())).thenReturn(Optional.of(member));
 			when(marketEnrollmentRepository.save(any(MarketEnrollment.class))).thenReturn(savedEnrollment);
 			when(savedEnrollment.getId()).thenReturn(anyLong());
@@ -107,7 +107,7 @@ class EnrollmentServiceTest {
 		@DisplayName("Fail - 이미 업체인 회원에 대한 업체 신청은 실패한다")
 		void enrollMarketFailByAlreadyMarket() {
 			// given
-			Member member = new Member("제롬", "google@gmail.com", MARKET, "1010");
+			Member member = new Member("google@gmail.com", MARKET, "1010");
 			when(memberRepository.findById(anyLong())).thenReturn(Optional.of(member));
 
 			// when & then
