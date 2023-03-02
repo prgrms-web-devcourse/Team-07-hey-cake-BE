@@ -3,7 +3,8 @@ package com.programmers.heycake.domain.image.service;
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Optional;
+import java.util.Collections;
+import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -52,18 +53,21 @@ class ImageServiceTest {
 		void deleteImageSuccess() {
 			// given
 			Long referenceId = 1L;
-			String savedUrl = "savedUrl";
-			Image image = new Image(referenceId, MARKET, savedUrl);
-			when(imageRepository.findByReferenceIdAndImageType(referenceId, MARKET))
-					.thenReturn(Optional.of(image));
-			doNothing().when(imageRepository).delete(image);
+			String savedUrl1 = "savedUrl1";
+			String savedUrl2 = "savedUrl2";
+			Image image1 = new Image(referenceId, ORDER, savedUrl1);
+			Image image2 = new Image(referenceId, ORDER, savedUrl2);
+			List<Image> images = List.of(image1, image2);
+			when(imageRepository.findAllByReferenceIdAndImageType(referenceId, ORDER))
+					.thenReturn(images);
+			doNothing().when(imageRepository).delete(any(Image.class));
 
 			// when
-			imageService.deleteImage(referenceId, MARKET);
+			imageService.deleteImage(referenceId, ORDER);
 
 			// then
-			verify(imageRepository).findByReferenceIdAndImageType(referenceId, MARKET);
-			verify(imageRepository).delete(image);
+			verify(imageRepository).findAllByReferenceIdAndImageType(referenceId, ORDER);
+			verify(imageRepository).delete(any(Image.class));
 		}
 
 		@Test
@@ -71,11 +75,11 @@ class ImageServiceTest {
 		void deleteImageFailByNotFound() {
 			// given
 			Long referenceId = 1L;
-			when(imageRepository.findByReferenceIdAndImageType(referenceId, MARKET))
-					.thenReturn(Optional.empty());
+			when(imageRepository.findAllByReferenceIdAndImageType(referenceId, ORDER))
+					.thenReturn(Collections.emptyList());
 
 			// when & then
-			Assertions.assertThatThrownBy(() -> imageService.deleteImage(referenceId, MARKET))
+			Assertions.assertThatThrownBy(() -> imageService.deleteImage(referenceId, ORDER))
 					.isExactlyInstanceOf(BusinessException.class)
 					.hasFieldOrPropertyWithValue("errorCode", ErrorCode.ENTITY_NOT_FOUND);
 		}
