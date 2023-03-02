@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum MemberAuthority {
 	USER("ROLE_USER"),
-	STORE("ROLE_STORE"),
+	MARKET("ROLE_MARKET"),
 	ADMIN("ROLE_ADMIN");
 
 	private final String role;
