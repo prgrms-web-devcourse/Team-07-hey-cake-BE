@@ -10,7 +10,7 @@ import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EnrollmentMapper {
 
 	public static MarketEnrollment toEntity(EnrollmentRequest request) {
