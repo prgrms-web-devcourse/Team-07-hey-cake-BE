@@ -10,10 +10,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.market.model.dto.EnrollmentControllerResponse;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
+import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 import com.programmers.heycake.domain.market.service.EnrollmentFacade;
 
 import lombok.RequiredArgsConstructor;
@@ -37,5 +41,20 @@ public class EnrollmentController {
 	public ResponseEntity<EnrollmentControllerResponse> getMarketEnrollment(@PathVariable Long enrollmentId) {
 		EnrollmentControllerResponse enrollment = enrollmentFacade.getMarketEnrollment(enrollmentId);
 		return ResponseEntity.ok(enrollment);
+	}
+
+	@GetMapping
+	public ResponseEntity<EnrollmentListResponse> getMarketEnrollments(
+			@RequestParam(required = false) Long cursor,
+			@RequestParam Integer pageSize,
+			@RequestParam(required = false) EnrollmentStatus status
+	) {
+		EnrollmentListRequest request = new EnrollmentListRequest(
+				cursor,
+				pageSize,
+				status
+		);
+		EnrollmentListResponse marketEnrollments = enrollmentFacade.getMarketEnrollments(request);
+		return ResponseEntity.ok(marketEnrollments);
 	}
 }

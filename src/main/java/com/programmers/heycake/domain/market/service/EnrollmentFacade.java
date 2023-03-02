@@ -9,6 +9,8 @@ import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.market.mapper.EnrollmentMapper;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentControllerResponse;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListRequest;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentResponse;
 
@@ -49,5 +51,10 @@ public class EnrollmentFacade {
 		EnrollmentResponse enrollment = enrollmentService.getMarketEnrollment(enrollmentId);
 		ImageResponses images = imageIntegrationService.getImages(enrollmentId, ENROLLMENT_MARKET);
 		return EnrollmentMapper.toControllerResponse(enrollment, images);
+	}
+
+	@Transactional(readOnly = true)
+	public EnrollmentListResponse getMarketEnrollments(EnrollmentListRequest request) {
+		return enrollmentService.getMarketEnrollments(request);
 	}
 }
