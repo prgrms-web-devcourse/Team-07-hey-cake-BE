@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EnrollmentFacade {
 
-	private static final String ENROLLMENT_IMAGE_PATH = "image/marketEnrollment";
+	private static final String ENROLLMENT_IMAGE_PATH = "images/marketEnrollments";
 
 	private final EnrollmentService enrollmentService;
 	private final ImageIntegrationService imageIntegrationService;
