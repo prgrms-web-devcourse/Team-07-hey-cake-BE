@@ -52,7 +52,7 @@ import io.findify.s3mock.S3Mock;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-class MarketEnrollmentControllerTest {
+class EnrollmentControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -72,7 +72,7 @@ class MarketEnrollmentControllerTest {
 
 	@BeforeEach
 	void setUp() {
-		Member user = new Member("Jerome", "google@gmail.com", USER, "1010");
+		Member user = new Member("google@gmail.com", USER, "1010");
 		Member savedUser = memberRepository.save(user);
 
 		businessLicenseImg = new MockMultipartFile(
