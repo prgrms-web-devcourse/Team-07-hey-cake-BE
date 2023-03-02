@@ -11,6 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.stereotype.Service;
@@ -161,6 +162,37 @@ public class MemberService {
 				.getString("profile_image_url");
 
 		return new MemberInfo(email, birthday, profileUrl);
+	}
+
+	@Transactional
+	public TokenResponse reissueToken(String refreshToken) {
+		Optional<Token> optionalToken = tokenRepository.findTokenByRefreshToken(refreshToken);
+		if (optionalToken.isEmpty()) {
+			throw new AccessDeniedException("token 발급 제한");
+		}
+		Long memberId;
+		String[] roles;
+
+		try {
+			Jwt.Claims claims = jwt.verify(optionalToken.get().getRefreshToken());
+			memberId = claims.getMemberId();
+			roles = claims.getRoles();
+		} catch (Exception e) {
+			log.warn("Jwt 처리중 문제가 발생하였습니다 : {}", e.getMessage());
+			throw e;
+		} finally {
+			tokenRepository.delete(optionalToken.get());
+			tokenRepository.flush();
+		}
+
+		TokenResponse tokenResponse = jwt.generateAllToken(
+				Jwt.Claims
+						.from(memberId, roles)
+		);
+		Token token = new Token(memberId, tokenResponse.refreshToken());
+		tokenRepository.save(token);
+
+		return tokenResponse;
 	}
 
 	@Transactional(readOnly = true)
