@@ -1,5 +1,8 @@
 package com.programmers.heycake.domain.market.mapper;
 
+import static com.programmers.heycake.common.exception.ErrorCode.*;
+
+import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.market.model.dto.MarketControllerResponse;
 import com.programmers.heycake.domain.market.model.dto.MarketResponse;
@@ -30,7 +33,12 @@ public class MarketMapper {
 				.marketName(market.marketName())
 				.businessNumber(market.businessNumber())
 				.ownerName(market.ownerName())
-				.marketImage(images.images().get(0).imageUrls())
+				.marketImage(
+						images.images().stream()
+								.findFirst()
+								.orElseThrow(() -> {
+									throw new BusinessException(ENTITY_NOT_FOUND);
+								}).imageUrls())
 				.build();
 	}
 }
