@@ -34,4 +34,15 @@ public class OrderMapper {
 				.build();
 	}
 
+	public static Order toEntity(OrderCreateRequest orderCreateRequest, CakeInfo cakeInfo) {
+		return Order.builder()
+				.cakeInfo(cakeInfo)
+				.hopePrice(orderCreateRequest.hopePrice())
+				.memberId(getMemberId())
+				.orderStatus(NEW)
+				.visitDate(orderCreateRequest.visitTime())
+				.title(orderCreateRequest.title())
+				.region(orderCreateRequest.region())
+				.build();
+	}
 }
