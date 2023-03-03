@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentControllerResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentStatusRequest;
-import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 import com.programmers.heycake.domain.market.service.EnrollmentFacade;
 
 import lombok.RequiredArgsConstructor;
@@ -48,7 +47,7 @@ public class EnrollmentController {
 			@PathVariable Long enrollmentId,
 			@Valid @RequestBody EnrollmentStatusRequest request
 	) {
-		enrollmentFacade.changeEnrollmentStatus(enrollmentId, EnrollmentStatus.valueOf(request.status()));
+		enrollmentFacade.changeEnrollmentStatus(enrollmentId, request.status());
 		return ResponseEntity.noContent().build();
 	}
 }

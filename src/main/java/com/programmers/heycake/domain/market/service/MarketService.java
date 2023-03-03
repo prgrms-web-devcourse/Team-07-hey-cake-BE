@@ -51,6 +51,14 @@ public class MarketService {
 		return MarketMapper.toResponse(market);
 	}
 
+	@Transactional(readOnly = true)
+	public Long getMarketIdByMember(Member member) {
+		return marketRepository.findByMember(member)
+				.orElseThrow(
+						() -> new BusinessException(ENTITY_NOT_FOUND)
+				).getId();
+	}
+
 	private MarketEnrollment getMarketEnrollment(Long enrollmentId) {
 		MarketEnrollment enrollment = marketEnrollmentRepository.findById(enrollmentId)
 				.orElseThrow(() -> {

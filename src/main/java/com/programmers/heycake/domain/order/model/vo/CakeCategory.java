@@ -5,5 +5,6 @@ public enum CakeCategory {
 	LETTERING,
 	CHARACTER_IMAGE,
 	CHARACTER_MODEL,
-	VINTAGE
+	VINTAGE,
+	ETC
 }

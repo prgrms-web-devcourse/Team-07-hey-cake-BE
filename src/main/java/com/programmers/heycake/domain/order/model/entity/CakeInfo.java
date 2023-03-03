@@ -41,7 +41,7 @@ public class CakeInfo {
 	@Enumerated(EnumType.STRING)
 	private CreamFlavor creamFlavor;
 
-	@Column(name = "requirements", length = 500, nullable = true)
+	@Column(name = "requirements", length = 500, nullable = false)
 	private String requirements;
 
 	@Builder

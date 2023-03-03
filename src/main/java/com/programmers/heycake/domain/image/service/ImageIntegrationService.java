@@ -35,7 +35,7 @@ public class ImageIntegrationService {
 	}
 
 	@Transactional
-	public void deleteImage(Long referenceId, ImageType imageType, String subPath) {
+	public void deleteImages(Long referenceId, ImageType imageType, String subPath) {
 		List<String> imageUrls = imageService.deleteImage(referenceId, imageType);
 		imageUrls
 				.forEach(imageUrl -> {
