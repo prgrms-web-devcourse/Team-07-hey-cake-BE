@@ -1,5 +1,7 @@
 package com.programmers.heycake.domain.offer.service;
 
+import static com.programmers.heycake.common.mapper.OfferMapper.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,6 +15,7 @@ import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
+import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
@@ -55,6 +58,11 @@ public class OfferService {
 			throw new BusinessException(ErrorCode.DELETE_ERROR);
 		}
 		offerRepository.deleteById(offerId);
+	}
+
+	@Transactional(readOnly = true)
+	public OfferDto getOfferById(Long offerId) {
+		return toOfferDto(getOffer(offerId));
 	}
 
 	private Offer getOffer(Long offerId) {
