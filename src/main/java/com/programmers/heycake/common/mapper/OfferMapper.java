@@ -10,7 +10,7 @@ import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.market.model.dto.MarketResponse;
+import com.programmers.heycake.domain.market.model.dto.response.MarketDetailNoImageResponse;
 import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
@@ -43,7 +43,7 @@ public class OfferMapper {
 	}
 
 	public static OfferSummaryResponse toOfferSummaryResponse(OfferResponse offerResponse, ImageResponses imageResponses,
-			MarketResponse marketResponse) {
+			MarketDetailNoImageResponse marketResponse) {
 
 		String imageUrl = imageResponses.images()
 				.stream()

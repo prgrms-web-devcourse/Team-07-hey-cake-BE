@@ -19,7 +19,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
+import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
@@ -52,7 +52,7 @@ class EnrollmentServiceTest {
 			".jpg",
 			"market".getBytes()
 	);
-	private EnrollmentRequest request = EnrollmentRequest.builder()
+	private EnrollmentCreateRequest request = EnrollmentCreateRequest.builder()
 			.memberId(1L)
 			.businessNumber("1234567890")
 			.ownerName("권성준")
