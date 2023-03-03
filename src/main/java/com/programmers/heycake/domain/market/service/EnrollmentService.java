@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
+import com.programmers.heycake.common.mapper.EnrollmentMapper;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
-import com.programmers.heycake.domain.market.mapper.EnrollmentMapper;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentGetListRequest;
 import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailNoImageResponse;

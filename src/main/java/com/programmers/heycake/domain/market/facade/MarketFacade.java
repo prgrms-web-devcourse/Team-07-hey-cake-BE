@@ -3,10 +3,10 @@ package com.programmers.heycake.domain.market.facade;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.common.mapper.MarketMapper;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageService;
-import com.programmers.heycake.domain.market.mapper.MarketMapper;
 import com.programmers.heycake.domain.market.model.dto.response.MarketDetailNoImageResponse;
 import com.programmers.heycake.domain.market.model.dto.response.MarketDetailWithImageResponse;
 import com.programmers.heycake.domain.market.service.MarketService;

@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.market.mapper;
+package com.programmers.heycake.common.mapper;
 
 import static com.programmers.heycake.common.exception.ErrorCode.*;
 
