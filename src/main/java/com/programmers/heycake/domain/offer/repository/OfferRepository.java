@@ -1,7 +1,6 @@
 package com.programmers.heycake.domain.offer.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,7 +14,4 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
 
 	@Query("SELECT DISTINCT o FROM Offer o LEFT JOIN FETCH o.comments WHERE o.order = :order")
 	List<Offer> findAllByOrderFetchComments(@Param(value = "order") Order order);
-
-	@Query(value = "SELECT o FROM Offer o JOIN fetch o.order WHERE o.id = :offerId ")
-	Optional<Offer> findByIdWithFetchJoin(Long offerId);
 }

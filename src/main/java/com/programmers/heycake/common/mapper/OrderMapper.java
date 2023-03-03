@@ -1,6 +1,11 @@
 package com.programmers.heycake.common.mapper;
 
+import static com.programmers.heycake.common.util.AuthenticationUtil.*;
+import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
+
 import com.programmers.heycake.domain.order.model.dto.OrderDto;
+import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
+import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 
 import lombok.AccessLevel;
