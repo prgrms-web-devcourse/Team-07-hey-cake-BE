@@ -28,25 +28,27 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MemberController {
 	private final MemberService memberService;
+	private static final String LOGIN_DONE_REDIRECT_URL = "http://localhost:3000/main";
 
-	@PostMapping("/login/oauth2/code/kakao")
-	public ResponseEntity<String> getAuthorizationCode(
-			@RequestBody AuthorizationCodeRequest authorizationCodeRequest, HttpServletResponse response
-	) {
+	@GetMapping("/login")
+	public void getAuthorizationCode(
+			@RequestParam String code, HttpServletResponse response
+	) throws IOException {
 		log.info("authorization code start");
-		log.info("authorizationCodeRequest : {}", authorizationCodeRequest);
+		log.info("code : {}", code);
 
-		TokenResponse tokenResponse = memberService.loginForKakao(authorizationCodeRequest.code());
+		TokenResponse tokenResponse = memberService.loginForKakao(code);
+
 		Cookie accessToken = new Cookie("access_token", tokenResponse.token());
+
 		accessToken.setPath("/");
 		accessToken.setHttpOnly(true);
 		response.addCookie(accessToken);
-
-		log.info("get authorization code done", authorizationCodeRequest);
-		return ResponseEntity.ok(tokenResponse.refreshToken());
+		response.sendRedirect(LOGIN_DONE_REDIRECT_URL);
+		log.info("login done");
 	}
 
-	@PostMapping("/members/refresh")
+	@PostMapping("/api/v1/members/refresh")
 	public ResponseEntity<String> refreshToken(
 			@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest,
 			HttpServletResponse response

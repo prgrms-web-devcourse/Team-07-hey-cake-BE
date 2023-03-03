@@ -76,7 +76,7 @@ public class MemberService {
 		Optional<Token> optionalToken = tokenRepository.findByMemberId(member.getId());
 
 		if (optionalToken.isPresent()) {
-			throw new RuntimeException("뭐시요? 왜 로그인 다시하는거요?");
+			throw new RuntimeException("이미 로그인 되었습니다.");
 		}
 
 		tokenRepository.save(
@@ -89,6 +89,7 @@ public class MemberService {
 	}
 
 	private String getAccessToken(String authorizedCode) {
+		log.info("get access token start");
 		HttpHeaders headers = getAccessTokenRequestHeader();
 
 		ClientRegistration kakaoRegistration = inMemoryClientRegistrationRepository.findByRegistrationId("kakao");
@@ -105,8 +106,10 @@ public class MemberService {
 		);
 
 		JSONObject responseBody = new JSONObject(response.getBody());
+		log.info("get access token end");
 
 		return responseBody.getString("access_token");
+
 	}
 
 	private HttpHeaders getAccessTokenRequestHeader() {
@@ -128,6 +131,7 @@ public class MemberService {
 	}
 
 	private MemberInfo getMemberInfo(String accessToken) {
+		log.info("getMemberInfo start");
 		HttpHeaders headers = getMemberInfoRequestHeader(accessToken);
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
