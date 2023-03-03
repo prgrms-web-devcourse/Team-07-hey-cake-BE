@@ -13,6 +13,7 @@ import com.programmers.heycake.domain.market.model.dto.EnrollmentListRequest;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentListResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentResponse;
+import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +25,7 @@ public class EnrollmentFacade {
 
 	private final EnrollmentService enrollmentService;
 	private final ImageIntegrationService imageIntegrationService;
+	private final MarketService marketService;
 
 	@Transactional
 	public Long enrollMarket(EnrollmentRequest request) {
@@ -51,6 +53,15 @@ public class EnrollmentFacade {
 		EnrollmentResponse enrollment = enrollmentService.getMarketEnrollment(enrollmentId);
 		ImageResponses images = imageIntegrationService.getImages(enrollmentId, ENROLLMENT_MARKET);
 		return EnrollmentMapper.toControllerResponse(enrollment, images);
+	}
+
+	@Transactional
+	public void changeEnrollmentStatus(Long enrollmentId, EnrollmentStatus status) {
+		enrollmentService.changeEnrollmentStatus(enrollmentId, status);
+
+		if (status == EnrollmentStatus.APPROVED) {
+			marketService.enrollMarket(enrollmentId);
+		}
 	}
 
 	@Transactional(readOnly = true)
