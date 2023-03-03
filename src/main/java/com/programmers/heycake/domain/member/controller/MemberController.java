@@ -30,11 +30,16 @@ public class MemberController {
 	public ResponseEntity<String> getAuthorizationCode(
 			@RequestBody AuthorizationCodeRequest authorizationCodeRequest, HttpServletResponse response
 	) {
+		log.info("authorization code start");
+		log.info("authorizationCodeRequest : {}", authorizationCodeRequest);
+
 		TokenResponse tokenResponse = memberService.loginForKakao(authorizationCodeRequest.code());
 		Cookie accessToken = new Cookie("access_token", tokenResponse.token());
 		accessToken.setPath("/");
 		accessToken.setHttpOnly(true);
 		response.addCookie(accessToken);
+
+		log.info("get authorization code done", authorizationCodeRequest);
 		return ResponseEntity.ok(tokenResponse.refreshToken());
 	}
 
