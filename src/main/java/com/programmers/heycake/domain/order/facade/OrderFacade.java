@@ -20,7 +20,7 @@ public class OrderFacade {
 	private final OrderService orderService;
 	private final ImageService imageService;
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public OrderGetDetailResponse getOrder(Long orderId) {
 		OrderGetDetailServiceResponse orderGetDetailServiceResponse = orderService.getOrder(orderId);
 		ImageResponses imageResponses = imageService.getImages(orderGetDetailServiceResponse.orderId(), ORDER);
