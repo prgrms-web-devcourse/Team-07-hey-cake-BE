@@ -90,7 +90,7 @@ public class OrderMapper {
 				.images(imageResponses.images()
 						.stream()
 						.map(ImageResponse::imageUrl)
-						.collect(Collectors.toList())
+						.toList()
 				)
 				.offerCount(orderGetDetailServiceResponse.offerCount())
 				.createdAt(orderGetDetailServiceResponse.createdAt())
