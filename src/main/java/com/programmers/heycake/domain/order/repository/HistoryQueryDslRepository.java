@@ -29,7 +29,7 @@ public class HistoryQueryDslRepository {
 				.selectFrom(qOrderHistory)
 				.where(
 						gtOrderTime(cursorTime),
-						orderStatus(option),
+						eqOrderStatus(option),
 						qOrderHistory.marketId.eq(memberId)
 				).orderBy(qOrderHistory.order.visitDate.asc())
 				.limit(pageSize)
@@ -41,7 +41,7 @@ public class HistoryQueryDslRepository {
 		return cursorTime == null ? null : qOrderHistory.order.visitDate.gt(cursorTime);
 	}
 
-	private BooleanExpression orderStatus(String option) {
+	private BooleanExpression eqOrderStatus(String option) {
 		return option == null ? null : qOrderHistory.order.orderStatus.eq(OrderStatus.valueOf(option));
 	}
 }

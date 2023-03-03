@@ -40,7 +40,7 @@ public class HistoryService {
 		);
 
 		LocalDateTime lastTime =
-				orderHistories.size() == 0 ? LocalDateTime.MAX :
+				orderHistories.isEmpty() ? LocalDateTime.MAX :
 						orderHistories.get(orderHistories.size() - 1).getOrder().getVisitDate();
 
 		return toGetOrderResponseListForMarket(orderHistories, lastTime);

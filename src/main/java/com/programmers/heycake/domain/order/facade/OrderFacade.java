@@ -55,7 +55,7 @@ public class OrderFacade {
 		return toOrderGetDetailResponse(orderGetDetailServiceResponse, imageResponses);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest) {
 		Long memberId = getMemberId();
 		if (memberService.isMarketById(memberId)) {
