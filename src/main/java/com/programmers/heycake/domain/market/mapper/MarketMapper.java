@@ -7,6 +7,7 @@ import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.market.model.dto.MarketControllerResponse;
 import com.programmers.heycake.domain.market.model.dto.MarketResponse;
 import com.programmers.heycake.domain.market.model.entity.Market;
+import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -43,6 +44,16 @@ public class MarketMapper {
 								.orElseThrow(() -> {
 									throw new BusinessException(ENTITY_NOT_FOUND);
 								}).imageUrl())
+				.build();
+	}
+
+	public static Market toEntity(MarketEnrollment enrollment) {
+		return Market.builder()
+				.phoneNumber(enrollment.getPhoneNumber())
+				.marketAddress(enrollment.getMarketAddress())
+				.openTime(enrollment.getOpenTime())
+				.endTime(enrollment.getEndTime())
+				.description(enrollment.getDescription())
 				.build();
 	}
 }

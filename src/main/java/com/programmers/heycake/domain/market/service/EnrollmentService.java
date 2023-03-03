@@ -10,6 +10,7 @@ import com.programmers.heycake.domain.market.mapper.EnrollmentMapper;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentResponse;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
+import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
@@ -50,5 +51,19 @@ public class EnrollmentService {
 					throw new BusinessException(ENTITY_NOT_FOUND);
 				});
 		return EnrollmentMapper.toResponse(enrollment);
+	}
+
+	@Transactional
+	public void changeEnrollmentStatus(Long enrollmentId, EnrollmentStatus status) {
+		MarketEnrollment enrollment = marketEnrollmentRepository.findByIdFetchWithMember(enrollmentId)
+				.orElseThrow(() -> {
+					throw new BusinessException(ENTITY_NOT_FOUND);
+				});
+
+		if (enrollment.isSameStatus(status)) {
+			throw new BusinessException(DUPLICATED);
+		}
+
+		enrollment.updateEnrollmentStatus(status);
 	}
 }
