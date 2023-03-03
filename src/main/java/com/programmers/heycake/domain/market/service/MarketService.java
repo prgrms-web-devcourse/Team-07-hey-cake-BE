@@ -35,13 +35,7 @@ public class MarketService {
 		}
 		member.changeAuthority(MARKET);
 
-		Market market = Market.builder()
-				.phoneNumber(enrollment.getPhoneNumber())
-				.marketAddress(enrollment.getMarketAddress())
-				.openTime(enrollment.getOpenTime())
-				.endTime(enrollment.getEndTime())
-				.description(enrollment.getDescription())
-				.build();
+		Market market = MarketMapper.toEntity(enrollment);
 		market.setMarketEnrollment(enrollment);
 		market.setMember(member);
 		Market savedMarket = marketRepository.save(market);
