@@ -57,12 +57,12 @@ public class EnrollmentController {
 
 	@GetMapping
 	public ResponseEntity<EnrollmentListResponse> getMarketEnrollments(
-			@RequestParam(required = false) Long cursor,
+			@RequestParam(required = false) Long cursorId,
 			@RequestParam Integer pageSize,
 			@RequestParam(required = false) EnrollmentStatus status
 	) {
 		EnrollmentListRequest request = new EnrollmentListRequest(
-				cursor,
+				cursorId,
 				pageSize,
 				status
 		);
