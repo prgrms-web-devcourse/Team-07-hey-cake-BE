@@ -114,15 +114,16 @@ public class OrderMapper {
 		List<MyOrderResponse> getOrderResponseList =
 				orderList
 						.stream()
-						.map(order -> new MyOrderResponse(
-								order.getId(),
-								order.getTitle(),
-								order.getOrderStatus(),
-								order.getRegion(),
-								order.getVisitDate(),
-								order.getCreatedAt(),
-								null
-						)).toList();
+						.map(order -> MyOrderResponse.builder()
+								.id(order.getId())
+								.title(order.getTitle())
+								.orderStatus(order.getOrderStatus())
+								.region(order.getRegion())
+								.visitTime(order.getVisitDate())
+								.createdAt(order.getCreatedAt())
+								.imageUrl(null)
+								.build()
+						).toList();
 		return new MyOrderResponseList(getOrderResponseList, lastTime);
 	}
 
