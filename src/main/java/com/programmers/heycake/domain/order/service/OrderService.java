@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
+import com.programmers.heycake.common.mapper.OrderMapper;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
@@ -20,23 +22,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderService {
 	private final OrderRepository orderRepository;
-
-	@Transactional
-	public void updateOrderState(Long orderId, OrderStatus orderStatus) {
-		isAuthor(orderId);
-		getOrder(orderId).upDateOrderStatus(orderStatus);
-	}
-
-	private Order getOrder(Long orderId) {
-		return orderRepository.findById(orderId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-	}
-
-	private void isAuthor(Long orderId) {
-		if (getOrder(orderId).isAuthor(getMemberId())) {
-			throw new BusinessException(ErrorCode.FORBIDDEN);
-		}
-	}
 
 	@Transactional
 	public Long create(OrderCreateRequest orderCreateRequest) {
@@ -53,5 +38,27 @@ public class OrderService {
 				toEntity(orderCreateRequest, cakeInfo)
 		);
 		return savedOrder.getId();
+	}
+
+	@Transactional(readOnly = true)
+	public OrderGetDetailServiceResponse getOrderDetail(Long orderId) {
+		return OrderMapper.toOrderGetDetailServiceResponse(getOrder(orderId));
+	}
+
+	@Transactional
+	public void updateOrderState(Long orderId, OrderStatus orderStatus) {
+		isAuthor(orderId);
+		getOrder(orderId).upDateOrderStatus(orderStatus);
+	}
+
+	public Order getOrder(Long orderId) {
+		return orderRepository.findById(orderId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+	}
+
+	private void isAuthor(Long orderId) {
+		if (getOrder(orderId).isAuthor(getMemberId())) {
+			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
 	}
 }
