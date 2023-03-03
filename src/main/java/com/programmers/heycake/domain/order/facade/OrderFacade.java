@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.mapper.OrderMapper;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
+import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.member.service.MemberService;
