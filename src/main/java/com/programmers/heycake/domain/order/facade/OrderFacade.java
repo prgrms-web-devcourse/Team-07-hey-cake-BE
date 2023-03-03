@@ -10,8 +10,8 @@ import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.member.model.dto.response.OrderGetDetailResponse;
-import com.programmers.heycake.domain.order.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class OrderFacade {
 
 	@Transactional
 	public OrderGetDetailResponse getOrder(Long orderId) {
-		OrderGetDetailServiceResponse orderGetDetailServiceResponse = orderService.getOrder(orderId);
+		OrderGetDetailServiceResponse orderGetDetailServiceResponse = orderService.getOrderDetail(orderId);
 		ImageResponses imageResponses = imageService.getImages(orderGetDetailServiceResponse.orderId(), ORDER);
 		return toOrderGetDetailResponse(orderGetDetailServiceResponse, imageResponses);
 	}

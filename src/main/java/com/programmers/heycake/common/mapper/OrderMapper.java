@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.member.model.dto.response.OrderGetDetailResponse;
-import com.programmers.heycake.domain.order.dto.request.OrderCreateRequest;
-import com.programmers.heycake.domain.order.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.dto.OrderDto;
+import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 
@@ -41,6 +41,7 @@ public class OrderMapper {
 				.visitDate(orderCreateRequest.visitTime())
 				.title(orderCreateRequest.title())
 				.region(orderCreateRequest.region())
+				.build();
 	}
 
 	public static OrderDto toOrderDto(Order order) {

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
@@ -39,15 +40,19 @@ public class OrderService {
 	}
 
 	@Transactional(readOnly = true)
-	private Order getOrder(Long orderId) {
-		return orderRepository.findById(orderId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+	public OrderGetDetailServiceResponse getOrderDetail(Long orderId) {
+		return toOrderGetServiceDetailResponse(getOrder(orderId));
 	}
 
 	@Transactional
 	public void updateOrderState(Long orderId, OrderStatus orderStatus) {
 		isAuthor(orderId);
 		getOrder(orderId).upDateOrderStatus(orderStatus);
+	}
+
+	public Order getOrder(Long orderId) {
+		return orderRepository.findById(orderId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
 	private void isAuthor(Long orderId) {

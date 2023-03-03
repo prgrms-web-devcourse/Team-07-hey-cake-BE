@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.order.dto.response;
+package com.programmers.heycake.domain.order.model.dto.response;
 
 import java.time.LocalDateTime;
 
