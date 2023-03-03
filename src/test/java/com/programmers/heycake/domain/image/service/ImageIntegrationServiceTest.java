@@ -71,7 +71,7 @@ class ImageIntegrationServiceTest {
 		doNothing().when(applicationEventPublisher).publishEvent(any(DeleteEvent.class));
 
 		// when
-		imageIntegrationService.deleteImage(referenceId, MARKET, subPath);
+		imageIntegrationService.deleteImages(referenceId, MARKET, subPath);
 
 		// then
 		verify(imageService).deleteImage(referenceId, MARKET);
