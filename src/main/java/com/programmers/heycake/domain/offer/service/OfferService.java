@@ -48,16 +48,16 @@ public class OfferService {
 
 	@Transactional
 	public void deleteOffer(Long offerId, Long marketId) {
-		if (!(getEntity(offerId).isAuthor(marketId))) {
+		if (!(getOffer(offerId).isAuthor(marketId))) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
-		if (getEntity(offerId).getOrder().isClosed()) {
+		if (getOffer(offerId).getOrder().isClosed()) {
 			throw new BusinessException(ErrorCode.DELETE_ERROR);
 		}
 		offerRepository.deleteById(offerId);
 	}
 
-	private Offer getEntity(Long offerId) {
+	private Offer getOffer(Long offerId) {
 		return offerRepository
 				.findById(offerId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
