@@ -14,9 +14,9 @@ import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OrderMapper;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
@@ -34,6 +34,7 @@ public class OrderService {
 	@Transactional
 	public void updateOrderState(Long orderId, OrderStatus orderStatus) {
 		isAuthor(orderId);
+		isNew(orderId);
 		getOrder(orderId).upDateOrderStatus(orderStatus);
 	}
 
@@ -83,6 +84,12 @@ public class OrderService {
 	private void isAuthor(Long orderId) {
 		if (getOrder(orderId).isAuthor(getMemberId())) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
+	}
+
+	private void isNew(Long orderId) {
+		if (getOrder(orderId).isClosed()) {
+			throw new BusinessException(ErrorCode.DUPLICATED);
 		}
 	}
 }
