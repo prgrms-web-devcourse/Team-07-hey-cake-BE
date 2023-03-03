@@ -4,8 +4,6 @@ import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
 
 import java.util.Optional;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +18,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.programmers.heycake.common.exception.BusinessException;
+import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.jwt.Jwt;
 import com.programmers.heycake.domain.member.model.dto.MemberInfo;
 import com.programmers.heycake.domain.member.model.dto.response.TokenResponse;
@@ -198,7 +198,9 @@ public class MemberService {
 	public Member getMemberById(Long memberId) {
 		return memberRepository
 				.findById(memberId)
-				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 memberId : " + memberId));
+				.orElseThrow(
+						() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND)
+				);
 	}
 }
 
