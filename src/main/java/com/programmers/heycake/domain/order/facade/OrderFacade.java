@@ -40,7 +40,7 @@ public class OrderFacade {
 		return orderId;
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public OrderGetDetailResponse getOrder(Long orderId) {
 		OrderGetDetailServiceResponse orderGetDetailServiceResponse = orderService.getOrderDetail(orderId);
 		ImageResponses imageResponses = imageService.getImages(orderGetDetailServiceResponse.orderId(), ORDER);

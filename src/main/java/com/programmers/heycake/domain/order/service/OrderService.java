@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
+import com.programmers.heycake.common.mapper.OrderMapper;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
@@ -41,7 +42,7 @@ public class OrderService {
 
 	@Transactional(readOnly = true)
 	public OrderGetDetailServiceResponse getOrderDetail(Long orderId) {
-		return toOrderGetServiceDetailResponse(getOrder(orderId));
+		return OrderMapper.toOrderGetDetailServiceResponse(getOrder(orderId));
 	}
 
 	@Transactional
