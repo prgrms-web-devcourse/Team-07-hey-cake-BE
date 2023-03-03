@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentMapper {
 
+	public static Comment toEntity(Long memberId, String content) {
+		return new Comment(memberId, content);
+	}
+	
 	public static CommentResponse toCommentResponse(Comment comment) {
 		return new CommentResponse(comment.getId(), comment.getMemberId(), comment.getContent());
 	}

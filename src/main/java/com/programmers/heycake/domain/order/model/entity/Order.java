@@ -3,6 +3,7 @@ package com.programmers.heycake.domain.order.model.entity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -77,12 +78,16 @@ public class Order extends BaseEntity {
 		this.visitDate = visitDate;
 		this.cakeInfo = cakeInfo;
 	}
-	
+
 	public boolean isPassedVisitDate(LocalDateTime targetDate) {
 		return this.visitDate.isBefore(targetDate);
 	}
 
 	public boolean isClosed() {
 		return this.orderStatus != OrderStatus.NEW;
+	}
+
+	public boolean isNotWriter(Long targetMemberId) {
+		return !Objects.equals(this.memberId, targetMemberId);
 	}
 }
