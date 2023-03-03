@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.programmers.heycake.domain.market.model.dto.MarketControllerResponse;
-import com.programmers.heycake.domain.market.service.MarketFacade;
+import com.programmers.heycake.domain.market.facade.MarketFacade;
+import com.programmers.heycake.domain.market.model.dto.response.MarketDetailWithImageResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,8 +23,8 @@ public class MarketController {
 	private final MarketFacade marketFacade;
 
 	@GetMapping("/{marketId}")
-	public ResponseEntity<MarketControllerResponse> getMarket(@PathVariable @Positive Long marketId) {
-		MarketControllerResponse market = marketFacade.getMarket(marketId);
+	public ResponseEntity<MarketDetailWithImageResponse> getMarket(@PathVariable @Positive Long marketId) {
+		MarketDetailWithImageResponse market = marketFacade.getMarket(marketId);
 		return ResponseEntity.ok(market);
 	}
 }

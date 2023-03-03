@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.market.model.dto;
+package com.programmers.heycake.domain.market.model.dto.request;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.Builder;
 
 @Builder
-public record EnrollmentRequest(
+public record EnrollmentCreateRequest(
 		// todo 인증 구현 시 marketId 제거
 		@NotNull @Positive Long memberId,
 		@NotBlank String businessNumber,

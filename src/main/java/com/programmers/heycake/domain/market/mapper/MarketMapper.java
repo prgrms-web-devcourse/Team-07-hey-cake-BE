@@ -4,8 +4,8 @@ import static com.programmers.heycake.common.exception.ErrorCode.*;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.market.model.dto.MarketControllerResponse;
-import com.programmers.heycake.domain.market.model.dto.MarketResponse;
+import com.programmers.heycake.domain.market.model.dto.response.MarketDetailNoImageResponse;
+import com.programmers.heycake.domain.market.model.dto.response.MarketDetailWithImageResponse;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 
@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MarketMapper {
 
-	public static MarketResponse toResponse(Market market) {
-		return MarketResponse.builder()
+	public static MarketDetailNoImageResponse toMarketDetailNoImageResponse(Market market) {
+		return MarketDetailNoImageResponse.builder()
 				.phoneNumber(market.getPhoneNumber())
 				.address(market.getMarketAddress())
 				.openTime(market.getOpenTime())
@@ -28,8 +28,9 @@ public class MarketMapper {
 				.build();
 	}
 
-	public static MarketControllerResponse toControllerResponse(MarketResponse market, ImageResponses images) {
-		return MarketControllerResponse.builder()
+	public static MarketDetailWithImageResponse toMarketDetailWithImageResponse(MarketDetailNoImageResponse market,
+			ImageResponses images) {
+		return MarketDetailWithImageResponse.builder()
 				.phoneNumber(market.phoneNumber())
 				.address(market.address())
 				.openTime(market.openTime())

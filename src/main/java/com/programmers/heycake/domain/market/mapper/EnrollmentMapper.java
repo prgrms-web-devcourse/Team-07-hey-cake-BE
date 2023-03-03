@@ -6,12 +6,12 @@ import java.util.List;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.market.model.EnrollmentForAdminResponse;
-import com.programmers.heycake.domain.market.model.dto.EnrollmentControllerResponse;
-import com.programmers.heycake.domain.market.model.dto.EnrollmentListDetailResponse;
-import com.programmers.heycake.domain.market.model.dto.EnrollmentListResponse;
-import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
-import com.programmers.heycake.domain.market.model.dto.EnrollmentResponse;
+import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailNoImageResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailWithImageResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentGetListResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentListSummaryNoImageResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentListSummaryWithImageResponse;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 
@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EnrollmentMapper {
 
-	public static MarketEnrollment toEntity(EnrollmentRequest request) {
+	public static MarketEnrollment toEntity(EnrollmentCreateRequest request) {
 		return MarketEnrollment.builder()
 				.businessNumber(request.businessNumber())
 				.ownerName(request.ownerName())
@@ -39,8 +39,8 @@ public class EnrollmentMapper {
 				.build();
 	}
 
-	public static EnrollmentResponse toResponse(MarketEnrollment enrollment) {
-		return EnrollmentResponse.builder()
+	public static EnrollmentDetailNoImageResponse toEnrollmentDetailNoImageResponse(MarketEnrollment enrollment) {
+		return EnrollmentDetailNoImageResponse.builder()
 				.enrollmentId(enrollment.getId())
 				.phoneNumber(enrollment.getPhoneNumber())
 				.marketAddress(enrollment.getMarketAddress())
@@ -53,8 +53,9 @@ public class EnrollmentMapper {
 				.build();
 	}
 
-	public static EnrollmentForAdminResponse toEnrollmentForAdminResponse(MarketEnrollment enrollment) {
-		return EnrollmentForAdminResponse.builder()
+	public static EnrollmentListSummaryNoImageResponse toEnrollmentListSummaryNoImageResponse(
+			MarketEnrollment enrollment) {
+		return EnrollmentListSummaryNoImageResponse.builder()
 				.enrollmentId(enrollment.getId())
 				.businessNumber(enrollment.getBusinessNumber())
 				.address(enrollment.getMarketAddress())
@@ -66,11 +67,11 @@ public class EnrollmentMapper {
 				.build();
 	}
 
-	public static EnrollmentControllerResponse toControllerResponse(
-			EnrollmentResponse enrollment,
+	public static EnrollmentDetailWithImageResponse toEnrollmentDetailWithImageResponse(
+			EnrollmentDetailNoImageResponse enrollment,
 			ImageResponses images
 	) {
-		return EnrollmentControllerResponse.builder()
+		return EnrollmentDetailWithImageResponse.builder()
 				.phoneNumber(enrollment.phoneNumber())
 				.marketAddress(enrollment.marketAddress())
 				.openTime(enrollment.openTime())
@@ -88,11 +89,11 @@ public class EnrollmentMapper {
 				.build();
 	}
 
-	public static EnrollmentListDetailResponse toResponse(
-			EnrollmentForAdminResponse enrollment,
+	public static EnrollmentListSummaryWithImageResponse toEnrollmentListSummaryWithImageResponse(
+			EnrollmentListSummaryNoImageResponse enrollment,
 			ImageResponses images
 	) {
-		return EnrollmentListDetailResponse.builder()
+		return EnrollmentListSummaryWithImageResponse.builder()
 				.enrollmentId(enrollment.enrollmentId())
 				.imageUrl(images.images()
 						.stream()
@@ -111,7 +112,9 @@ public class EnrollmentMapper {
 				.build();
 	}
 
-	public static EnrollmentListResponse toResponse(List<EnrollmentListDetailResponse> enrollments, Long nextCursor) {
-		return new EnrollmentListResponse(enrollments, nextCursor);
+	public static EnrollmentGetListResponse toEnrollmentGetListResponse(
+			List<EnrollmentListSummaryWithImageResponse> enrollments,
+			Long nextCursor) {
+		return new EnrollmentGetListResponse(enrollments, nextCursor);
 	}
 }

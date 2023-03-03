@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.market.mapper.MarketMapper;
-import com.programmers.heycake.domain.market.model.dto.MarketResponse;
+import com.programmers.heycake.domain.market.model.dto.response.MarketDetailNoImageResponse;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
@@ -43,12 +43,12 @@ public class MarketService {
 	}
 
 	@Transactional(readOnly = true)
-	public MarketResponse getMarket(Long marketId) {
+	public MarketDetailNoImageResponse getMarket(Long marketId) {
 		Market market = marketRepository.findByIdFetchWithMarketEnrollment(marketId)
 				.orElseThrow(() -> {
 					throw new BusinessException(ENTITY_NOT_FOUND);
 				});
-		return MarketMapper.toResponse(market);
+		return MarketMapper.toMarketDetailNoImageResponse(market);
 	}
 
 	@Transactional(readOnly = true)

@@ -15,7 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
-import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
+import com.programmers.heycake.domain.market.facade.EnrollmentFacade;
+import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 
 @ExtendWith(MockitoExtension.class)
 class EnrollmentFacadeTest {
@@ -41,7 +42,7 @@ class EnrollmentFacadeTest {
 			".jpg",
 			"market".getBytes()
 	);
-	private EnrollmentRequest request = EnrollmentRequest.builder()
+	private EnrollmentCreateRequest request = EnrollmentCreateRequest.builder()
 			.memberId(1L)
 			.businessNumber("1234567890")
 			.ownerName("권성준")

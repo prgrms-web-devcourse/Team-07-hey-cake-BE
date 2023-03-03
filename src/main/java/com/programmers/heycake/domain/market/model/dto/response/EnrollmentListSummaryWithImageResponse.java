@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.market.model;
+package com.programmers.heycake.domain.market.model.dto.response;
 
 import java.time.LocalDateTime;
 
@@ -9,8 +9,9 @@ import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 import lombok.Builder;
 
 @Builder
-public record EnrollmentForAdminResponse(
+public record EnrollmentListSummaryWithImageResponse(
 		Long enrollmentId,
+		String imageUrl,
 		String businessNumber,
 		MarketAddress address,
 		String marketName,

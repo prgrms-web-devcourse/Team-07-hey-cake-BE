@@ -2,14 +2,12 @@ package com.programmers.heycake.common.mapper;
 
 import java.util.List;
 
-import javax.persistence.Access;
-
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.market.model.dto.MarketResponse;
+import com.programmers.heycake.domain.market.model.dto.response.MarketDetailNoImageResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
@@ -41,7 +39,7 @@ public class OfferMapper {
 	}
 
 	public static OfferSummaryResponse toOfferSummaryResponse(OfferResponse offerResponse, ImageResponses imageResponses,
-			MarketResponse marketResponse) {
+			MarketDetailNoImageResponse marketResponse) {
 
 		String imageUrl = imageResponses.images()
 				.stream()
