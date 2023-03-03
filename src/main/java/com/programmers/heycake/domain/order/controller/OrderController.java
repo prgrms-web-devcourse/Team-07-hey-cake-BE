@@ -1,8 +1,10 @@
 package com.programmers.heycake.domain.order.controller;
 
+import java.net.URI;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,10 +23,13 @@ public class OrderController {
 	private final OrderFacade orderFacade;
 
 	@PostMapping
-	public ResponseEntity<Void> createOrder(
-			@Valid @ModelAttribute OrderCreateRequest orderCreateRequest
+	public ResponseEntity<String> createOrder(
+			@Valid @ModelAttribute OrderCreateRequest orderCreateRequest,
+			HttpServletRequest httpServletRequest
 	) {
-		orderFacade.createOrder(orderCreateRequest);
-		return new ResponseEntity<>(HttpStatus.CREATED);
+		Long orderId = orderFacade.createOrder(orderCreateRequest);
+		return ResponseEntity.created(
+				URI.create(httpServletRequest.getRequestURI() + "/" + orderId)
+		).build();
 	}
 }

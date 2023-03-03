@@ -21,7 +21,7 @@ public class OrderFacade {
 	private final ImageIntegrationService imageIntegrationService;
 
 	@Transactional
-	public void createOrder(OrderCreateRequest orderCreateRequest) {
+	public Long createOrder(OrderCreateRequest orderCreateRequest) {
 		Long orderId = orderService.create(orderCreateRequest);
 
 		orderCreateRequest.cakeImages()
@@ -32,7 +32,8 @@ public class OrderFacade {
 										ORDER_IMAGE_SUB_PATH,
 										orderId,
 										ORDER
-								))
-		;
+								));
+
+		return orderId;
 	}
 }
