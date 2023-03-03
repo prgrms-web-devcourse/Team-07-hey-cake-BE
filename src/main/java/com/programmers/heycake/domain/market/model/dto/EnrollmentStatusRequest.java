@@ -1,7 +1,8 @@
 package com.programmers.heycake.domain.market.model.dto;
 
-import com.programmers.heycake.common.validator.Enum;
+import javax.validation.constraints.NotNull;
+
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 
-public record EnrollmentStatusRequest(@Enum(target = EnrollmentStatus.class) String status) {
+public record EnrollmentStatusRequest(@NotNull EnrollmentStatus status) {
 }
