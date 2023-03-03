@@ -22,6 +22,6 @@ public class OrderService {
 	public OrderGetDetailServiceResponse getOrder(Long orderId) {
 		Order order = orderRepository.findById(orderId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-		return toOrderGetServiceDetailResponse(order);
+		return toOrderGetDetailServiceResponse(order);
 	}
 }

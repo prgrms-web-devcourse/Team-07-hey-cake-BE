@@ -2,8 +2,6 @@ package com.programmers.heycake.common.mapper;
 
 import static lombok.AccessLevel.*;
 
-import java.util.stream.Collectors;
-
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.member.model.dto.response.OrderGetDetailResponse;
@@ -14,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = PRIVATE)
 public class OrderMapper {
-	public static OrderGetDetailServiceResponse toOrderGetServiceDetailResponse(Order order) {
+	public static OrderGetDetailServiceResponse toOrderGetDetailServiceResponse(Order order) {
 		return OrderGetDetailServiceResponse.builder()
 				.orderId(order.getId())
 				.memberId(order.getMemberId())
