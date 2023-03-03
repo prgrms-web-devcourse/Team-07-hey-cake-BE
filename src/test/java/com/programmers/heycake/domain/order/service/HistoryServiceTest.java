@@ -1,19 +1,10 @@
 package com.programmers.heycake.domain.order.service;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.programmers.heycake.domain.order.model.entity.Order;
-import com.programmers.heycake.domain.order.model.entity.OrderHistory;
-import com.programmers.heycake.domain.order.model.vo.request.HistoryRequest;
 import com.programmers.heycake.domain.order.repository.HistoryRepository;
 
 @ExtendWith(MockitoExtension.class)

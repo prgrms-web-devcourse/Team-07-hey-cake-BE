@@ -13,7 +13,7 @@
 //
 // import com.programmers.heycake.domain.offer.model.entity.Offer;
 // import com.programmers.heycake.domain.offer.service.OfferService;
-// import com.programmers.heycake.domain.order.model.vo.request.HistoryControllerRequest;
+// import com.programmers.heycake.domain.order.model.dto.request.HistoryControllerRequest;
 // import com.programmers.heycake.domain.order.model.vo.request.HistoryRequest;
 // import com.programmers.heycake.domain.order.service.HistoryService;
 //

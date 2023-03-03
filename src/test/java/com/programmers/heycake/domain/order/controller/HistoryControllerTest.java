@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.programmers.heycake.domain.order.facade.HistoryFacade;
-import com.programmers.heycake.domain.order.model.vo.request.HistoryControllerRequest;
+import com.programmers.heycake.domain.order.model.dto.request.HistoryControllerRequest;
 
 @SpringBootTest
 @AutoConfigureMockMvc

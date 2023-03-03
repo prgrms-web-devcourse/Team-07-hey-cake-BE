@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 
 import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.service.OfferService;
+import com.programmers.heycake.domain.order.model.dto.request.HistoryControllerRequest;
 import com.programmers.heycake.domain.order.model.dto.request.HistoryFacadeRequest;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
-import com.programmers.heycake.domain.order.model.vo.request.HistoryControllerRequest;
 import com.programmers.heycake.domain.order.service.HistoryService;
 import com.programmers.heycake.domain.order.service.OrderService;
 
