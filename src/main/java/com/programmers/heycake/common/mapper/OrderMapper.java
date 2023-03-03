@@ -4,14 +4,20 @@ import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 import static lombok.AccessLevel.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.member.model.dto.response.OrderGetDetailResponse;
 import com.programmers.heycake.domain.order.model.dto.OrderDto;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
+import com.programmers.heycake.domain.order.model.entity.OrderHistory;
 
 import lombok.NoArgsConstructor;
 
@@ -93,5 +99,46 @@ public class OrderMapper {
 				.createdAt(orderGetDetailServiceResponse.createdAt())
 				.updatedAt(orderGetDetailServiceResponse.updatedAt())
 				.build();
+	}
+
+	public static MyOrderResponseList toMyOrderResponseListForMember(
+			List<MyOrderResponse> orderList,
+			LocalDateTime lastTime) {
+		return new MyOrderResponseList(orderList, lastTime);
+	}
+
+	//TODO 추후에 삭제
+	public static MyOrderResponseList toMyOrderResponseListForMember(
+			LocalDateTime lastTime,
+			List<Order> orderList) {
+		List<MyOrderResponse> getOrderResponseList =
+				orderList
+						.stream()
+						.map(order -> MyOrderResponse.builder()
+								.id(order.getId())
+								.title(order.getTitle())
+								.orderStatus(order.getOrderStatus())
+								.region(order.getRegion())
+								.visitTime(order.getVisitDate())
+								.createdAt(order.getCreatedAt())
+								.imageUrl(null)
+								.build()
+						).toList();
+		return new MyOrderResponseList(getOrderResponseList, lastTime);
+	}
+
+	public static MyOrderResponseList toGetOrderResponseListForMarket(
+			//TOO 나중에 수정
+			List<OrderHistory> orderHistoryList,
+			LocalDateTime lastTime
+	) {
+		List<Order> orderList =
+				orderHistoryList
+						.stream()
+						.map(OrderHistory::getOrder)
+						.toList();
+
+		//TODO 추후에 변경
+		return toMyOrderResponseListForMember(lastTime, orderList);
 	}
 }
