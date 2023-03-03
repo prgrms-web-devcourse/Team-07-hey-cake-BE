@@ -34,7 +34,10 @@ public class OrderMapper {
 				.build();
 	}
 
-	public static MyOrderResponseList toGetOrderResponseListForMember(List<Order> orderList, LocalDateTime lastTime) {
+	//TODO 추후에 삭제
+	public static MyOrderResponseList toMyOrderResponseListForMember(
+			LocalDateTime lastTime,
+			List<Order> orderList) {
 		List<MyOrderResponse> getOrderResponseList =
 				orderList
 						.stream()
@@ -44,12 +47,20 @@ public class OrderMapper {
 								order.getOrderStatus(),
 								order.getRegion(),
 								order.getVisitDate(),
-								order.getCreatedAt()
+								order.getCreatedAt(),
+								null
 						)).toList();
 		return new MyOrderResponseList(getOrderResponseList, lastTime);
 	}
 
+	public static MyOrderResponseList toMyOrderResponseListForMember(
+			List<MyOrderResponse> orderList,
+			LocalDateTime lastTime) {
+		return new MyOrderResponseList(orderList, lastTime);
+	}
+
 	public static MyOrderResponseList toGetOrderResponseListForMarket(
+			//TOO 나중에 수정
 			List<OrderHistory> orderHistoryList,
 			LocalDateTime lastTime
 	) {
@@ -59,7 +70,8 @@ public class OrderMapper {
 						.map(OrderHistory::getOrder)
 						.toList();
 
-		return toGetOrderResponseListForMember(orderList, lastTime);
+		//TODO 추후에 변경
+		return toMyOrderResponseListForMember(lastTime, orderList);
 	}
 
 	public static OrderGetDetailServiceResponse toOrderGetServiceDetailResponse(Order order) {

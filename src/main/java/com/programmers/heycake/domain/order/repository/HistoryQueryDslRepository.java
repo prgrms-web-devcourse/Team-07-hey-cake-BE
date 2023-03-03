@@ -15,12 +15,11 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class HistoryCustomRepositoryImpl implements HistoryCustomRepository {
+public class HistoryQueryDslRepository {
 	private final JPAQueryFactory jpaQueryFactory;
 
 	QOrderHistory qOrderHistory = QOrderHistory.orderHistory;
 
-	@Override
 	public List<OrderHistory> findAllByMarketIdOrderByVisitDateAsc(
 			Long memberId,
 			String option,

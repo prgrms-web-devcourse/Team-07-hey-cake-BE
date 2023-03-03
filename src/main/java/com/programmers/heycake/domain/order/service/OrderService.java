@@ -18,16 +18,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OrderMapper;
+import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSimpleResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
-import com.programmers.heycake.domain.order.repository.OrderCustomRepository;
+import com.programmers.heycake.domain.order.repository.OrderQueryDslRepository;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -36,7 +38,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderService {
 	private final OrderRepository orderRepository;
-	private final OrderCustomRepository orderCustomRepository;
+	private final OrderQueryDslRepository orderQueryDslRepository;
+	private final ImageService imageService;
 
 	@Transactional
 	public Long create(OrderCreateRequest orderCreateRequest) {
@@ -66,17 +69,34 @@ public class OrderService {
 
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long memberId) {
-		List<Order> orderList = orderCustomRepository.findAllByMemberIdOrderByVisitDateAsc(
+		// List<Order> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
+		List<MyOrderResponse> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
 				getOrderRequest.orderStatus(),
 				getOrderRequest.cursorTime(),
 				getOrderRequest.pageSize()
 		);
 
-		LocalDateTime lastTime =
-				orderList.size() == 0 ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).getVisitDate();
+		//TODO 삭제
+		// List<MyOrderResponse> orderDtoWithImages = orderList.stream()
+		// 		.map(o ->
+		// 				MyOrderResponse.builder()
+		// 						.id(o.getId())
+		// 						.title(o.getTitle())
+		// 						.orderStatus(o.getOrderStatus())
+		// 						.hopePrice(o.getHopePrice())
+		// 						.region(o.getRegion())
+		// 						.visitDate(o.getVisitDate())
+		// 						.image(String.valueOf(
+		// 								imageService.getImages(o.getId(), ORDER).images().stream().findFirst())
+		// 						).build()
+		// 		).toList();
+		// return new MyOrderResponseList(orderDtoWithImages, lastTime);
 
-		return toGetOrderResponseListForMember(orderList, lastTime);
+		LocalDateTime lastTime =
+				orderList.size() == 0 ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).visitTime();
+
+		return toMyOrderResponseListForMember(orderList, lastTime);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -89,7 +109,7 @@ public class OrderService {
 	public List<OrderGetServiceSimpleResponse> getOrders(
 			Long cursorId, int pageSize, CakeCategory cakeCategory, String region
 	) {
-		return orderCustomRepository
+		return orderQueryDslRepository
 				.findAllByRegionAndCategoryOrderByCreatedAtAsc(cursorId, pageSize, cakeCategory, region)
 				.stream()
 				.map(OrderMapper::toOrderGetServiceSimpleResponse)

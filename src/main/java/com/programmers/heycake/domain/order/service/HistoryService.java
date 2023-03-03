@@ -9,11 +9,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.order.model.dto.request.HistoryFacadeRequest;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.entity.OrderHistory;
-import com.programmers.heycake.domain.order.repository.HistoryCustomRepository;
+import com.programmers.heycake.domain.order.repository.HistoryQueryDslRepository;
 import com.programmers.heycake.domain.order.repository.HistoryRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class HistoryService {
 	private final HistoryRepository historyRepository;
-	private final HistoryCustomRepository historyCustomRepository;
+	private final HistoryQueryDslRepository historyQueryDslRepository;
+	private final ImageService imageService;
 
 	public Long createHistory(HistoryFacadeRequest historyRequest) {
 		OrderHistory orderHistory = toOrderHistory(historyRequest);
@@ -31,7 +33,7 @@ public class HistoryService {
 
 	@Transactional(readOnly = true)
 	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long marketId) {
-		List<OrderHistory> orderHistories = historyCustomRepository.findAllByMarketIdOrderByVisitDateAsc(
+		List<OrderHistory> orderHistories = historyQueryDslRepository.findAllByMarketIdOrderByVisitDateAsc(
 				marketId,
 				getOrderRequest.orderStatus(),
 				getOrderRequest.cursorTime(),
