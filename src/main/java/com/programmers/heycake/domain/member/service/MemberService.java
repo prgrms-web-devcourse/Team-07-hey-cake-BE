@@ -202,5 +202,10 @@ public class MemberService {
 						() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND)
 				);
 	}
+
+	@Transactional(readOnly = true)
+	public boolean isMarketById(Long memberId) {
+		return getMemberById(memberId).isMarket();
+	}
 }
 

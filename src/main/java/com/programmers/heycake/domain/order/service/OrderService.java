@@ -3,17 +3,24 @@ package com.programmers.heycake.domain.order.service;
 import static com.programmers.heycake.common.mapper.OrderMapper.*;
 import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OrderMapper;
+import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
+import com.programmers.heycake.domain.order.repository.OrderQueryDslRepository;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +29,29 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderService {
 	private final OrderRepository orderRepository;
+	private final OrderQueryDslRepository orderQueryDslRepository;
+
+	@Transactional
+	public void updateOrderState(Long orderId, OrderStatus orderStatus) {
+		isAuthor(orderId);
+		getOrder(orderId).upDateOrderStatus(orderStatus);
+	}
+
+	@Transactional(readOnly = true)
+	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long memberId) {
+		// List<Order> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
+		List<MyOrderResponse> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
+				memberId,
+				getOrderRequest.orderStatus(),
+				getOrderRequest.cursorTime(),
+				getOrderRequest.pageSize()
+		);
+
+		LocalDateTime lastTime =
+				orderList.isEmpty() ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).visitTime();
+
+		return toMyOrderResponseListForMember(orderList, lastTime);
+	}
 
 	@Transactional
 	public Long create(OrderCreateRequest orderCreateRequest) {
@@ -43,12 +73,6 @@ public class OrderService {
 	@Transactional(readOnly = true)
 	public OrderGetDetailServiceResponse getOrderDetail(Long orderId) {
 		return OrderMapper.toOrderGetDetailServiceResponse(getOrder(orderId));
-	}
-
-	@Transactional
-	public void updateOrderState(Long orderId, OrderStatus orderStatus) {
-		isAuthor(orderId);
-		getOrder(orderId).upDateOrderStatus(orderStatus);
 	}
 
 	public Order getOrder(Long orderId) {
