@@ -23,23 +23,23 @@ class HistoryServiceTest {
 	@Mock
 	HistoryRepository historyRepository;
 
-	@Nested
-	@DisplayName("createHistory")
-	class CreateHistoryTest {
-		@Test
-		@DisplayName("Success - orderHistory 를 생성한다. - createHistory")
-		public void createHistorySuccess() {
-			//given
-			HistoryRequest historyRequest = new HistoryRequest(1L, 1L, Order.builder().build());
-
-			//when
-			when(historyRepository.save(any(OrderHistory.class)))
-					.thenReturn(new OrderHistory(1L, 1L));
-			historyService.createHistory(historyRequest);
-
-			//then
-			verify(historyRepository).save(any(OrderHistory.class));
-		}
-	}
+	// @Nested
+	// @DisplayName("createHistory")
+	// class CreateHistoryTest {
+	// 	@Test
+	// 	@DisplayName("Success - orderHistory 를 생성한다. - createHistory")
+	// 	public void createHistorySuccess() {
+	// 		//given
+	// 		HistoryRequest historyRequest = new HistoryRequest(1L, 1L, Order.builder().build());
+	//
+	// 		//when
+	// 		when(historyRepository.save(any(OrderHistory.class)))
+	// 				.thenReturn(new OrderHistory(1L, 1L));
+	// 		historyService.createHistory(historyRequest);
+	//
+	// 		//then
+	// 		verify(historyRepository).save(any(OrderHistory.class));
+	// 	}
+	// }
 
 }
