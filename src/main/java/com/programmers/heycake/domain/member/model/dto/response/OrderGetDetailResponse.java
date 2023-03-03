@@ -17,14 +17,14 @@ public record OrderGetDetailResponse(
 		String region,
 		OrderStatus orderStatus,
 		int hopePrice,
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 		LocalDateTime visitDate,
 		CakeInfo cakeInfo,
 		List<String> images,
 		int offerCount,
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 		LocalDateTime createdAt,
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 		LocalDateTime updatedAt
 ) {
 }
