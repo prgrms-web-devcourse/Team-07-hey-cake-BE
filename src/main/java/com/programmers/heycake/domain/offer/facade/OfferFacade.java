@@ -13,6 +13,7 @@ import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.model.dto.MarketResponse;
 import com.programmers.heycake.domain.market.service.MarketService;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferSaveRequest;
+import com.programmers.heycake.domain.offer.model.dto.request.OfferSummaryRequest;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
 import com.programmers.heycake.domain.offer.service.OfferService;
@@ -45,8 +46,8 @@ public class OfferFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public List<OfferSummaryResponse> getOffers(Long orderId) {
-		List<OfferResponse> offerResponses = offerService.getOffersWithComments(orderId);
+	public List<OfferSummaryResponse> getOffers(OfferSummaryRequest offerSummaryRequest) {
+		List<OfferResponse> offerResponses = offerService.getOffersWithComments(offerSummaryRequest.orderId());
 
 		return offerResponses.stream()
 				.map(
