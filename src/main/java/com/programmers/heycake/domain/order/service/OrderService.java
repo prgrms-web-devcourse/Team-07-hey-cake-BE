@@ -5,6 +5,7 @@ import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSimpleResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
@@ -28,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
+
 	private final OrderRepository orderRepository;
 	private final OrderQueryDslRepository orderQueryDslRepository;
 
@@ -90,6 +93,15 @@ public class OrderService {
 	private void isNew(Long orderId) {
 		if (getOrder(orderId).isClosed()) {
 			throw new BusinessException(ErrorCode.DUPLICATED);
+		}
+		public List<OrderGetServiceSimpleResponse> getOrders (
+				Long cursorId,int pageSize, CakeCategory cakeCategory, String region
+	){
+			return orderQueryDslRepository
+					.findAllByRegionAndCategoryOrderByCreatedAtAsc(cursorId, pageSize, cakeCategory, region)
+					.stream()
+					.map(OrderMapper::toOrderGetServiceSimpleResponse)
+					.collect(Collectors.toList());
 		}
 	}
 }

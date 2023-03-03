@@ -1,5 +1,6 @@
 package com.programmers.heycake.common.mapper;
 
+<<<<<<< HEAD
 import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 import static lombok.AccessLevel.*;
@@ -19,10 +20,22 @@ import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.entity.OrderHistory;
 
+import static lombok.AccessLevel.*;
+
+import java.util.stream.Collectors;
+
+import com.programmers.heycake.domain.image.model.dto.ImageResponse;
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSimpleResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponse;
+import com.programmers.heycake.domain.order.model.entity.Order;
+>>>>>>> dfbf285 (Feat: 주문 리스트 조회 기능 구현)
+
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = PRIVATE)
 public class OrderMapper {
+
 	public static Order toEntity(OrderDto orderDto) {
 		return Order.builder()
 				.memberId(orderDto.memberId())
@@ -98,6 +111,19 @@ public class OrderMapper {
 				.offerCount(orderGetDetailServiceResponse.offerCount())
 				.createdAt(orderGetDetailServiceResponse.createdAt())
 				.updatedAt(orderGetDetailServiceResponse.updatedAt())
+				.build();
+	}
+
+	public static OrderGetServiceSimpleResponse toOrderGetServiceSimpleResponse(Order order) {
+		return OrderGetServiceSimpleResponse.builder()
+				.orderId(order.getId())
+				.title(order.getTitle())
+				.cakeInfo(order.getCakeInfo())
+				.orderStatus(order.getOrderStatus())
+				.hopePrice(order.getHopePrice())
+				.region(order.getRegion())
+				.visitDate(order.getVisitDate())
+				.createdAt(order.getCreatedAt())
 				.build();
 	}
 
