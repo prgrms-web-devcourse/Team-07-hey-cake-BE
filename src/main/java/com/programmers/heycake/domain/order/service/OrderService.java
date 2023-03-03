@@ -1,7 +1,6 @@
 package com.programmers.heycake.domain.order.service;
 
-import static com.programmers.heycake.common.util.AuthenticationUtil.*;
-import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
+import static com.programmers.heycake.common.mapper.OrderMapper.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,15 +29,7 @@ public class OrderService {
 				.build();
 
 		Order savedOrder = orderRepository.save(
-				Order.builder()
-						.cakeInfo(cakeInfo)
-						.hopePrice(orderCreateRequest.hopePrice())
-						.memberId(getMemberId())
-						.orderStatus(NEW)
-						.visitDate(orderCreateRequest.visitTime())
-						.title(orderCreateRequest.title())
-						.region(orderCreateRequest.region())
-						.build()
+				toEntity(orderCreateRequest, cakeInfo)
 		);
 		return savedOrder.getId();
 	}
