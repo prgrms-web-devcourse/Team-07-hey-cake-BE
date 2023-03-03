@@ -2,13 +2,11 @@ package com.programmers.heycake.domain.market.service;
 
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
-import com.programmers.heycake.domain.market.event.EnrollmentStatusEvent;
 import com.programmers.heycake.domain.market.mapper.EnrollmentMapper;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentControllerResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
@@ -25,7 +23,7 @@ public class EnrollmentFacade {
 
 	private final EnrollmentService enrollmentService;
 	private final ImageIntegrationService imageIntegrationService;
-	private final ApplicationEventPublisher applicationEventPublisher;
+	private final MarketService marketService;
 
 	@Transactional
 	public Long enrollMarket(EnrollmentRequest request) {
@@ -57,7 +55,10 @@ public class EnrollmentFacade {
 
 	@Transactional
 	public void changeEnrollmentStatus(Long enrollmentId, EnrollmentStatus status) {
-		applicationEventPublisher.publishEvent(new EnrollmentStatusEvent(enrollmentId, status));
 		enrollmentService.changeEnrollmentStatus(enrollmentId, status);
+
+		if (status == EnrollmentStatus.APPROVED) {
+			marketService.enrollMarket(enrollmentId);
+		}
 	}
 }

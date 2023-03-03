@@ -39,7 +39,6 @@ public class MarketService {
 		market.setMarketEnrollment(enrollment);
 		market.setMember(member);
 		Market savedMarket = marketRepository.save(market);
-
 		return savedMarket.getId();
 	}
 
