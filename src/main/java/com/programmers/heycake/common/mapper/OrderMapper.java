@@ -41,7 +41,7 @@ public class OrderMapper {
 				.images(imageResponses.images()
 						.stream()
 						.map(ImageResponse::imageUrl)
-						.collect(Collectors.toList())
+						.toList()
 				)
 				.region(orderSimpleGetServiceResponse.region())
 				.visitTime(orderSimpleGetServiceResponse.visitDate())
