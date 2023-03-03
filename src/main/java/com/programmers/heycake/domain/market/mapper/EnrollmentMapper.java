@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.image.model.entity.Image;
+import com.programmers.heycake.domain.market.model.EnrollmentForAdminResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentControllerResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentListDetailResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentListResponse;
@@ -53,6 +53,19 @@ public class EnrollmentMapper {
 				.build();
 	}
 
+	public static EnrollmentForAdminResponse toEnrollmentForAdminResponse(MarketEnrollment enrollment) {
+		return EnrollmentForAdminResponse.builder()
+				.enrollmentId(enrollment.getId())
+				.businessNumber(enrollment.getBusinessNumber())
+				.address(enrollment.getMarketAddress())
+				.marketName(enrollment.getMarketName())
+				.phoneNumber(enrollment.getPhoneNumber())
+				.ownerName(enrollment.getOwnerName())
+				.status(enrollment.getEnrollmentStatus())
+				.createdAt(enrollment.getCreatedAt())
+				.build();
+	}
+
 	public static EnrollmentControllerResponse toControllerResponse(
 			EnrollmentResponse enrollment,
 			ImageResponses images
@@ -75,22 +88,26 @@ public class EnrollmentMapper {
 				.build();
 	}
 
-	public static EnrollmentListDetailResponse toResponse(MarketEnrollment enrollment, List<Image> images) {
+	public static EnrollmentListDetailResponse toResponse(
+			EnrollmentForAdminResponse enrollment,
+			ImageResponses images
+	) {
 		return EnrollmentListDetailResponse.builder()
-				.enrollmentId(enrollment.getId())
-				.imageUrl(images.stream()
+				.enrollmentId(enrollment.enrollmentId())
+				.imageUrl(images.images()
+						.stream()
 						.findFirst()
 						.orElseThrow(() -> {
 							throw new BusinessException(ENTITY_NOT_FOUND);
-						}).getImageUrl()
+						}).imageUrl()
 				)
-				.businessNumber(enrollment.getBusinessNumber())
-				.address(enrollment.getMarketAddress())
-				.marketName(enrollment.getMarketName())
-				.phoneNumber(enrollment.getPhoneNumber())
-				.ownerName(enrollment.getOwnerName())
-				.status(enrollment.getEnrollmentStatus())
-				.createdAt(enrollment.getCreatedAt())
+				.businessNumber(enrollment.businessNumber())
+				.address(enrollment.address())
+				.marketName(enrollment.marketName())
+				.phoneNumber(enrollment.phoneNumber())
+				.ownerName(enrollment.ownerName())
+				.status(enrollment.status())
+				.createdAt(enrollment.createdAt())
 				.build();
 	}
 

@@ -2,13 +2,17 @@ package com.programmers.heycake.domain.market.service;
 
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.market.mapper.EnrollmentMapper;
+import com.programmers.heycake.domain.market.model.EnrollmentForAdminResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentControllerResponse;
+import com.programmers.heycake.domain.market.model.dto.EnrollmentListDetailResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentListRequest;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentListResponse;
 import com.programmers.heycake.domain.market.model.dto.EnrollmentRequest;
@@ -66,6 +70,17 @@ public class EnrollmentFacade {
 
 	@Transactional(readOnly = true)
 	public EnrollmentListResponse getMarketEnrollments(EnrollmentListRequest request) {
-		return enrollmentService.getMarketEnrollments(request);
+		List<EnrollmentForAdminResponse> enrollments = enrollmentService.getMarketEnrollments(request);
+		List<EnrollmentListDetailResponse> enrollmentListDetailResponses = enrollments.stream()
+				.map(enrollment -> {
+					ImageResponses images = imageIntegrationService.getImages(enrollment.enrollmentId(), ENROLLMENT_MARKET);
+					return EnrollmentMapper.toResponse(enrollment, images);
+				})
+				.toList();
+		Long nextCursor =
+				enrollmentListDetailResponses.size() < request.pageSize() ?
+						0 : enrollmentListDetailResponses.get(enrollmentListDetailResponses.size() - 1).enrollmentId();
+
+		return EnrollmentMapper.toResponse(enrollmentListDetailResponses, nextCursor);
 	}
 }
