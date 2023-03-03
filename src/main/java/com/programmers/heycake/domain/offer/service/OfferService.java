@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
@@ -45,6 +46,23 @@ public class OfferService {
 		return offer.getId();
 	}
 
+	@Transactional
+	public void deleteOffer(Long offerId, Long marketId) {
+		if (!(getEntity(offerId).isAuthor(marketId))) {
+			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
+		if (getEntity(offerId).getOrder().isClosed()) {
+			throw new BusinessException(ErrorCode.DELETE_ERROR);
+		}
+		offerRepository.deleteById(offerId);
+	}
+
+	private Offer getEntity(Long offerId) {
+		return offerRepository
+				.findById(offerId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+	}
+
 	private void validateSaveOffer(Order order, Market market) {
 		if (offerRepository.existsByMarketIdAndOrder(market.getId(), order)) {
 			throw new BusinessException(ErrorCode.DUPLICATED_OFFER);
@@ -82,5 +100,4 @@ public class OfferService {
 		return orderRepository.findById(orderId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
-
 }
