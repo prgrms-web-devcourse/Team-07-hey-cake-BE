@@ -2,6 +2,8 @@ package com.programmers.heycake.domain.order.controller;
 
 import java.net.URI;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,18 +20,11 @@ import lombok.RequiredArgsConstructor;
 public class HistoryController {
 	private final HistoryFacade historyFacade;
 
-	/**
-	 * 해야할일
-	 * 멤버에서 가져온 memberID와 orderId 작성자가 같은지 확인
-	 * 스레드 id가 orderId를 보고있는지 -> 페치조인으로 오더가져오기
-	 * 스레드 id의 업주id가져오기
-	 * 모두맞으면 엔티티 생성
-	 */
 	@PostMapping
-	public ResponseEntity<Void> createHistory(HistoryControllerRequest historyRequest) {
+	public ResponseEntity<Void> createHistory(HistoryControllerRequest historyRequest, HttpServletRequest request) {
 		Long historyId = historyFacade.createHistory(historyRequest);
 
-		URI location = URI.create("/api/v1/histories" + historyId);
+		URI location = URI.create(request.getRequestURI() + "/" + historyId);
 		return ResponseEntity.created(location).build();
 	}
 

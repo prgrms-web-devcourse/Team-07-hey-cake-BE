@@ -90,4 +90,8 @@ public class Order extends BaseEntity {
 	public boolean isAuthor(Long memberId) {
 		return Objects.equals(this.memberId, memberId);
 	}
+
+	public void upDateOrderStatus(OrderStatus orderStatus) {
+		this.orderStatus = orderStatus;
+	}
 }

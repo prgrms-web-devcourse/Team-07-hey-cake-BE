@@ -1,12 +1,16 @@
 package com.programmers.heycake.domain.order.facade;
 
+import static com.programmers.heycake.common.util.AuthenticationUtil.*;
+
 import org.springframework.stereotype.Component;
 
-import com.programmers.heycake.domain.offer.model.entity.Offer;
+import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.service.OfferService;
+import com.programmers.heycake.domain.order.model.dto.request.HistoryFacadeRequest;
+import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.model.vo.request.HistoryControllerRequest;
-import com.programmers.heycake.domain.order.model.vo.request.HistoryRequest;
 import com.programmers.heycake.domain.order.service.HistoryService;
+import com.programmers.heycake.domain.order.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,16 +19,14 @@ import lombok.RequiredArgsConstructor;
 public class HistoryFacade {
 	private final HistoryService historyService;
 	private final OfferService offerService;
+	private final OrderService orderService;
 
 	public Long createHistory(HistoryControllerRequest historyControllerRequest) {
-		//Todo 컨텍스트 memberId와 order의 작성자 같은지 체크
+		orderService.updateOrderState(historyControllerRequest.orderId(), OrderStatus.RESERVED);
+		OfferDto offerDto = offerService.getOfferById(historyControllerRequest.offerId());
+		HistoryFacadeRequest historyFacadeRequest =
+				new HistoryFacadeRequest(getMemberId(), offerDto.marketId(), offerDto.orderDto());
 
-		// DTO로 변경
-		Offer offer = offerService.findById(historyControllerRequest.offerId());
-
-		//memberId, orderDto로 변경
-		HistoryRequest historyRequest = new HistoryRequest(1L, offer.getMarketId(), offer.getOrder());
-
-		return historyService.createHistory(historyRequest);
+		return historyService.createHistory(historyFacadeRequest);
 	}
 }
