@@ -62,6 +62,16 @@ public class OfferFacade {
 		// coment(db+s3) 삭제
 	}
 
+	@Transactional
+	public void deleteOfferWithoutAuth(Long offerId) {
+		imageIntegrationService.deleteImages(offerId, OFFER, OFFER_IMAGE_SUB_PATH);
+		offerService.deleteOfferWithoutAuth(offerId);
+		//comment service
+		//offerid로 Comment 리스트 조회
+		//Comment list stream 으로 삭제 메서드 호출
+		// coment(db+s3) 삭제
+	}
+
 	@Transactional(readOnly = true)
 	public List<OfferSummaryResponse> getOffers(OfferSummaryRequest offerSummaryRequest) {
 		List<OfferResponse> offerResponses = offerService.getOffersWithComments(offerSummaryRequest.orderId());
@@ -76,5 +86,4 @@ public class OfferFacade {
 				)
 				.toList();
 	}
-
 }

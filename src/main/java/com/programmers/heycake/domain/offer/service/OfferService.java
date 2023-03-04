@@ -24,6 +24,7 @@ import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
 
+
 @Service
 @RequiredArgsConstructor
 public class OfferService {
@@ -51,12 +52,8 @@ public class OfferService {
 
 	@Transactional
 	public void deleteOffer(Long offerId, Long marketId) {
-		if (!(getOffer(offerId).isAuthor(marketId))) {
-			throw new BusinessException(ErrorCode.FORBIDDEN);
-		}
-		if (getOffer(offerId).getOrder().isClosed()) {
-			throw new BusinessException(ErrorCode.DELETE_ERROR);
-		}
+		identifyAuthor(offerId, marketId);
+		isNew(offerId);
 		offerRepository.deleteById(offerId);
 	}
 
@@ -69,6 +66,23 @@ public class OfferService {
 		return offerRepository
 				.findById(offerId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+	}
+
+	private void identifyAuthor(Long offerId, Long marketId) {
+		if (!getOffer(offerId).identifyAuthor(marketId)) {
+			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
+	}
+
+	private void isNew(Long offerId) {
+		if (getOffer(offerId).getOrder().isClosed()) {
+			throw new BusinessException(ErrorCode.ORDER_CLOSED);
+		}
+	}
+
+	@Transactional
+	public void deleteOfferWithoutAuth(Long offerId) {
+		offerRepository.deleteById(offerId);
 	}
 
 	private void validateSaveOffer(Order order, Market market) {
@@ -108,4 +122,5 @@ public class OfferService {
 		return orderRepository.findById(orderId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
+
 }
