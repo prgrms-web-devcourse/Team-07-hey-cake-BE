@@ -51,7 +51,7 @@ public class OfferService {
 
 	@Transactional
 	public void deleteOffer(Long offerId, Long marketId) {
-		isAuthor(offerId, marketId);
+		identifyAuthor(offerId, marketId);
 		isNew(offerId);
 		offerRepository.deleteById(offerId);
 	}
@@ -67,8 +67,8 @@ public class OfferService {
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
-	private void isAuthor(Long offerId, Long marketId) {
-		if (!getOffer(offerId).isAuthor(marketId)) {
+	private void identifyAuthor(Long offerId, Long marketId) {
+		if (!getOffer(offerId).identifyAuthor(marketId)) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
 	}

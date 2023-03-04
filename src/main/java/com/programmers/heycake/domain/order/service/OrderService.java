@@ -34,14 +34,13 @@ public class OrderService {
 
 	@Transactional
 	public void updateOrderState(Long orderId, OrderStatus orderStatus) {
-		isAuthor(orderId);
+		identifyAuthor(orderId);
 		isNew(orderId);
 		getOrder(orderId).upDateOrderStatus(orderStatus);
 	}
 
 	@Transactional(readOnly = true)
 	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long memberId) {
-		// List<Order> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
 		List<MyOrderResponse> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
 				getOrderRequest.orderStatus(),
@@ -88,7 +87,7 @@ public class OrderService {
 
 	@Transactional
 	public void deleteOrder(Long orderId) {
-		isAuthor(orderId);
+		identifyAuthor(orderId);
 		isNew(orderId);
 		orderRepository.deleteById(orderId);
 	}
@@ -98,8 +97,8 @@ public class OrderService {
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
-	private void isAuthor(Long orderId) {
-		if (!getOrder(orderId).isAuthor(getMemberId())) {
+	private void identifyAuthor(Long orderId) {
+		if (!getOrder(orderId).identifyAuthor(getMemberId())) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
 	}
