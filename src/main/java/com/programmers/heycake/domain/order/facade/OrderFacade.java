@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class OrderFacade {
+
 	private final OrderService orderService;
 	private final MemberService memberService;
 	private final HistoryService historyService;
@@ -55,23 +56,6 @@ public class OrderFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public OrderGetDetailResponse getOrder(Long orderId) {
-		OrderGetDetailServiceResponse orderGetDetailServiceResponse = orderService.getOrderDetail(orderId);
-		ImageResponses imageResponses = imageService.getImages(orderGetDetailServiceResponse.orderId(), ORDER);
-		return toOrderGetDetailResponse(orderGetDetailServiceResponse, imageResponses);
-	}
-
-	@Transactional(readOnly = true)
-	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest) {
-		Long memberId = getMemberId();
-		if (memberService.isMarketById(memberId)) {
-			return historyService.getMyOrderList(getOrderRequest, memberId);
-		} else {
-			return orderService.getMyOrderList(getOrderRequest, memberId);
-		}
-	}
-
-	@Transactional(readOnly = true)
 	public OrderGetSimpleResponses getOrders(
 			Long cursorId, int pageSize, CakeCategory cakeCategory, String region
 	) {
@@ -93,5 +77,22 @@ public class OrderFacade {
 		boolean isLast = size < pageSize;
 
 		return new OrderGetSimpleResponses(orderGetSimpleResponseList, lastCursor, isLast);
+	}
+
+	@Transactional(readOnly = true)
+	public OrderGetDetailResponse getOrder(Long orderId) {
+		OrderGetDetailServiceResponse orderGetDetailServiceResponse = orderService.getOrderDetail(orderId);
+		ImageResponses imageResponses = imageService.getImages(orderGetDetailServiceResponse.orderId(), ORDER);
+		return toOrderGetDetailResponse(orderGetDetailServiceResponse, imageResponses);
+	}
+
+	@Transactional(readOnly = true)
+	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest) {
+		Long memberId = getMemberId();
+		if (memberService.isMarketById(memberId)) {
+			return historyService.getMyOrderList(getOrderRequest, memberId);
+		} else {
+			return orderService.getMyOrderList(getOrderRequest, memberId);
+		}
 	}
 }

@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 public class OrderQueryDslRepository {
+
 	private final JPAQueryFactory jpaQueryFactory;
 	QOrder qOrder = QOrder.order;
 	QImage qImage = QImage.image;
@@ -57,14 +58,6 @@ public class OrderQueryDslRepository {
 				.fetch();
 	}
 
-	private BooleanExpression gtOrderTime(LocalDateTime cursorTime) {
-		return cursorTime == null ? null : qOrder.visitDate.gt(cursorTime);
-	}
-
-	private BooleanExpression eqOrderStatus(String option) {
-		return option == null ? null : qOrder.orderStatus.eq(OrderStatus.valueOf(option));
-	}
-
 	public List<Order> findAllByRegionAndCategoryOrderByCreatedAtAsc(
 			Long cursorId,
 			int pageSize,
@@ -81,6 +74,14 @@ public class OrderQueryDslRepository {
 				.limit(pageSize)
 				.orderBy(qOrder.createdAt.desc())
 				.fetch();
+	}
+
+	private BooleanExpression gtOrderTime(LocalDateTime cursorTime) {
+		return cursorTime == null ? null : qOrder.visitDate.gt(cursorTime);
+	}
+
+	private BooleanExpression eqOrderStatus(String option) {
+		return option == null ? null : qOrder.orderStatus.eq(OrderStatus.valueOf(option));
 	}
 
 	private BooleanExpression eqRegion(String region) {

@@ -43,6 +43,16 @@ public class OrderController {
 		).build();
 	}
 
+	@GetMapping
+	public ResponseEntity<OrderGetSimpleResponses> getOrders(
+			@RequestParam(required = false) Long cursorId,
+			@RequestParam int pageSize,
+			@RequestParam(required = false) CakeCategory cakeCategory,
+			@RequestParam(required = false) String region
+	) {
+		return ResponseEntity.ok(orderFacade.getOrders(cursorId, pageSize, cakeCategory, region));
+	}
+
 	@GetMapping("/{orderId}")
 	public ResponseEntity<OrderGetDetailResponse> getOrder(@PathVariable Long orderId) {
 		return ResponseEntity.ok(orderFacade.getOrder(orderId));
@@ -53,15 +63,5 @@ public class OrderController {
 		MyOrderResponseList myOrderList = orderFacade.getMyOrderList(getOrderRequest);
 
 		return ResponseEntity.ok(myOrderList);
-	}
-
-	@GetMapping
-	public ResponseEntity<OrderGetSimpleResponses> getOrders(
-			@RequestParam(required = false) Long cursorId,
-			@RequestParam int pageSize,
-			@RequestParam(required = false) CakeCategory cakeCategory,
-			@RequestParam(required = false) String region
-	) {
-		return ResponseEntity.ok(orderFacade.getOrders(cursorId, pageSize, cakeCategory, region));
 	}
 }
