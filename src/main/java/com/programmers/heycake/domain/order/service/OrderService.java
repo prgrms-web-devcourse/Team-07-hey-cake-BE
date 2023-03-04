@@ -94,7 +94,7 @@ public class OrderService {
 		// return new MyOrderResponseList(orderDtoWithImages, lastTime);
 
 		LocalDateTime lastTime =
-				orderList.size() == 0 ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).visitTime();
+				orderList.isEmpty() ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).visitTime();
 
 		return toMyOrderResponseListForMember(orderList, lastTime);
 	}
