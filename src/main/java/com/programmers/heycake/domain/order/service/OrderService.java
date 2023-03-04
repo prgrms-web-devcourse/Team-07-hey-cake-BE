@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OrderMapper;
+import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
@@ -33,7 +34,7 @@ public class OrderService {
 
 	@Transactional
 	public void updateOrderState(Long orderId, OrderStatus orderStatus) {
-		isAuthor(orderId);
+		identifyAuthor(orderId);
 		isNew(orderId);
 		getOrder(orderId).upDateOrderStatus(orderStatus);
 	}
@@ -75,20 +76,36 @@ public class OrderService {
 		return OrderMapper.toOrderGetDetailServiceResponse(getOrder(orderId));
 	}
 
+	@Transactional(readOnly = true)
+	public List<Long> getOrderOfferIdList(Long orderId) {
+		return getOrder(orderId)
+				.getOffers()
+				.stream()
+				.map(Offer::getId)
+				.toList();
+	}
+
+	@Transactional
+	public void deleteOrder(Long orderId) {
+		identifyAuthor(orderId);
+		isNew(orderId);
+		orderRepository.deleteById(orderId);
+	}
+
 	public Order getOrder(Long orderId) {
 		return orderRepository.findById(orderId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
-	private void isAuthor(Long orderId) {
-		if (getOrder(orderId).isAuthor(getMemberId())) {
+	private void identifyAuthor(Long orderId) {
+		if (!getOrder(orderId).identifyAuthor(getMemberId())) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
 	}
 
 	private void isNew(Long orderId) {
 		if (getOrder(orderId).isClosed()) {
-			throw new BusinessException(ErrorCode.DUPLICATED);
+			throw new BusinessException(ErrorCode.ORDER_CLOSED);
 		}
 	}
 }
