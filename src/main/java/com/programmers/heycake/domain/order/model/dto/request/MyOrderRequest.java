@@ -4,13 +4,12 @@ import java.time.LocalDateTime;
 
 import javax.validation.constraints.Positive;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.programmers.heycake.common.validator.Enum;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 
 public record MyOrderRequest(
-		@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 		LocalDateTime cursorTime,
 		@Positive
 		int pageSize,
