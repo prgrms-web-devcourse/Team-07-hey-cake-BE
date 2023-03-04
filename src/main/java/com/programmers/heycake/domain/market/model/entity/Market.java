@@ -1,6 +1,7 @@
 package com.programmers.heycake.domain.market.model.entity;
 
 import java.time.LocalTime;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -82,4 +83,9 @@ public class Market extends BaseEntity {
 	public void setMarketEnrollment(MarketEnrollment marketEnrollment) {
 		this.marketEnrollment = marketEnrollment;
 	}
+
+	public boolean isNotMarketMember(Long memberId) {
+		return !Objects.equals(this.member.getId(), memberId);
+	}
+
 }
