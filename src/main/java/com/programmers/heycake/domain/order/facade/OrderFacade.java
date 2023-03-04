@@ -71,14 +71,14 @@ public class OrderFacade {
 		}
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public OrderGetSimpleResponses getOrders(
 			Long cursorId, int pageSize, CakeCategory cakeCategory, String region
 	) {
 		List<OrderGetServiceSimpleResponse> orderGetSimpleServiceResponses =
 				orderService.getOrders(cursorId, pageSize, cakeCategory, region);
 
-		List<OrderGetSimpleResponse> orderGetSimpleResponses =
+		List<OrderGetSimpleResponse> orderGetSimpleResponseList =
 				orderGetSimpleServiceResponses
 						.stream()
 						.map(orderSimpleGetServiceResponse ->
@@ -88,16 +88,10 @@ public class OrderFacade {
 						)
 						.toList();
 
-		int size = orderGetSimpleResponses.size();
-		long lastCursor = 0;
+		int size = orderGetSimpleResponseList.size();
+		long lastCursor = size <= 0 ? 0 : orderGetSimpleResponseList.get(size - 1).orderId();
+		boolean isLast = size < pageSize;
 
-		for (OrderGetSimpleResponse orderGetSimpleResponse : orderGetSimpleResponses) {
-			lastCursor = orderGetSimpleResponse.orderId();
-		}
-
-		if (size < pageSize) {
-			return new OrderGetSimpleResponses(orderGetSimpleResponses, lastCursor, true);
-		}
-		return new OrderGetSimpleResponses(orderGetSimpleResponses, lastCursor, false);
+		return new OrderGetSimpleResponses(orderGetSimpleResponseList, lastCursor, isLast);
 	}
 }
