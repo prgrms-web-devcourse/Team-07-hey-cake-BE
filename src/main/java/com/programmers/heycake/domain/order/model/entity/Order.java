@@ -95,7 +95,7 @@ public class Order extends BaseEntity {
 		this.orderStatus = orderStatus;
 	}
 
-	public boolean isNotWritten(Long targetMemberId) {
+	public boolean isNotWrittenBy(Long targetMemberId) {
 		return !Objects.equals(this.memberId, targetMemberId);
 	}
 }
