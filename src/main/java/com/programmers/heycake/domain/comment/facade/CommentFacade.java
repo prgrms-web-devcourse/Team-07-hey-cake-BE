@@ -11,6 +11,7 @@ import com.programmers.heycake.domain.comment.model.dto.request.CommentSaveReque
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentSummaryResponse;
 import com.programmers.heycake.domain.comment.service.CommentService;
+import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
@@ -27,6 +28,16 @@ public class CommentFacade {
 	private final CommentService commentService;
 	private final ImageIntegrationService imageIntegrationService;
 	private final ImageService imageService;
+
+	@Transactional
+	public void deleteComment(Long commentId) {
+		commentService.deleteComment(commentId);
+
+		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
+		if (!commentImageResponse.isEmpty()) {
+			imageIntegrationService.deleteImages(commentId, ImageType.COMMENT, COMMENT_SUB_PATH);
+		}
+	}
 
 	@Transactional
 	public Long saveComment(CommentSaveRequest commentSaveRequest) {
