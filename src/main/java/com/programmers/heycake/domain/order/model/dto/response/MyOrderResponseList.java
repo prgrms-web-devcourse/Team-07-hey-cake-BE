@@ -9,7 +9,7 @@ public record MyOrderResponseList(
 		//TODO 나중에 변경
 		List<MyOrderResponse> myOrderResponseList,
 		// List<OrderDtoWithImage> myOrderResponseList,
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-ddTHH:mm:ss", timezone = "Asia/Seoul")
+		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 		LocalDateTime lastTime
 ) {
 }
