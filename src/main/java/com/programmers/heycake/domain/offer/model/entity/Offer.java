@@ -67,8 +67,8 @@ public class Offer extends BaseEntity {
 		this.order = order;
 		order.getOffers().add(this);
 	}
-	
-	public boolean isAuthor(Long marketId) {
+
+	public boolean identifyAuthor(Long marketId) {
 		return Objects.equals(this.marketId, marketId);
 	}
 }
