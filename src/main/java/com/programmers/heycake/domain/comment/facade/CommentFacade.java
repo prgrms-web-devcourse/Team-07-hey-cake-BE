@@ -9,8 +9,10 @@ import com.programmers.heycake.common.mapper.CommentMapper;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentSummaryResponse;
 import com.programmers.heycake.domain.comment.service.CommentService;
+import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
+import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 
 import lombok.RequiredArgsConstructor;
@@ -19,8 +21,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CommentFacade {
 
+	private static final String COMMENT_SUB_PATH = "images/comments";
+
 	private final CommentService commentService;
 	private final ImageService imageService;
+	private final ImageIntegrationService imageIntegrationService;
+
+	@Transactional
+	public void deleteComment(Long commentId) {
+		commentService.deleteComment(commentId);
+
+		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
+		if (!commentImageResponse.isEmpty()) {
+			imageIntegrationService.deleteImages(commentId, ImageType.COMMENT, COMMENT_SUB_PATH);
+		}
+	}
 
 	@Transactional(readOnly = true)
 	public List<CommentSummaryResponse> getComments(Long offerId) {
