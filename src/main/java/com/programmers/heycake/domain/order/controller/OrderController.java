@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.member.model.dto.response.OrderGetDetailResponse;
@@ -20,6 +21,8 @@ import com.programmers.heycake.domain.order.facade.OrderFacade;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponses;
+import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
 public class OrderController {
+
 	private final OrderFacade orderFacade;
 
 	@PostMapping
@@ -38,6 +42,16 @@ public class OrderController {
 		return ResponseEntity.created(
 				URI.create(httpServletRequest.getRequestURI() + "/" + orderId)
 		).build();
+	}
+
+	@GetMapping
+	public ResponseEntity<OrderGetSimpleResponses> getOrders(
+			@RequestParam(required = false) Long cursorId,
+			@RequestParam int pageSize,
+			@RequestParam(required = false) CakeCategory cakeCategory,
+			@RequestParam(required = false) String region
+	) {
+		return ResponseEntity.ok(orderFacade.getOrders(cursorId, pageSize, cakeCategory, region));
 	}
 
 	@GetMapping("/{orderId}")

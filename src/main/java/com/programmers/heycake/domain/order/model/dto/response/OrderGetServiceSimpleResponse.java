@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.order.dto.response;
+package com.programmers.heycake.domain.order.model.dto.response;
 
 import java.time.LocalDateTime;
 
@@ -8,17 +8,14 @@ import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import lombok.Builder;
 
 @Builder
-public record OrderGetDetailServiceResponse(
+public record OrderGetServiceSimpleResponse(
 		Long orderId,
-		Long memberId,
 		String title,
 		String region,
+		CakeInfo cakeInfo,
 		OrderStatus orderStatus,
 		int hopePrice,
 		LocalDateTime visitDate,
-		CakeInfo cakeInfo,
-		int offerCount,
-		LocalDateTime createdAt,
-		LocalDateTime updatedAt
+		LocalDateTime createdAt
 ) {
 }

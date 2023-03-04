@@ -18,8 +18,10 @@ import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSimpleResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
+import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.repository.OrderQueryDslRepository;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
@@ -50,7 +52,6 @@ public class OrderService {
 
 		LocalDateTime lastTime =
 				orderList.isEmpty() ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).visitTime();
-
 		return toMyOrderResponseListForMember(orderList, lastTime);
 	}
 
@@ -69,6 +70,16 @@ public class OrderService {
 				toEntity(orderCreateRequest, cakeInfo)
 		);
 		return savedOrder.getId();
+	}
+
+	public List<OrderGetServiceSimpleResponse> getOrders(
+			Long cursorId, int pageSize, CakeCategory cakeCategory, String region
+	) {
+		return orderQueryDslRepository
+				.findAllByRegionAndCategoryOrderByCreatedAtAsc(cursorId, pageSize, cakeCategory, region)
+				.stream()
+				.map(OrderMapper::toOrderGetServiceSimpleResponse)
+				.toList();
 	}
 
 	@Transactional(readOnly = true)
