@@ -19,6 +19,10 @@ import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSimpleResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponses;
+import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 import com.programmers.heycake.domain.order.service.HistoryService;
 import com.programmers.heycake.domain.order.service.OrderService;
 
@@ -27,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class OrderFacade {
+
 	private final OrderService orderService;
 	private final MemberService memberService;
 	private final HistoryService historyService;
@@ -50,6 +55,30 @@ public class OrderFacade {
 										ORDER
 								));
 		return orderId;
+	}
+
+	@Transactional(readOnly = true)
+	public OrderGetSimpleResponses getOrders(
+			Long cursorId, int pageSize, CakeCategory cakeCategory, String region
+	) {
+		List<OrderGetServiceSimpleResponse> orderGetSimpleServiceResponses =
+				orderService.getOrders(cursorId, pageSize, cakeCategory, region);
+
+		List<OrderGetSimpleResponse> orderGetSimpleResponseList =
+				orderGetSimpleServiceResponses
+						.stream()
+						.map(orderSimpleGetServiceResponse ->
+								toOrderGetSimpleResponse(
+										orderSimpleGetServiceResponse,
+										imageService.getImages(orderSimpleGetServiceResponse.orderId(), ORDER))
+						)
+						.toList();
+
+		int size = orderGetSimpleResponseList.size();
+		long lastCursor = size <= 0 ? 0 : orderGetSimpleResponseList.get(size - 1).orderId();
+		boolean isLast = size < pageSize;
+
+		return new OrderGetSimpleResponses(orderGetSimpleResponseList, lastCursor, isLast);
 	}
 
 	@Transactional(readOnly = true)
