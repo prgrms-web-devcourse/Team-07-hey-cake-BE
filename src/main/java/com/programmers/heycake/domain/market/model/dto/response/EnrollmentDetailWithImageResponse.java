@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.market.model.dto;
+package com.programmers.heycake.domain.market.model.dto.response;
 
 import java.time.LocalTime;
 
@@ -8,13 +8,11 @@ import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 import lombok.Builder;
 
 @Builder
-public record MarketControllerResponse(
+public record EnrollmentDetailWithImageResponse(
 		String phoneNumber,
-		MarketAddress address,
-		@JsonFormat(pattern = "HH:mm")
-		LocalTime openTime,
-		@JsonFormat(pattern = "HH:mm")
-		LocalTime endTime,
+		MarketAddress marketAddress,
+		@JsonFormat(pattern = "HH:mm") LocalTime openTime,
+		@JsonFormat(pattern = "HH:mm") LocalTime endTime,
 		String description,
 		String marketName,
 		String businessNumber,

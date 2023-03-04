@@ -56,4 +56,8 @@ public class Member extends BaseEntity {
 	public boolean isSameMember(Member member) {
 		return Objects.equals(this.id, member.getId());
 	}
+
+	public void changeAuthority(MemberAuthority authority) {
+		this.memberAuthority = authority;
+	}
 }

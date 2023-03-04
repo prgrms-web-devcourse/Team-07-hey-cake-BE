@@ -87,6 +87,14 @@ public class Order extends BaseEntity {
 		return this.orderStatus != OrderStatus.NEW;
 	}
 
+	public boolean identifyAuthor(Long memberId) {
+		return Objects.equals(this.memberId, memberId);
+	}
+
+	public void upDateOrderStatus(OrderStatus orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+
 	public boolean isNotWritten(Long targetMemberId) {
 		return !Objects.equals(this.memberId, targetMemberId);
 	}

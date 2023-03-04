@@ -1,9 +1,12 @@
 package com.programmers.heycake.domain.offer.service;
 
+import static com.programmers.heycake.common.mapper.OfferMapper.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
@@ -12,6 +15,7 @@ import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
+import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
@@ -43,6 +47,41 @@ public class OfferService {
 		offerRepository.save(offer);
 
 		return offer.getId();
+	}
+
+	@Transactional
+	public void deleteOffer(Long offerId, Long marketId) {
+		identifyAuthor(offerId, marketId);
+		isNew(offerId);
+		offerRepository.deleteById(offerId);
+	}
+
+	@Transactional(readOnly = true)
+	public OfferDto getOfferById(Long offerId) {
+		return toOfferDto(getOffer(offerId));
+	}
+
+	private Offer getOffer(Long offerId) {
+		return offerRepository
+				.findById(offerId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+	}
+
+	private void identifyAuthor(Long offerId, Long marketId) {
+		if (!getOffer(offerId).identifyAuthor(marketId)) {
+			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
+	}
+
+	private void isNew(Long offerId) {
+		if (getOffer(offerId).getOrder().isClosed()) {
+			throw new BusinessException(ErrorCode.ORDER_CLOSED);
+		}
+	}
+
+	@Transactional
+	public void deleteOfferWithoutAuth(Long offerId) {
+		offerRepository.deleteById(offerId);
 	}
 
 	private void validateSaveOffer(Order order, Market market) {
