@@ -29,10 +29,7 @@ public class CommentFacade {
 
 		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
 		if (!commentImageResponse.isEmpty()) {
-			commentImageResponse
-					.forEach(imageResponse ->
-							imageIntegrationService.deleteImages(commentId, ImageType.COMMENT, COMMENT_SUB_PATH))
-			;
+			imageIntegrationService.deleteImages(commentId, ImageType.COMMENT, COMMENT_SUB_PATH);
 		}
 	}
 }
