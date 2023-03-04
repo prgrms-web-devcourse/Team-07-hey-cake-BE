@@ -1,5 +1,7 @@
 package com.programmers.heycake.domain.member.model.entity;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -49,5 +51,9 @@ public class Member extends BaseEntity {
 
 	public boolean isMarket() {
 		return this.memberAuthority == MemberAuthority.MARKET;
+	}
+
+	public boolean isSameMember(Member member) {
+		return Objects.equals(this.id, member.getId());
 	}
 }
