@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CommentFacade {
 
-	private static final String COMMENT_SUB_PATH = "image/comment";
+	private static final String COMMENT_SUB_PATH = "images/comments";
 
 	private final CommentService commentService;
 	private final ImageService imageService;
