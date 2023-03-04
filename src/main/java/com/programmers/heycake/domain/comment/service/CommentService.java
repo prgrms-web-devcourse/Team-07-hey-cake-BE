@@ -2,10 +2,14 @@ package com.programmers.heycake.domain.comment.service;
 
 import static com.programmers.heycake.common.mapper.CommentMapper.*;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
+import com.programmers.heycake.common.mapper.CommentMapper;
+import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.comment.repository.CommentRepository;
 import com.programmers.heycake.domain.market.model.entity.Market;
@@ -65,4 +69,10 @@ public class CommentService {
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
+	public List<CommentResponse> getComments(Long offerId) {
+		return commentRepository.findByOfferId(offerId)
+				.stream()
+				.map(CommentMapper::toCommentResponse)
+				.toList();
+	}
 }
