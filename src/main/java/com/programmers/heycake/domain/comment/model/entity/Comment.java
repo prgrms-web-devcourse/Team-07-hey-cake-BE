@@ -57,7 +57,7 @@ public class Comment extends BaseEntity {
 		offer.getComments().add(this);
 	}
 
-	public boolean isNotWriter(Long targetMemberId) {
+	public boolean isNotWrittenBy(Long targetMemberId) {
 		return !Objects.equals(this.memberId, targetMemberId);
 	}
 }

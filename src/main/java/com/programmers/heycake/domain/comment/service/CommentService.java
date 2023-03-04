@@ -27,7 +27,7 @@ public class CommentService {
 	}
 
 	private void verifyCommentDeleteAuthority(Comment comment, Long memberId) {
-		if (comment.isNotWriter(memberId)) {
+		if (comment.isNotWrittenBy(memberId)) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
 	}
