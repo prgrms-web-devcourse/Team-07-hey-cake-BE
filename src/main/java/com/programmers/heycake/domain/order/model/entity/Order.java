@@ -94,4 +94,8 @@ public class Order extends BaseEntity {
 	public void upDateOrderStatus(OrderStatus orderStatus) {
 		this.orderStatus = orderStatus;
 	}
+
+	public boolean isNotWrittenBy(Long targetMemberId) {
+		return !Objects.equals(this.memberId, targetMemberId);
+	}
 }
