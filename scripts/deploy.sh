@@ -1,8 +1,8 @@
-REPOSITORY=/home/ubuntu/build
+REPOSITORY=/home/ubuntu/hey-cake
 cd $REPOSITORY
 
 APP_NAME=hey-cake
-JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep '.jar' | tail -n 1)
+JAR_NAME=$(ls $REPOSITORY/build/libs | grep '.jar' | tail -n 1)
 JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
 
 CURRENT_PID=$(pgrep -f $APP_NAME)
@@ -17,4 +17,4 @@ else
 fi
 
 echo "> $JAR_PATH 배포"
-nohup java -jar /home/ubuntu/build/build/libs/hey-cake-0.0.1-SNAPSHOT.jar > /dev/null 2> /dev/null < /dev/null &
+nohup java -jar $JAR_PATH > /dev/null 2> /dev/null &

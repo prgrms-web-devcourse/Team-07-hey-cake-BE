@@ -5,7 +5,7 @@ services:
     ports:
       - 3306:3306
     env_file:
-      - ../env/db.env
+      - ../env/docker-compose.env
     container_name: hey-cake
     environment:
       TZ: Asia/Seoul
