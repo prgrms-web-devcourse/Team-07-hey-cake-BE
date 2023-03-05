@@ -17,7 +17,6 @@ import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseLi
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
-import com.programmers.heycake.domain.order.model.entity.OrderHistory;
 
 import lombok.NoArgsConstructor;
 
@@ -101,44 +100,9 @@ public class OrderMapper {
 				.build();
 	}
 
-	public static MyOrderResponseList toMyOrderResponseListForMember(
+	public static MyOrderResponseList toMyOrderResponseList(
 			List<MyOrderResponse> orderList,
 			LocalDateTime lastTime) {
 		return new MyOrderResponseList(orderList, lastTime);
-	}
-
-	//TODO 추후에 삭제
-	public static MyOrderResponseList toMyOrderResponseListForMember(
-			LocalDateTime lastTime,
-			List<Order> orderList) {
-		List<MyOrderResponse> getOrderResponseList =
-				orderList
-						.stream()
-						.map(order -> MyOrderResponse.builder()
-								.id(order.getId())
-								.title(order.getTitle())
-								.orderStatus(order.getOrderStatus())
-								.region(order.getRegion())
-								.visitTime(order.getVisitDate())
-								.createdAt(order.getCreatedAt())
-								.imageUrl(null)
-								.build()
-						).toList();
-		return new MyOrderResponseList(getOrderResponseList, lastTime);
-	}
-
-	public static MyOrderResponseList toGetOrderResponseListForMarket(
-			//TOO 나중에 수정
-			List<OrderHistory> orderHistoryList,
-			LocalDateTime lastTime
-	) {
-		List<Order> orderList =
-				orderHistoryList
-						.stream()
-						.map(OrderHistory::getOrder)
-						.toList();
-
-		//TODO 추후에 변경
-		return toMyOrderResponseListForMember(lastTime, orderList);
 	}
 }

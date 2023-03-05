@@ -10,7 +10,7 @@ import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 
 public record MyOrderRequest(
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-		LocalDateTime cursorTime,
+		LocalDateTime cursorDate,
 		@Positive
 		int pageSize,
 		@Enum(target = OrderStatus.class)
