@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.market.controller;
+package com.programmers.heycake.domain.market;
 
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
@@ -52,7 +52,7 @@ import io.findify.s3mock.S3Mock;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-class EnrollmentControllerTest {
+class EnrollmentIntegrationTest {
 
 	@Autowired
 	private MockMvc mockMvc;
