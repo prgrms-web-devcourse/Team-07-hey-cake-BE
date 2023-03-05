@@ -27,10 +27,9 @@ public class OfferController {
 	private final OfferFacade offerFacade;
 
 	@PostMapping("/api/v1/offers")
-	public ResponseEntity<Void> saveOffer(@ModelAttribute OfferSaveRequest offerSaveRequest,
-			@RequestParam Long memberId) {
+	public ResponseEntity<Void> saveOffer(@ModelAttribute OfferSaveRequest offerSaveRequest) {
 
-		Long savedOfferId = offerFacade.saveOffer(offerSaveRequest, memberId);
+		Long savedOfferId = offerFacade.saveOffer(offerSaveRequest);
 		return ResponseEntity.created(URI.create("/api/v1/offers/" + savedOfferId)).build();
 	}
 
