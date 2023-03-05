@@ -14,7 +14,6 @@ import javax.servlet.GenericFilter;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtAuthenticationFilter extends GenericFilter {
 
 	private final Jwt jwt;
-	private final String accessToken;
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -41,6 +39,7 @@ public class JwtAuthenticationFilter extends GenericFilter {
 
 		if (SecurityContextHolder.getContext().getAuthentication() == null) {
 			String token = getAccessToken(httpServletRequest);
+
 			if (token != null) {
 				try {
 					Jwt.Claims claims = verify(token);
@@ -64,19 +63,11 @@ public class JwtAuthenticationFilter extends GenericFilter {
 	}
 
 	private String getAccessToken(HttpServletRequest request) {
-		Cookie[] cookies = request.getCookies();
-		String token = null;
-		if (cookies != null) {
-			token = Arrays
-					.stream(cookies)
-					.filter(cookie -> cookie.getName().equals(accessToken))
-					.map(Cookie::getValue)
-					.findFirst()
-					.orElse("");
-		}
-		if (token != null && !token.isBlank()) {
+		String accessToken = request.getHeader("access_token");
+
+		if (accessToken != null && !accessToken.isBlank()) {
 			try {
-				return URLDecoder.decode(token, StandardCharsets.UTF_8);
+				return URLDecoder.decode(accessToken, StandardCharsets.UTF_8);
 			} catch (Exception e) {
 				log.warn(e.getMessage(), e);
 			}
