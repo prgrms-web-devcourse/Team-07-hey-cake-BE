@@ -1,9 +1,12 @@
 package com.programmers.heycake.domain.order.repository;
 
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
+import static com.querydsl.core.group.GroupBy.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -24,38 +27,54 @@ public class OrderQueryDslRepository {
 	QOrder qOrder = QOrder.order;
 	QImage qImage = QImage.image;
 
-	public List<MyOrderResponse> findAllByMemberIdOrderByVisitDateAsc(Long memberId, String option,
-			LocalDateTime cursorTime,
+	public List<MyOrderResponse> findAllByMemberIdOrderByVisitDateAsc(
+			Long memberId,
+			String option,
+			LocalDateTime cursorDate,
 			int pageSize) {
 
-		return jpaQueryFactory
+		Map<Long, MyOrderResponse> myOrderResponseMap = jpaQueryFactory
 				.select(
-						Projections.constructor(
-								MyOrderResponse.class,
-								qOrder.id,
-								qOrder.title,
-								qOrder.orderStatus,
-								qOrder.region,
-								qOrder.visitDate,
-								qOrder.createdAt,
-								qImage.imageUrl
-						)
+						qOrder.id,
+						qOrder.title,
+						qOrder.orderStatus,
+						qOrder.region,
+						qOrder.visitDate,
+						qOrder.createdAt,
+						qImage.imageUrl
 				)
 				.from(qOrder)
 				.leftJoin(qImage)
 				.on(
-						qOrder.id.eq(qImage.referenceId).and(qImage.imageType.eq(ORDER))
-				).limit(1)
+						qOrder.id.eq(qImage.referenceId),
+						qImage.imageType.eq(ORDER)
+				)
 				.where(
-						gtOrderTime(cursorTime),
+						gtVisitDate(cursorDate),
 						eqOrderStatus(option),
 						qOrder.memberId.eq(memberId)
-				).orderBy(qOrder.visitDate.asc())
+				).orderBy(qOrder.visitDate.asc(), qImage.id.asc())
 				.limit(pageSize)
-				.fetch();
+				.transform(
+						groupBy(qOrder.id)
+								.as(
+										Projections.constructor(
+												MyOrderResponse.class,
+												qOrder.id,
+												qOrder.title,
+												qOrder.orderStatus,
+												qOrder.region,
+												qOrder.visitDate,
+												qOrder.createdAt,
+												qImage.imageUrl
+										)
+								)
+				);
+
+		return new ArrayList<>(myOrderResponseMap.values());
 	}
 
-	private BooleanExpression gtOrderTime(LocalDateTime cursorTime) {
+	private BooleanExpression gtVisitDate(LocalDateTime cursorTime) {
 		return cursorTime == null ? null : qOrder.visitDate.gt(cursorTime);
 	}
 
