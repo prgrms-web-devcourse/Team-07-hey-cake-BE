@@ -8,29 +8,29 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.programmers.heycake.common.dto.ErrorResponse;
 
-public class CustomAccessDeniedHandler implements AccessDeniedHandler {
+public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 	@Override
-	public void handle(HttpServletRequest request, HttpServletResponse response,
-			AccessDeniedException accessDeniedException) throws IOException {
+	public void commence(HttpServletRequest request, HttpServletResponse response,
+			AuthenticationException authException) throws IOException {
 
 		ErrorResponse errorResponse = ErrorResponse.of(
-				"권한이 없습니다.",
+				"사용자 인증에 실패하였습니다.",
 				request.getRequestURI(),
 				null
 		);
 
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType(APPLICATION_JSON.toString());
-		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
 		PrintWriter writer = response.getWriter();
 
@@ -44,3 +44,4 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 		writer.close();
 	}
 }
+
