@@ -1,6 +1,7 @@
 package com.programmers.heycake.domain.market.service;
 
 import static com.programmers.heycake.common.exception.ErrorCode.*;
+import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 
 import java.util.List;
 
@@ -9,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.mapper.EnrollmentMapper;
-import com.programmers.heycake.domain.image.repository.ImageRepository;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentGetListRequest;
 import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailNoImageResponse;
@@ -30,7 +30,6 @@ public class EnrollmentService {
 	private final MarketEnrollmentRepository marketEnrollmentRepository;
 	private final EnrollmentQueryDslRepository enrollmentQueryDslRepository;
 	private final MemberRepository memberRepository;
-	private final ImageRepository imageRepository;
 
 	@Transactional
 	public Long enrollMarket(EnrollmentCreateRequest request) {
@@ -38,7 +37,7 @@ public class EnrollmentService {
 		MarketEnrollment enrollment = EnrollmentMapper.toEntity(request);
 
 		// todo 인증 완성 시 회원 조회 방식 변경
-		Member member = memberRepository.findById(request.memberId())
+		Member member = memberRepository.findById(getMemberId())
 				.orElseThrow(() -> {
 					throw new BusinessException(UNAUTHORIZED);
 				});

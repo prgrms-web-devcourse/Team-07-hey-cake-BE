@@ -32,7 +32,6 @@ public class EnrollmentController {
 
 	private final EnrollmentFacade enrollmentFacade;
 
-	// todo 인증 로직 완료 시 입력 인자 수정 필요
 	@PostMapping
 	public ResponseEntity<Void> enrollMarket(@Valid @ModelAttribute EnrollmentCreateRequest request) {
 		Long enrollmentId = enrollmentFacade.enrollMarket(request);
