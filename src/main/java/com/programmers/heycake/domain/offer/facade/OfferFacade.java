@@ -36,11 +36,9 @@ public class OfferFacade {
 	private final ImageIntegrationService imageIntegrationService;
 
 	@Transactional
-	public Long saveOffer(OfferSaveRequest offerSaveRequest, Long memberId) {
+	public Long saveOffer(OfferSaveRequest offerSaveRequest) {
 
-		// TODO : 회원 검증 로직
-
-		Long savedOfferId = offerService.saveOffer(memberId, offerSaveRequest.orderId(), offerSaveRequest.expectedPrice(),
+		Long savedOfferId = offerService.saveOffer(offerSaveRequest.orderId(), offerSaveRequest.expectedPrice(),
 				offerSaveRequest.content());
 
 		imageIntegrationService.createAndUploadImage(offerSaveRequest.offerImage(), OFFER_IMAGE_SUB_PATH, savedOfferId,
