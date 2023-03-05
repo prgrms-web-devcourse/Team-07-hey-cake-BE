@@ -17,7 +17,6 @@ import com.programmers.heycake.domain.market.model.dto.response.MarketDetailNoIm
 import com.programmers.heycake.domain.market.service.MarketService;
 import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferSaveRequest;
-import com.programmers.heycake.domain.offer.model.dto.request.OfferSummaryRequest;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
 import com.programmers.heycake.domain.offer.service.OfferService;
@@ -37,11 +36,9 @@ public class OfferFacade {
 	private final ImageIntegrationService imageIntegrationService;
 
 	@Transactional
-	public Long saveOffer(OfferSaveRequest offerSaveRequest, Long memberId) {
+	public Long saveOffer(OfferSaveRequest offerSaveRequest) {
 
-		// TODO : 회원 검증 로직
-
-		Long savedOfferId = offerService.saveOffer(memberId, offerSaveRequest.orderId(), offerSaveRequest.expectedPrice(),
+		Long savedOfferId = offerService.saveOffer(offerSaveRequest.orderId(), offerSaveRequest.expectedPrice(),
 				offerSaveRequest.content());
 
 		imageIntegrationService.createAndUploadImage(offerSaveRequest.offerImage(), OFFER_IMAGE_SUB_PATH, savedOfferId,
@@ -73,8 +70,8 @@ public class OfferFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public List<OfferSummaryResponse> getOffers(OfferSummaryRequest offerSummaryRequest) {
-		List<OfferResponse> offerResponses = offerService.getOffersWithComments(offerSummaryRequest.orderId());
+	public List<OfferSummaryResponse> getOffers(Long orderId) {
+		List<OfferResponse> offerResponses = offerService.getOffersWithComments(orderId);
 
 		return offerResponses.stream()
 				.map(

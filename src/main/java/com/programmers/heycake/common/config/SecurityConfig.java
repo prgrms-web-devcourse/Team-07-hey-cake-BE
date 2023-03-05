@@ -17,7 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.programmers.heycake.common.exception.CustomAccessDeniedHandler;
-import com.programmers.heycake.common.jwt.CustomAuthenticationEntryPoint;
+import com.programmers.heycake.common.exception.CustomAuthenticationEntryPoint;
 import com.programmers.heycake.common.jwt.Jwt;
 import com.programmers.heycake.common.jwt.JwtAuthenticationFilter;
 import com.programmers.heycake.common.jwt.JwtProperties;
@@ -46,7 +46,7 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(List.of("*"));
 		configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"));
-		configuration.setAllowedHeaders(List.of("Content-Type"));
+		configuration.setAllowedHeaders(List.of("Content-Type", "access_token", "refresh_token"));
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
@@ -64,7 +64,7 @@ public class SecurityConfig {
 
 	@Bean
 	public JwtAuthenticationFilter jwtAuthenticationFilter() {
-		return new JwtAuthenticationFilter(jwt(), "access_token");
+		return new JwtAuthenticationFilter(jwt());
 	}
 
 	@Bean
