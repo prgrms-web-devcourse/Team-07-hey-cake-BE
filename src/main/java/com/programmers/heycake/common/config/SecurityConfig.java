@@ -17,7 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.programmers.heycake.common.exception.CustomAccessDeniedHandler;
-import com.programmers.heycake.common.jwt.CustomAuthenticationEntryPoint;
+import com.programmers.heycake.common.exception.CustomAuthenticationEntryPoint;
 import com.programmers.heycake.common.jwt.Jwt;
 import com.programmers.heycake.common.jwt.JwtAuthenticationFilter;
 import com.programmers.heycake.common.jwt.JwtProperties;
