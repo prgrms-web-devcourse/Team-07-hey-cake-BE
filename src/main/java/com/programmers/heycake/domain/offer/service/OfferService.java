@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OfferMapper;
+import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
@@ -23,7 +24,6 @@ import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
-
 
 @Service
 @RequiredArgsConstructor
@@ -55,6 +55,15 @@ public class OfferService {
 		identifyAuthor(offerId, marketId);
 		isNew(offerId);
 		offerRepository.deleteById(offerId);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Long> getOfferCommentIdList(Long offerId) {
+		return getOffer(offerId)
+				.getComments()
+				.stream()
+				.map(Comment::getId)
+				.toList();
 	}
 
 	@Transactional(readOnly = true)
