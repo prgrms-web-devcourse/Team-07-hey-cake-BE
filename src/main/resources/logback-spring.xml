@@ -17,9 +17,13 @@
     </springProfile>
 
     <springProfile name="prod">
+        <include resource="appender/console-appender.xml"/>
+        <include resource="appender/aws-debug-appender.xml"/>
         <include resource="appender/aws-info-appender.xml"/>
         <include resource="appender/aws-error-appender.xml"/>
-        <root level="INFO">
+        <root level="DEBUG">
+            <appender-ref ref="CONSOLE_APPENDER"/>
+            <appender-ref ref="AWS_DEBUG_LOG"/>
             <appender-ref ref="AWS_INFO_LOG"/>
             <appender-ref ref="AWS_ERROR_LOG"/>
         </root>
