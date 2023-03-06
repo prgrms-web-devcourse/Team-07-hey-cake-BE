@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.domain.image.model.entity.QImage;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
@@ -58,18 +59,21 @@ public class OrderQueryDslRepository {
 				.fetch();
 	}
 
+	@Transactional
 	public List<Order> findAllByRegionAndCategoryOrderByCreatedAtAsc(
 			Long cursorId,
 			int pageSize,
 			CakeCategory cakeCategory,
-			String region
+			String region,
+			String orderStatus
 	) {
 		return jpaQueryFactory
 				.selectFrom(qOrder)
 				.where(
 						ltOrderId(cursorId),
 						eqRegion(region),
-						eqCakeCategory(cakeCategory)
+						eqCakeCategory(cakeCategory),
+						eqOrderStatus(orderStatus)
 				)
 				.limit(pageSize)
 				.orderBy(qOrder.createdAt.desc())
