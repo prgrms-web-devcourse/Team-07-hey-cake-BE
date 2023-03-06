@@ -22,11 +22,18 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.programmers.heycake.common.dto.ErrorResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<ErrorResponse> handleIllegalArgumentException(HttpServletRequest request) {
+	public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+			HttpServletRequest request, IllegalArgumentException e
+	) {
+		logInfo(e, request.getRequestURI());
+
 		return ResponseEntity
 				.badRequest()
 				.body(ErrorResponse.of(BAD_REQUEST.getMessage(), request.getRequestURI(), null));
@@ -34,9 +41,10 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
-			HttpServletRequest request,
-			MethodArgumentNotValidException e
+			HttpServletRequest request, MethodArgumentNotValidException e
 	) {
+		logInfo(e, request.getRequestURI());
+
 		return ResponseEntity
 				.badRequest()
 				.body(
@@ -50,9 +58,10 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(ConstraintViolationException.class)
 	protected ResponseEntity<ErrorResponse> handleConstraintViolationException(
-			HttpServletRequest request,
-			ConstraintViolationException e
+			HttpServletRequest request, ConstraintViolationException e
 	) {
+		logInfo(e, request.getRequestURI());
+
 		return ResponseEntity.badRequest()
 				.body(ErrorResponse.of(
 						BAD_REQUEST.getMessage(),
@@ -65,6 +74,8 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
 			HttpServletRequest request, MethodArgumentTypeMismatchException e
 	) {
+		logInfo(e, request.getRequestURI());
+
 		ErrorResponse errorResponse = ErrorResponse.of(
 				e.getMessage(),
 				request.getRequestURI(),
@@ -79,7 +90,9 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(InvalidFormatException.class)
 	protected ResponseEntity<ErrorResponse> handleInvalidFormatException(
-			HttpServletRequest request, InvalidFormatException e) {
+			HttpServletRequest request, InvalidFormatException e
+	) {
+		logInfo(e, request.getRequestURI());
 
 		return ResponseEntity.badRequest()
 				.body(ErrorResponse.of(e.getMessage(), request.getRequestURI(), null));
@@ -87,6 +100,8 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(BusinessException.class)
 	public ResponseEntity<ErrorResponse> handleBusinessException(HttpServletRequest request, BusinessException e) {
+		logInfo(e, request.getRequestURI());
+
 		return ResponseEntity
 				.status(e.getErrorCode().getStatus())
 				.body(ErrorResponse.of(e.getErrorCode().getMessage(), request.getRequestURI(), null));
@@ -94,6 +109,17 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<ErrorResponse> handleRuntimeException(HttpServletRequest request, RuntimeException e) {
+		logWarn(e, request.getRequestURI());
+
+		return ResponseEntity
+				.badRequest()
+				.body(ErrorResponse.of(e.getMessage(), request.getRequestURI(), null));
+	}
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponse> handleRuntimeException(HttpServletRequest request, Exception e) {
+		logError(e, request.getRequestURI());
+
 		return ResponseEntity
 				.badRequest()
 				.body(ErrorResponse.of(e.getMessage(), request.getRequestURI(), null));
@@ -105,7 +131,7 @@ public class GlobalExceptionHandler {
 				.stream()
 				.map(error -> new ErrorResponse.FieldError(
 						error.getField(),
-						error.getRejectedValue().toString(),
+						Objects.requireNonNull(error.getRejectedValue()).toString(),
 						error.getDefaultMessage()
 				))
 				.toList();
@@ -126,5 +152,17 @@ public class GlobalExceptionHandler {
 	private String getFieldFromPath(Path fieldPath) {
 		PathImpl pathImpl = (PathImpl)fieldPath;
 		return pathImpl.getLeafNode().toString();
+	}
+
+	private void logInfo(Exception e, String url) {
+		log.info("URL = {}, Exception = {}, Message = {}", url, e.getClass().getSimpleName(), e.getMessage());
+	}
+
+	private void logWarn(Exception e, String url) {
+		log.info("URL = {}, Exception = {}, Message = {}", url, e.getClass().getSimpleName(), e.getMessage());
+	}
+
+	private void logError(Exception e, String url) {
+		log.info("URL = {}, Exception = {}, Message = {}", url, e.getClass().getSimpleName(), e.getMessage());
 	}
 }
