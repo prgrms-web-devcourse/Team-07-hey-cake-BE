@@ -71,6 +71,7 @@ public class OrderMapper {
 				.orderStatus(order.getOrderStatus())
 				.hopePrice(order.getHopePrice())
 				.region(order.getRegion())
+				.offerCount(order.getOffers().size())
 				.visitDate(order.getVisitDate())
 				.createdAt(order.getCreatedAt())
 				.build();
@@ -92,6 +93,7 @@ public class OrderMapper {
 						.toList()
 				)
 				.region(orderSimpleGetServiceResponse.region())
+				.offerCount(orderSimpleGetServiceResponse.offerCount())
 				.visitTime(orderSimpleGetServiceResponse.visitDate())
 				.createdAt(orderSimpleGetServiceResponse.createdAt())
 				.build();
