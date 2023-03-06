@@ -30,18 +30,14 @@ public class MemberController {
 	private final MemberService memberService;
 
 	@GetMapping("/login")
-	public void login(
-			@RequestParam String code, HttpServletResponse response
-	) throws IOException {
+	public ResponseEntity<TokenResponse> login(@RequestParam String code) throws IOException {
 		log.info("login start: {}", code);
 
 		TokenResponse tokenResponse = memberService.loginForKakao(code);
 
-		response.setHeader("access_token", tokenResponse.accessToken());
-		response.setHeader("refresh_token", tokenResponse.refreshToken());
-		response.sendRedirect(LOGIN_DONE_REDIRECT_URL);
-
 		log.info("login end: {}", code);
+
+		return ResponseEntity.ok(tokenResponse);
 	}
 
 	@PostMapping("api/v1/members/refresh")

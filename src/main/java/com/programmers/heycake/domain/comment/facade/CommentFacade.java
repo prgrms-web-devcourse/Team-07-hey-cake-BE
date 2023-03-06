@@ -40,6 +40,16 @@ public class CommentFacade {
 	}
 
 	@Transactional
+	public void deleteCommentWithoutAuth(Long commentId) {
+		commentService.deleteCommentWithoutAuth(commentId);
+
+		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
+		if (!commentImageResponse.isEmpty()) {
+			imageIntegrationService.deleteImages(commentId, ImageType.COMMENT, COMMENT_SUB_PATH);
+		}
+	}
+
+	@Transactional
 	public Long saveComment(CommentSaveRequest commentSaveRequest) {
 		Long memberId = AuthenticationUtil.getMemberId();
 

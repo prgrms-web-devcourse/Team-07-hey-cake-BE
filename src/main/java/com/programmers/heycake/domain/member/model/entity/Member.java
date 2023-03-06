@@ -36,7 +36,7 @@ public class Member extends BaseEntity {
 	@Column(name = "email", length = 254, nullable = false, unique = true)
 	private String email;
 
-	@Column(name = "member_role", nullable = false)
+	@Column(name = "member_authority", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private MemberAuthority memberAuthority;
 
