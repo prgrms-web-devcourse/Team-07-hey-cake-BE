@@ -2,6 +2,7 @@ package com.programmers.heycake.domain.market.controller;
 
 import java.net.URI;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -32,11 +33,13 @@ public class EnrollmentController {
 
 	private final EnrollmentFacade enrollmentFacade;
 
-	// todo 인증 로직 완료 시 입력 인자 수정 필요
 	@PostMapping
-	public ResponseEntity<Void> enrollMarket(@Valid @ModelAttribute EnrollmentCreateRequest request) {
-		Long enrollmentId = enrollmentFacade.enrollMarket(request);
-		URI location = URI.create("/api/v1/enrollments/" + enrollmentId);
+	public ResponseEntity<Void> enrollMarket(
+			@Valid @ModelAttribute EnrollmentCreateRequest createRequest,
+			HttpServletRequest request
+	) {
+		Long enrollmentId = enrollmentFacade.enrollMarket(createRequest);
+		URI location = URI.create(request.getRequestURI() + "/" + enrollmentId);
 		return ResponseEntity.created(location).build();
 	}
 

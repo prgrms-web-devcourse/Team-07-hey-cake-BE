@@ -53,7 +53,6 @@ class EnrollmentServiceTest {
 			"market".getBytes()
 	);
 	private EnrollmentCreateRequest request = EnrollmentCreateRequest.builder()
-			.memberId(1L)
 			.businessNumber("1234567890")
 			.ownerName("권성준")
 			.openDate(LocalDate.of(1997, 10, 10))
