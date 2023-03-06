@@ -80,6 +80,11 @@ public class CommentService {
 		commentRepository.delete(comment);
 	}
 
+	public void deleteCommentWithoutAuth(Long commentId) {
+		Comment comment = getComment(commentId);
+		commentRepository.delete(comment);
+	}
+
 	private void verifyCommentDeleteAuthority(Comment comment, Long memberId) {
 		if (comment.isNotWrittenBy(memberId)) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
@@ -97,4 +102,5 @@ public class CommentService {
 				.map(CommentMapper::toCommentResponse)
 				.toList();
 	}
+
 }
