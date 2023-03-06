@@ -28,6 +28,8 @@ public class HistoryQueryDslRepository {
 	QOrderHistory qOrderHistory = QOrderHistory.orderHistory;
 	QImage qImage = QImage.image;
 
+	private static final long MAX_PHOTOS_NUM_PER_ORDER = 3L;
+
 	public List<MyOrderResponse> findAllByMarketIdOrderByVisitDateAsc(
 			Long marketId,
 			OrderStatus option,
@@ -55,7 +57,7 @@ public class HistoryQueryDslRepository {
 						eqOrderStatus(option),
 						qOrderHistory.marketId.eq(marketId)
 				).orderBy(qOrderHistory.order.visitDate.asc())
-				.limit(pageSize * 3L)
+				.limit(pageSize * MAX_PHOTOS_NUM_PER_ORDER)
 				.transform(
 						groupBy(qOrderHistory.id)
 								.as(
