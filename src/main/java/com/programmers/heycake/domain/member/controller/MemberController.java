@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.programmers.heycake.domain.member.model.dto.request.AuthenticationCodeRequest;
 import com.programmers.heycake.domain.member.model.dto.request.TokenRefreshRequest;
 import com.programmers.heycake.domain.member.model.dto.response.TokenResponse;
 import com.programmers.heycake.domain.member.service.MemberService;
@@ -29,13 +30,14 @@ public class MemberController {
 
 	private final MemberService memberService;
 
-	@GetMapping("/login")
-	public ResponseEntity<TokenResponse> login(@RequestParam String code) throws IOException {
-		log.info("login start: {}", code);
+	@PostMapping("/login")
+	public ResponseEntity<TokenResponse> login(
+			@RequestBody AuthenticationCodeRequest authenticationCodeRequest) throws IOException {
+		log.info("login start: {}", authenticationCodeRequest.code());
 
-		TokenResponse tokenResponse = memberService.loginForKakao(code);
+		TokenResponse tokenResponse = memberService.loginForKakao(authenticationCodeRequest.code());
 
-		log.info("login end: {}", code);
+		log.info("login end: {}", authenticationCodeRequest.code());
 
 		return ResponseEntity.ok(tokenResponse);
 	}
