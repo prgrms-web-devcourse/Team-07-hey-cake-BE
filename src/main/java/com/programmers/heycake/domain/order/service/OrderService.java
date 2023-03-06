@@ -43,6 +43,7 @@ public class OrderService {
 
 	@Transactional(readOnly = true)
 	public MyOrderResponseList getMyOrderList(MyOrderRequest myOrderRequest, Long memberId) {
+
 		List<MyOrderResponse> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
 				myOrderRequest.orderStatus(),
@@ -54,6 +55,7 @@ public class OrderService {
 				orderList.isEmpty() ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).visitTime();
 
 		return toMyOrderResponseList(orderList, lastTime);
+
 	}
 
 	@Transactional
