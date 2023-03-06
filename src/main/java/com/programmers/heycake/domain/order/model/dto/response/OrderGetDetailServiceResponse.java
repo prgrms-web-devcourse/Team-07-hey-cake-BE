@@ -13,11 +13,11 @@ public record OrderGetDetailServiceResponse(
 		Long memberId,
 		String title,
 		String region,
+		CakeInfo cakeInfo,
 		OrderStatus orderStatus,
 		int hopePrice,
-		LocalDateTime visitDate,
-		CakeInfo cakeInfo,
 		int offerCount,
+		LocalDateTime visitDate,
 		LocalDateTime createdAt,
 		LocalDateTime updatedAt
 ) {
