@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OfferMapper;
+import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.common.util.AuthenticationUtil;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
@@ -56,6 +57,15 @@ public class OfferService {
 		identifyAuthor(offerId, marketId);
 		isNew(offerId);
 		offerRepository.deleteById(offerId);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Long> getOfferCommentIdList(Long offerId) {
+		return getOffer(offerId)
+				.getComments()
+				.stream()
+				.map(Comment::getId)
+				.toList();
 	}
 
 	@Transactional(readOnly = true)
