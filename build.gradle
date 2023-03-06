@@ -37,6 +37,7 @@ jacoco {
 
 test {
     finalizedBy 'jacocoTestReport'
+    useJUnitPlatform()
 }
 
 // jacoco 보고서 설정
