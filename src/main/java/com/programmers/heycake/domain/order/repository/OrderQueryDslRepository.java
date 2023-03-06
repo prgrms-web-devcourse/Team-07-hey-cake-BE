@@ -32,7 +32,7 @@ public class OrderQueryDslRepository {
 
 	public List<MyOrderResponse> findAllByMemberIdOrderByVisitDateAsc(
 			Long memberId,
-			String option,
+			OrderStatus option,
 			LocalDateTime cursorDate,
 			int pageSize) {
 
@@ -99,8 +99,8 @@ public class OrderQueryDslRepository {
 		return cursorTime == null ? null : qOrder.visitDate.gt(cursorTime);
 	}
 
-	private BooleanExpression eqOrderStatus(String option) {
-		return option == null ? null : qOrder.orderStatus.eq(OrderStatus.valueOf(option));
+	private BooleanExpression eqOrderStatus(OrderStatus option) {
+		return option == null ? null : qOrder.orderStatus.eq(option);
 	}
 
 	private BooleanExpression eqRegion(String region) {

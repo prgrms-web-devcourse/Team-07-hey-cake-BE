@@ -30,7 +30,7 @@ public class HistoryQueryDslRepository {
 
 	public List<MyOrderResponse> findAllByMarketIdOrderByVisitDateAsc(
 			Long marketId,
-			String option,
+			OrderStatus option,
 			LocalDateTime cursorDate,
 			int pageSize) {
 
@@ -79,7 +79,7 @@ public class HistoryQueryDslRepository {
 		return cursorTime == null ? null : qOrderHistory.order.visitDate.gt(cursorTime);
 	}
 
-	private BooleanExpression eqOrderStatus(String option) {
-		return option == null ? null : qOrderHistory.order.orderStatus.eq(OrderStatus.valueOf(option));
+	private BooleanExpression eqOrderStatus(OrderStatus option) {
+		return option == null ? null : qOrderHistory.order.orderStatus.eq(option);
 	}
 }
