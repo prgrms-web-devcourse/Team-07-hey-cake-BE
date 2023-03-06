@@ -16,11 +16,17 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.programmers.heycake.common.dto.ErrorResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,
-			AccessDeniedException accessDeniedException) throws IOException {
+			AccessDeniedException e) throws IOException {
+
+		log.info("URL = {}, Exception = {}, Message = {}",
+				request.getRequestURI(), e.getClass().getSimpleName(), e.getMessage());
 
 		ErrorResponse errorResponse = ErrorResponse.of(
 				"권한이 없습니다.",
