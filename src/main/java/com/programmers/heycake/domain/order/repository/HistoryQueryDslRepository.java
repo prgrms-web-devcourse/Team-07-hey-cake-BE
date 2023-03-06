@@ -55,7 +55,7 @@ public class HistoryQueryDslRepository {
 						eqOrderStatus(option),
 						qOrderHistory.marketId.eq(marketId)
 				).orderBy(qOrderHistory.order.visitDate.asc())
-				.limit(pageSize)
+				.limit(pageSize * 3L)
 				.transform(
 						groupBy(qOrderHistory.id)
 								.as(
@@ -71,6 +71,10 @@ public class HistoryQueryDslRepository {
 										)
 								)
 				);
+
+		if (myOrderResponseMap.size() > pageSize) {
+			return new ArrayList<>(myOrderResponseMap.values()).subList(0, pageSize);
+		}
 
 		return new ArrayList<>(myOrderResponseMap.values());
 	}

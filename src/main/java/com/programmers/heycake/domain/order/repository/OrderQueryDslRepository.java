@@ -57,7 +57,7 @@ public class OrderQueryDslRepository {
 						eqOrderStatus(option),
 						qOrder.memberId.eq(memberId)
 				).orderBy(qOrder.visitDate.asc(), qImage.id.asc())
-				.limit(pageSize)
+				.limit(pageSize * 3L)
 				.transform(
 						groupBy(qOrder.id)
 								.as(
@@ -73,6 +73,10 @@ public class OrderQueryDslRepository {
 										)
 								)
 				);
+
+		if (myOrderResponseMap.size() > pageSize) {
+			return new ArrayList<>(myOrderResponseMap.values()).subList(0, pageSize);
+		}
 
 		return new ArrayList<>(myOrderResponseMap.values());
 	}
