@@ -73,7 +73,6 @@ class HistoryControllerTest {
 		@DisplayName("Success - orderHistory 를 생성한다.")
 		void createHistorySuccess() throws Exception {
 			//given
-			// Member member = memberRepository.findById(2L).get();
 			Order order = orderRepository.save(getOrder(2L));
 			Market market = marketRepository.save(getMarket());
 			Offer offer = getOffer(market.getId(), 1000, "content");
