@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.domain.order.model.dto.request.HistoryFacadeRequest;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.entity.OrderHistory;
 import com.programmers.heycake.domain.order.repository.HistoryQueryDslRepository;
@@ -32,17 +33,17 @@ public class HistoryService {
 
 	@Transactional(readOnly = true)
 	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long marketId) {
-		List<OrderHistory> orderHistories = historyQueryDslRepository.findAllByMarketIdOrderByVisitDateAsc(
+		List<MyOrderResponse> orderHistories = historyQueryDslRepository.findAllByMarketIdOrderByVisitDateAsc(
 				marketId,
 				getOrderRequest.orderStatus(),
-				getOrderRequest.cursorTime(),
+				getOrderRequest.cursorDate(),
 				getOrderRequest.pageSize()
 		);
 
 		LocalDateTime lastTime =
 				orderHistories.isEmpty() ? LocalDateTime.MAX :
-						orderHistories.get(orderHistories.size() - 1).getOrder().getVisitDate();
+						orderHistories.get(orderHistories.size() - 1).visitTime();
 
-		return toGetOrderResponseListForMarket(orderHistories, lastTime);
+		return toMyOrderResponseList(orderHistories, lastTime);
 	}
 }

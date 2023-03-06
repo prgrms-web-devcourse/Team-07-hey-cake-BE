@@ -12,6 +12,7 @@ import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OfferMapper;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
+import com.programmers.heycake.common.util.AuthenticationUtil;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
@@ -34,7 +35,8 @@ public class OfferService {
 	private final OrderRepository orderRepository;
 	private final MarketRepository marketRepository;
 
-	public Long saveOffer(Long memberId, Long orderId, int expectedPrice, String content) {
+	public Long saveOffer(Long orderId, int expectedPrice, String content) {
+		Long memberId = AuthenticationUtil.getMemberId();
 
 		Order order = getOrder(orderId);
 		Member member = getMember(memberId);
