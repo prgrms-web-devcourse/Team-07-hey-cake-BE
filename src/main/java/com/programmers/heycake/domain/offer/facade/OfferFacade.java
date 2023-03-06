@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.mapper.OfferMapper;
+import com.programmers.heycake.domain.comment.facade.CommentFacade;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
@@ -33,6 +34,7 @@ public class OfferFacade {
 	private final MarketService marketService;
 	private final MemberService memberService;
 	private final ImageService imageService;
+	private final CommentFacade commentFacade;
 	private final ImageIntegrationService imageIntegrationService;
 
 	@Transactional
@@ -53,20 +55,17 @@ public class OfferFacade {
 		offerService.deleteOffer(offerId, marketId);
 		imageIntegrationService.deleteImages(offerId, OFFER, OFFER_IMAGE_SUB_PATH);
 
-		//comment service
-		//offerid로 Comment 리스트 조회
-		//Comment list stream 으로 삭제 메서드 호출
-		// coment(db+s3) 삭제
+		List<Long> offerCommentIdList = offerService.getOfferCommentIdList(offerId);
+		offerCommentIdList.forEach(commentFacade::deleteCommentWithoutAuth);
 	}
 
 	@Transactional
 	public void deleteOfferWithoutAuth(Long offerId) {
 		imageIntegrationService.deleteImages(offerId, OFFER, OFFER_IMAGE_SUB_PATH);
 		offerService.deleteOfferWithoutAuth(offerId);
-		//comment service
-		//offerid로 Comment 리스트 조회
-		//Comment list stream 으로 삭제 메서드 호출
-		// coment(db+s3) 삭제
+
+		List<Long> offerCommentIdList = offerService.getOfferCommentIdList(offerId);
+		offerCommentIdList.forEach(commentFacade::deleteCommentWithoutAuth);
 	}
 
 	@Transactional(readOnly = true)

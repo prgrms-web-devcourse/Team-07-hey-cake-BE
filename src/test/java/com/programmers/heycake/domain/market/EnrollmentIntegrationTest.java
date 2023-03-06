@@ -88,7 +88,6 @@ class EnrollmentIntegrationTest {
 				"market".getBytes()
 		);
 		userRequest = EnrollmentCreateRequest.builder()
-				.memberId(savedUser.getId())
 				.businessNumber("1234567890")
 				.ownerName("권성준")
 				.openDate(LocalDate.of(1997, 10, 10))
@@ -130,7 +129,6 @@ class EnrollmentIntegrationTest {
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
 							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 							.file("marketImage", userRequest.marketImage().getBytes())
-							.param("memberId", userRequest.memberId().toString())
 							.param("businessNumber", userRequest.businessNumber())
 							.param("ownerName", userRequest.ownerName())
 							.param("openDate", userRequest.openDate().toString())

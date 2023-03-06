@@ -42,17 +42,20 @@ public class OrderService {
 	}
 
 	@Transactional(readOnly = true)
-	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long memberId) {
+	public MyOrderResponseList getMyOrderList(MyOrderRequest myOrderRequest, Long memberId) {
+
 		List<MyOrderResponse> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
-				getOrderRequest.orderStatus(),
-				getOrderRequest.cursorTime(),
-				getOrderRequest.pageSize()
+				myOrderRequest.orderStatus(),
+				myOrderRequest.cursorDate(),
+				myOrderRequest.pageSize()
 		);
 
 		LocalDateTime lastTime =
 				orderList.isEmpty() ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).visitTime();
-		return toMyOrderResponseListForMember(orderList, lastTime);
+
+		return toMyOrderResponseList(orderList, lastTime);
+
 	}
 
 	@Transactional

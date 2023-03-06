@@ -5,7 +5,6 @@ import java.time.LocalTime;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,8 +13,6 @@ import lombok.Builder;
 
 @Builder
 public record EnrollmentCreateRequest(
-		// todo 인증 구현 시 marketId 제거
-		@NotNull @Positive Long memberId,
 		@NotBlank String businessNumber,
 		@NotBlank String ownerName,
 		@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate openDate,

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.programmers.heycake.domain.member.model.dto.request.AuthenticationCodeRequest;
 import com.programmers.heycake.domain.member.model.dto.request.TokenRefreshRequest;
 import com.programmers.heycake.domain.member.model.dto.response.TokenResponse;
 import com.programmers.heycake.domain.member.service.MemberService;
@@ -29,19 +30,16 @@ public class MemberController {
 
 	private final MemberService memberService;
 
-	@GetMapping("/login")
-	public void login(
-			@RequestParam String code, HttpServletResponse response
-	) throws IOException {
-		log.info("login start: {}", code);
+	@PostMapping("/login")
+	public ResponseEntity<TokenResponse> login(
+			@RequestBody AuthenticationCodeRequest authenticationCodeRequest) throws IOException {
+		log.info("login start: {}", authenticationCodeRequest.code());
 
-		TokenResponse tokenResponse = memberService.loginForKakao(code);
+		TokenResponse tokenResponse = memberService.loginForKakao(authenticationCodeRequest.code());
 
-		response.setHeader("access_token", tokenResponse.accessToken());
-		response.setHeader("refresh_token", tokenResponse.refreshToken());
-		response.sendRedirect(LOGIN_DONE_REDIRECT_URL);
+		log.info("login end: {}", authenticationCodeRequest.code());
 
-		log.info("login end: {}", code);
+		return ResponseEntity.ok(tokenResponse);
 	}
 
 	@PostMapping("api/v1/members/refresh")
