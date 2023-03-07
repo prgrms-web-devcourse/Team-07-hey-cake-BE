@@ -9,6 +9,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,6 +21,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +45,7 @@ import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 import com.programmers.heycake.util.WithMockCustomUser;
 
-@SpringBootTest
+@SpringBootTest(properties = {"spring.config.location=classpath:application-test.yml"})
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 class HistoryControllerTest {
@@ -70,8 +76,6 @@ class HistoryControllerTest {
 	@Autowired
 	MemberService memberService;
 
-	static final String TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoiaGV5LWNha2UiLCJleHAiOjM2NzgwOTQyNTMsImlhdCI6MTY3ODA5NDI1MywibWVtYmVySWQiOjJ9.efMIPCAP9jf6-HklFpQ832Ur50LSLq-H6_7Tcwemh7wPc7NrVJIherhvdoxIXA7NWl9xm1mQsKgzbnRD6MuB1g";
-
 	@BeforeEach
 	void createOffer() {
 		//offer 생성
@@ -87,7 +91,12 @@ class HistoryControllerTest {
 		void createHistorySuccess() throws Exception {
 			//given
 
-			Member member = memberRepository.save(new Member("email", MemberAuthority.USER, "0000"));
+			Member member = memberRepository.save(new Member("email@naver.com", MemberAuthority.USER, "0000"));
+
+			SecurityContext context = SecurityContextHolder.getContext();
+			context.setAuthentication(
+					new UsernamePasswordAuthenticationToken(member.getId(), null,
+							List.of(new SimpleGrantedAuthority("ROLE_USER"))));
 			Order order = orderRepository.save(getOrder(member.getId()));
 
 			MarketEnrollment marketEnrollment = getMarketEnrollment();
@@ -109,8 +118,6 @@ class HistoryControllerTest {
 			//when //then
 
 			mockMvc.perform(post("/api/v1/histories")
-							.header("access_token",
-									TOKEN)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(historyControllerRequest))
 							.with(csrf())
@@ -118,9 +125,6 @@ class HistoryControllerTest {
 					.andDo(print())
 					.andDo(document(
 							"history/주문 확정 생성",
-							requestHeaders(
-									headerWithName("access_token").description("access token")
-							),
 							requestFields(
 									fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("orderId"),
 									fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("offerId")
