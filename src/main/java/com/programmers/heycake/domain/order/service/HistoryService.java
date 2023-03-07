@@ -32,12 +32,12 @@ public class HistoryService {
 	}
 
 	@Transactional(readOnly = true)
-	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long marketId) {
+	public MyOrderResponseList getMyOrderList(MyOrderRequest myOrderRequest, Long marketId) {
 		List<MyOrderResponse> orderHistories = historyQueryDslRepository.findAllByMarketIdOrderByVisitDateAsc(
 				marketId,
-				getOrderRequest.orderStatus(),
-				getOrderRequest.cursorDate(),
-				getOrderRequest.pageSize()
+				myOrderRequest.orderStatus(),
+				myOrderRequest.cursorDate(),
+				myOrderRequest.pageSize()
 		);
 
 		LocalDateTime lastTime =
