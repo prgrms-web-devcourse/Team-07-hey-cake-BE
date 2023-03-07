@@ -50,6 +50,9 @@ import com.programmers.heycake.util.WithMockCustomUserSecurityContextFactory;
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 class HistoryControllerTest {
+
+	private static final String ACCESS_TOKEN = "access_token";
+
 	@Autowired
 	MockMvc mockMvc;
 
@@ -117,11 +120,15 @@ class HistoryControllerTest {
 			mockMvc.perform(post("/api/v1/histories")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(historyControllerRequest))
+							.header("access_token", ACCESS_TOKEN)
 							.with(csrf())
 					).andExpect(status().isCreated())
 					.andDo(print())
 					.andDo(document(
 							"history/주문 확정 생성",
+							requestHeaders(
+									headerWithName("access_token").description("access token")
+							),
 							requestFields(
 									fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("orderId"),
 									fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("offerId")
