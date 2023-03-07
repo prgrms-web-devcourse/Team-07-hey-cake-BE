@@ -39,7 +39,7 @@ import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 import com.programmers.heycake.util.WithMockCustomUser;
 
-@SpringBootTest
+@SpringBootTest(properties = {"spring.config.location=classpath:application-test.yml"})
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 class HistoryControllerTest {
