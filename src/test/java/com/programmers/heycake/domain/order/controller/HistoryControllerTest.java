@@ -9,6 +9,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +21,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +45,7 @@ import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 import com.programmers.heycake.util.WithMockCustomUserSecurityContextFactory;
 
+@Transactional
 @SpringBootTest(properties = {"spring.config.location=classpath:application-test.yml"})
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
@@ -84,11 +90,16 @@ class HistoryControllerTest {
 		@DisplayName("Success - orderHistory 를 생성한다.")
 		void createHistorySuccess() throws Exception {
 			//given
+			// Member member = memberRepository.save(new Member(UUID.randomUUID() + "@naver.com", MemberAuthority.USER, "0000"));
+			Member member = memberRepository.save(new Member("rhdtn311@naver.com", MemberAuthority.USER, "0000"));
 
-			Member member = memberRepository.save(new Member(UUID.randomUUID() + "@naver.com", MemberAuthority.USER, "0000"));
+			SecurityContext context = SecurityContextHolder.getContext();
+			context.setAuthentication(
+					new UsernamePasswordAuthenticationToken(member.getId(), null,
+							List.of(new SimpleGrantedAuthority("ROLE_USER"))));
 
-			MemberAuthority[] roles = {MemberAuthority.USER};
-			withMockCustomUserSecurityContextFactory.createSecurityContext(member.getId(), roles);
+			// MemberAuthority[] roles = {MemberAuthority.USER};
+			// withMockCustomUserSecurityContextFactory.createSecurityContext(member.getId(), roles);
 
 			Order order = orderRepository.save(getOrder(member.getId()));
 
