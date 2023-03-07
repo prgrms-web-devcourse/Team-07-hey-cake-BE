@@ -80,8 +80,6 @@ class HistoryControllerTest {
 	@Autowired
 	WithMockCustomUserSecurityContextFactory withMockCustomUserSecurityContextFactory;
 
-	static final String TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoiaGV5LWNha2UiLCJleHAiOjM2NzgwOTQyNTMsImlhdCI6MTY3ODA5NDI1MywibWVtYmVySWQiOjJ9.efMIPCAP9jf6-HklFpQ832Ur50LSLq-H6_7Tcwemh7wPc7NrVJIherhvdoxIXA7NWl9xm1mQsKgzbnRD6MuB1g";
-
 	@Nested
 	@DisplayName("createHistory")
 	@Transactional
@@ -90,16 +88,12 @@ class HistoryControllerTest {
 		@DisplayName("Success - orderHistory 를 생성한다.")
 		void createHistorySuccess() throws Exception {
 			//given
-			// Member member = memberRepository.save(new Member(UUID.randomUUID() + "@naver.com", MemberAuthority.USER, "0000"));
 			Member member = memberRepository.save(new Member("rhdtn311@naver.com", MemberAuthority.USER, "0000"));
 
 			SecurityContext context = SecurityContextHolder.getContext();
 			context.setAuthentication(
 					new UsernamePasswordAuthenticationToken(member.getId(), null,
 							List.of(new SimpleGrantedAuthority("ROLE_USER"))));
-
-			// MemberAuthority[] roles = {MemberAuthority.USER};
-			// withMockCustomUserSecurityContextFactory.createSecurityContext(member.getId(), roles);
 
 			Order order = orderRepository.save(getOrder(member.getId()));
 
@@ -121,7 +115,6 @@ class HistoryControllerTest {
 
 			//when //then
 			mockMvc.perform(post("/api/v1/histories")
-							.header("access_token", TOKEN)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(historyControllerRequest))
 							.with(csrf())
@@ -129,9 +122,6 @@ class HistoryControllerTest {
 					.andDo(print())
 					.andDo(document(
 							"history/주문 확정 생성",
-							requestHeaders(
-									headerWithName("access_token").description("access token")
-							),
 							requestFields(
 									fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("orderId"),
 									fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("offerId")
