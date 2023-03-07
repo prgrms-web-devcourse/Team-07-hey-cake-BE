@@ -43,11 +43,17 @@ public class OrderService {
 
 	@Transactional(readOnly = true)
 	public MyOrderResponseList getMyOrderList(MyOrderRequest myOrderRequest, Long memberId) {
+		LocalDateTime cursorTime = null;
+		if (myOrderRequest.cursorId() != null) {
+			cursorTime = orderRepository.findById(myOrderRequest.cursorId())
+					.map(Order::getVisitDate)
+					.orElse(null);
+		}
 
 		List<MyOrderResponse> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
 				myOrderRequest.orderStatus(),
-				myOrderRequest.cursorDate(),
+				cursorTime,
 				myOrderRequest.pageSize()
 		);
 
