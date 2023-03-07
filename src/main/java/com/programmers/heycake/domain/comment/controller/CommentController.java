@@ -12,13 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.comment.facade.CommentFacade;
 import com.programmers.heycake.domain.comment.model.dto.request.CommentSaveRequest;
-import com.programmers.heycake.domain.comment.model.dto.request.CommentsRequest;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentSummaryResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -48,9 +47,9 @@ public class CommentController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<CommentSummaryResponse>> getComments(@RequestBody CommentsRequest commentsRequest) {
+	public ResponseEntity<List<CommentSummaryResponse>> getComments(@RequestParam Long offerId) {
 
-		List<CommentSummaryResponse> comments = commentFacade.getComments(commentsRequest.offerId());
+		List<CommentSummaryResponse> comments = commentFacade.getComments(offerId);
 		return ResponseEntity.ok(comments);
 	}
 }
