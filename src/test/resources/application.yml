@@ -2,6 +2,8 @@ spring:
   config:
     import:
       - optional:file:env/test-spring.env[.properties]
+      - application-aws.yml
+      - application-security.yml
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
