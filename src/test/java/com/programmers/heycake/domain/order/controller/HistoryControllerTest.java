@@ -59,6 +59,8 @@ class HistoryControllerTest {
 	@Autowired
 	MemberRepository memberRepository;
 
+	static final String TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoiaGV5LWNha2UiLCJleHAiOjM2NzgwOTQyNTMsImlhdCI6MTY3ODA5NDI1MywibWVtYmVySWQiOjJ9.efMIPCAP9jf6-HklFpQ832Ur50LSLq-H6_7Tcwemh7wPc7NrVJIherhvdoxIXA7NWl9xm1mQsKgzbnRD6MuB1g";
+
 	@BeforeEach
 	void createOffer() {
 		//offer 생성
@@ -83,9 +85,10 @@ class HistoryControllerTest {
 					new HistoryControllerRequest(order.getId(), offer.getId());
 
 			//when //then
+
 			mockMvc.perform(post("/api/v1/histories")
 							.header("access_token",
-									"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoiaGV5LWNha2UiLCJleHAiOjM2NzgwOTQyNTMsImlhdCI6MTY3ODA5NDI1MywibWVtYmVySWQiOjJ9.efMIPCAP9jf6-HklFpQ832Ur50LSLq-H6_7Tcwemh7wPc7NrVJIherhvdoxIXA7NWl9xm1mQsKgzbnRD6MuB1g")
+									TOKEN)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(historyControllerRequest))
 							.with(csrf())
@@ -143,7 +146,7 @@ class HistoryControllerTest {
 		//when //then
 		mockMvc.perform(post("/api/v1/histories")
 						.header("access_token",
-								"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoiaGV5LWNha2UiLCJleHAiOjM2NzgwNTE5MzEsImlhdCI6MTY3ODA1MTkzMSwibWVtYmVySWQiOjJ9.Kou7wVDRO6v9Bb-bBOczLcNWzePtih9RTTVO6349qCqDEzgIezfwlVWj7se3u4T1sqPGL_Xr1dQRt7p0uXUJ9A")
+								"TOKEN")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(historyControllerRequest))
 						.with(csrf())

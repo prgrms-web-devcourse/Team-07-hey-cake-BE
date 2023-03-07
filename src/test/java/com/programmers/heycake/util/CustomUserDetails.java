@@ -13,7 +13,7 @@ import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 
 public class CustomUserDetails implements UserDetails {
 
-	long memberId;
+	private long memberId;
 
 	private List<GrantedAuthority> authorities;
 
