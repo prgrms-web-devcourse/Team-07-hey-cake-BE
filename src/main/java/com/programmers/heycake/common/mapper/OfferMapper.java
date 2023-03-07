@@ -54,6 +54,7 @@ public class OfferMapper {
 		return OfferSummaryResponse.builder()
 				.offerId(offerResponse.offerId())
 				.marketId(offerResponse.marketId())
+				.enrollmentId(marketResponse.enrollmentId())
 				.marketName(marketResponse.marketName())
 				.expectedPrice(offerResponse.expectedPrice())
 				.imageUrl(imageUrl)

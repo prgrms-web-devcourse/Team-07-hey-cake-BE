@@ -25,6 +25,7 @@ public class MarketMapper {
 				.marketName(market.getMarketEnrollment().getMarketName())
 				.businessNumber(market.getMarketEnrollment().getBusinessNumber())
 				.ownerName(market.getMarketEnrollment().getOwnerName())
+				.enrollmentId(market.getMarketEnrollment().getId())
 				.build();
 	}
 

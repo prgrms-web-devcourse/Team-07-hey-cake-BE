@@ -16,6 +16,7 @@ public record MarketDetailNoImageResponse(
 		String description,
 		String marketName,
 		String businessNumber,
-		String ownerName
+		String ownerName,
+		Long enrollmentId
 ) {
 }
