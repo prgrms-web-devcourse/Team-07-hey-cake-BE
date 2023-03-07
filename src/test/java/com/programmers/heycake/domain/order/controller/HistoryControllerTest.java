@@ -28,6 +28,7 @@ import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
+import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
 import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
@@ -81,13 +82,13 @@ class HistoryControllerTest {
 	@Transactional
 	class CreateHistory {
 		@Test
-		@WithMockCustomUser
+		@WithMockCustomUser(memberId = 1L)
 		@DisplayName("Success - orderHistory 를 생성한다.")
 		void createHistorySuccess() throws Exception {
 			//given
 
-			Order order = orderRepository.save(getOrder(2L));
-			Member member = memberService.getMemberById(2L);
+			Member member = memberRepository.save(new Member("email", MemberAuthority.USER, "0000"));
+			Order order = orderRepository.save(getOrder(member.getId()));
 
 			MarketEnrollment marketEnrollment = getMarketEnrollment();
 			marketEnrollment.setMember(member);
