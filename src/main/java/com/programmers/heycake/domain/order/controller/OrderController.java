@@ -4,6 +4,7 @@ import java.net.URI;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +23,7 @@ import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponses;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
+import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -60,8 +61,13 @@ public class OrderController {
 	}
 
 	@GetMapping("/my")
-	public ResponseEntity<MyOrderResponseList> getOrderList(@RequestBody @Valid MyOrderRequest getOrderRequest) {
-		MyOrderResponseList myOrderList = orderFacade.getMyOrderList(getOrderRequest);
+	public ResponseEntity<MyOrderResponseList> getOrderList(
+			@RequestParam(required = false) @Positive Long cursorId,
+			@RequestParam(defaultValue = "10") @Positive Integer pageSize,
+			@RequestParam(required = false) OrderStatus orderStatus
+	) {
+		MyOrderRequest myOrderRequest = new MyOrderRequest(cursorId, pageSize, orderStatus);
+		MyOrderResponseList myOrderList = orderFacade.getMyOrderList(myOrderRequest);
 
 		return ResponseEntity.ok(myOrderList);
 	}

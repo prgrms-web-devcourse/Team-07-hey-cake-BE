@@ -5,6 +5,7 @@ import static com.programmers.heycake.common.mapper.OrderMapper.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import com.programmers.heycake.domain.order.model.dto.request.HistoryFacadeReque
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
+import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.entity.OrderHistory;
 import com.programmers.heycake.domain.order.repository.HistoryQueryDslRepository;
 import com.programmers.heycake.domain.order.repository.HistoryRepository;
@@ -32,12 +34,21 @@ public class HistoryService {
 	}
 
 	@Transactional(readOnly = true)
-	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest, Long marketId) {
+	public MyOrderResponseList getMyOrderList(MyOrderRequest myOrderRequest, Long marketId) {
+		LocalDateTime cursorTime = null;
+		if (myOrderRequest.cursorId() != null) {
+			Optional<Order> order = historyRepository.findById(myOrderRequest.cursorId())
+					.map(OrderHistory::getOrder);
+			if (order.isPresent()) {
+				cursorTime = order.get().getVisitDate();
+			}
+		}
+
 		List<MyOrderResponse> orderHistories = historyQueryDslRepository.findAllByMarketIdOrderByVisitDateAsc(
 				marketId,
-				getOrderRequest.orderStatus(),
-				getOrderRequest.cursorDate(),
-				getOrderRequest.pageSize()
+				myOrderRequest.orderStatus(),
+				cursorTime,
+				myOrderRequest.pageSize()
 		);
 
 		LocalDateTime lastTime =
@@ -45,5 +56,6 @@ public class HistoryService {
 						orderHistories.get(orderHistories.size() - 1).visitTime();
 
 		return toMyOrderResponseList(orderHistories, lastTime);
+
 	}
 }

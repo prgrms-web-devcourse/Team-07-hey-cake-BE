@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +22,8 @@ public class HistoryController {
 	private final HistoryFacade historyFacade;
 
 	@PostMapping
-	public ResponseEntity<Void> createHistory(HistoryControllerRequest historyRequest, HttpServletRequest request) {
+	public ResponseEntity<Void> createHistory(
+			@RequestBody HistoryControllerRequest historyRequest, HttpServletRequest request) {
 		Long historyId = historyFacade.createHistory(historyRequest);
 
 		URI location = URI.create(request.getRequestURI() + "/" + historyId);
