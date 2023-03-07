@@ -24,8 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.programmers.heycake.domain.market.model.entity.Market;
+import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
+import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
+import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
+import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.facade.HistoryFacade;
@@ -59,6 +63,12 @@ class HistoryControllerTest {
 	@Autowired
 	MemberRepository memberRepository;
 
+	@Autowired
+	MarketEnrollmentRepository marketEnrollmentRepository;
+
+	@Autowired
+	MemberService memberService;
+
 	static final String TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoiaGV5LWNha2UiLCJleHAiOjM2NzgwOTQyNTMsImlhdCI6MTY3ODA5NDI1MywibWVtYmVySWQiOjJ9.efMIPCAP9jf6-HklFpQ832Ur50LSLq-H6_7Tcwemh7wPc7NrVJIherhvdoxIXA7NWl9xm1mQsKgzbnRD6MuB1g";
 
 	@BeforeEach
@@ -75,8 +85,19 @@ class HistoryControllerTest {
 		@DisplayName("Success - orderHistory 를 생성한다.")
 		void createHistorySuccess() throws Exception {
 			//given
+
 			Order order = orderRepository.save(getOrder(2L));
-			Market market = marketRepository.save(getMarket());
+			Member member = memberService.getMemberById(2L);
+
+			MarketEnrollment marketEnrollment = getMarketEnrollment();
+			marketEnrollment.setMember(member);
+			marketEnrollmentRepository.save(marketEnrollment);
+
+			Market market = getMarket();
+			market.setMember(member);
+			market.setMarketEnrollment(marketEnrollment);
+			marketRepository.save(market);
+
 			Offer offer = getOffer(market.getId(), 1000, "content");
 			offer.setOrder(order);
 			offerRepository.save(offer);
