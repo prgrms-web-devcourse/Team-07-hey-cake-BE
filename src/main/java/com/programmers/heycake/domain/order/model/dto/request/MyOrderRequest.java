@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.Positive;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.programmers.heycake.common.validator.Enum;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 
 public record MyOrderRequest(
@@ -13,7 +12,6 @@ public record MyOrderRequest(
 		LocalDateTime cursorDate,
 		@Positive
 		int pageSize,
-		@Enum(target = OrderStatus.class)
-		String orderStatus
+		OrderStatus orderStatus
 ) {
 }

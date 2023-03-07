@@ -29,10 +29,11 @@ public class OrderQueryDslRepository {
 	private final JPAQueryFactory jpaQueryFactory;
 	QOrder qOrder = QOrder.order;
 	QImage qImage = QImage.image;
+	private static final long MAX_PHOTOS_NUM_PER_ORDER = 3L;
 
 	public List<MyOrderResponse> findAllByMemberIdOrderByVisitDateAsc(
 			Long memberId,
-			String option,
+			OrderStatus option,
 			LocalDateTime cursorDate,
 			int pageSize) {
 
@@ -57,7 +58,7 @@ public class OrderQueryDslRepository {
 						eqOrderStatus(option),
 						qOrder.memberId.eq(memberId)
 				).orderBy(qOrder.visitDate.asc(), qImage.id.asc())
-				.limit(pageSize)
+				.limit(pageSize * MAX_PHOTOS_NUM_PER_ORDER)
 				.transform(
 						groupBy(qOrder.id)
 								.as(
@@ -73,6 +74,10 @@ public class OrderQueryDslRepository {
 										)
 								)
 				);
+
+		if (myOrderResponseMap.size() > pageSize) {
+			return new ArrayList<>(myOrderResponseMap.values()).subList(0, pageSize);
+		}
 
 		return new ArrayList<>(myOrderResponseMap.values());
 	}
@@ -99,8 +104,8 @@ public class OrderQueryDslRepository {
 		return cursorTime == null ? null : qOrder.visitDate.gt(cursorTime);
 	}
 
-	private BooleanExpression eqOrderStatus(String option) {
-		return option == null ? null : qOrder.orderStatus.eq(OrderStatus.valueOf(option));
+	private BooleanExpression eqOrderStatus(OrderStatus option) {
+		return option == null ? null : qOrder.orderStatus.eq(option);
 	}
 
 	private BooleanExpression eqRegion(String region) {
