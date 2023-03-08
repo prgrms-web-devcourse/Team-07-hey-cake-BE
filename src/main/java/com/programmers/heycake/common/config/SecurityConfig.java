@@ -88,7 +88,7 @@ public class SecurityConfig {
 				.antMatchers(HttpMethod.DELETE, "/api/v1/comments/**").hasAnyRole("ADMIN", "MARKET", "USER")
 				.antMatchers(HttpMethod.GET, "/api/v1/comments").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/v1/enrollments").hasRole("USER")
-				.antMatchers(HttpMethod.GET, "/api/v1/enrollments/**").hasRole("ADMIN")
+				.antMatchers(HttpMethod.GET, "/api/v1/enrollments/**").permitAll()
 				.antMatchers(HttpMethod.PATCH, "/api/v1/enrollments/**").hasRole("ADMIN")
 				.antMatchers(HttpMethod.GET, "/api/v1/markets/**").permitAll()
 				.antMatchers(HttpMethod.PATCH, "/api/v1/markets/**").hasRole("MARKET")
