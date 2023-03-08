@@ -54,34 +54,31 @@ public class MemberService {
 
 		if (!memberRepository.existsByEmail(memberInfo.email())) {
 			memberRepository.save(
-					new Member(
-							memberInfo.email(),
-							USER,
-							memberInfo.birthday()
-					)
+					new Member(memberInfo.email(), USER, memberInfo.birthday())
 			);
 		}
 
 		Member member = memberRepository.findByEmail(memberInfo.email()).get();
+		Optional<Token> foundToken = tokenRepository.findByMemberId(member.getId());
 
 		TokenResponse tokenResponse = jwt.generateAllToken(
-				Jwt
-						.Claims.from(member.getId(), new String[] {
+				Jwt.Claims.from(
+						member.getId(),
+						new String[] {
 								member.getMemberAuthority().getRole()
 						})
 		);
 
-		Optional<Token> optionalToken = tokenRepository.findByMemberId(member.getId());
-		if (optionalToken.isPresent()) {
-			throw new RuntimeException("토큰이 만료되지 않은 상태에서, 로그인을 다시 하였습니다.");
-		}
-
-		tokenRepository.save(
-				new Token(
-						member.getId(),
-						tokenResponse.refreshToken()
-				)
+		Token newToken = new Token(
+				member.getId(),
+				tokenResponse.refreshToken()
 		);
+
+		if (foundToken.isPresent()) {
+			foundToken.get().updateRefreshToken(tokenResponse.refreshToken());
+		} else {
+			tokenRepository.save(newToken);
+		}
 		return tokenResponse;
 	}
 
@@ -208,4 +205,3 @@ public class MemberService {
 		return getMemberById(memberId).isMarket();
 	}
 }
-
