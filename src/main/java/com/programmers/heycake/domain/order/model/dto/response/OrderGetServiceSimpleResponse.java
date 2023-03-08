@@ -15,6 +15,7 @@ public record OrderGetServiceSimpleResponse(
 		CakeInfo cakeInfo,
 		OrderStatus orderStatus,
 		int hopePrice,
+		int offerCount,
 		LocalDateTime visitDate,
 		LocalDateTime createdAt
 ) {

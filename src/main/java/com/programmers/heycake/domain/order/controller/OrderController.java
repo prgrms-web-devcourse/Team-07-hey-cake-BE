@@ -50,9 +50,10 @@ public class OrderController {
 			@RequestParam(required = false) Long cursorId,
 			@RequestParam int pageSize,
 			@RequestParam(required = false) CakeCategory cakeCategory,
-			@RequestParam(required = false) String region
+			@RequestParam(required = false) String region,
+			@RequestParam(required = false) String orderStatus
 	) {
-		return ResponseEntity.ok(orderFacade.getOrders(cursorId, pageSize, cakeCategory, region));
+		return ResponseEntity.ok(orderFacade.getOrders(cursorId, pageSize, cakeCategory, region, orderStatus));
 	}
 
 	@GetMapping("/{orderId}")

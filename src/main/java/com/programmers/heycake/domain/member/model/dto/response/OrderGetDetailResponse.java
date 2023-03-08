@@ -15,13 +15,13 @@ public record OrderGetDetailResponse(
 		Long memberId,
 		String title,
 		String region,
-		OrderStatus orderStatus,
-		int hopePrice,
-		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-		LocalDateTime visitDate,
 		CakeInfo cakeInfo,
 		List<String> images,
+		OrderStatus orderStatus,
+		int hopePrice,
 		int offerCount,
+		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+		LocalDateTime visitDate,
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 		LocalDateTime createdAt,
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

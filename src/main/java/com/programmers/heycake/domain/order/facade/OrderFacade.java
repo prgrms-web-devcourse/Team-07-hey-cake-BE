@@ -59,10 +59,10 @@ public class OrderFacade {
 
 	@Transactional(readOnly = true)
 	public OrderGetSimpleResponses getOrders(
-			Long cursorId, int pageSize, CakeCategory cakeCategory, String region
+			Long cursorId, int pageSize, CakeCategory cakeCategory, String region, String orderStatus
 	) {
 		List<OrderGetServiceSimpleResponse> orderGetSimpleServiceResponses =
-				orderService.getOrders(cursorId, pageSize, cakeCategory, region);
+				orderService.getOrders(cursorId, pageSize, cakeCategory, region, orderStatus);
 
 		List<OrderGetSimpleResponse> orderGetSimpleResponseList =
 				orderGetSimpleServiceResponses
