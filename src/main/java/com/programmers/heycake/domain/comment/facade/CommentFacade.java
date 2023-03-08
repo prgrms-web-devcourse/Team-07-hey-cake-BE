@@ -31,22 +31,22 @@ public class CommentFacade {
 
 	@Transactional
 	public void deleteComment(Long commentId) {
-		commentService.deleteComment(commentId);
-
 		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
 		if (!commentImageResponse.isEmpty()) {
 			imageIntegrationService.deleteImages(commentId, ImageType.COMMENT, COMMENT_SUB_PATH);
 		}
+
+		commentService.deleteComment(commentId);
 	}
 
 	@Transactional
 	public void deleteCommentWithoutAuth(Long commentId) {
-		commentService.deleteCommentWithoutAuth(commentId);
-
 		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
 		if (!commentImageResponse.isEmpty()) {
 			imageIntegrationService.deleteImages(commentId, ImageType.COMMENT, COMMENT_SUB_PATH);
 		}
+
+		commentService.deleteCommentWithoutAuth(commentId);
 	}
 
 	@Transactional
