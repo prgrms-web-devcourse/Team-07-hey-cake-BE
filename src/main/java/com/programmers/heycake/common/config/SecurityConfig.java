@@ -89,7 +89,7 @@ public class SecurityConfig {
 				.antMatchers(HttpMethod.GET, "/api/v1/comments").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/v1/enrollments").hasRole("USER")
 				.antMatchers(HttpMethod.GET, "/api/v1/enrollments/**").permitAll()
-				.antMatchers(HttpMethod.PATCH, "/api/v1/enrollments/**").hasRole("ADMIN")
+				.antMatchers(HttpMethod.PATCH, "/api/v1/enrollments/**").hasRole("MARKET")
 				.antMatchers(HttpMethod.GET, "/api/v1/markets/**").permitAll()
 				.antMatchers(HttpMethod.PATCH, "/api/v1/markets/**").hasRole("MARKET")
 				.and()
