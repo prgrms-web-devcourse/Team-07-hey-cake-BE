@@ -89,7 +89,7 @@ public class OrderQueryDslRepository {
 			int pageSize,
 			CakeCategory cakeCategory,
 			String region,
-			String orderStatus
+			OrderStatus orderStatus
 	) {
 		return jpaQueryFactory
 				.selectFrom(qOrder)

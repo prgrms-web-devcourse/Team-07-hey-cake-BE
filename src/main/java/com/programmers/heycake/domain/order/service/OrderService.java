@@ -82,7 +82,7 @@ public class OrderService {
 	}
 
 	public List<OrderGetServiceSimpleResponse> getOrders(
-			Long cursorId, int pageSize, CakeCategory cakeCategory, String region, String orderStatus
+			Long cursorId, int pageSize, CakeCategory cakeCategory, String region, OrderStatus orderStatus
 	) {
 		return orderQueryDslRepository
 				.findAllByRegionAndCategoryOrderByCreatedAtAsc(cursorId, pageSize, cakeCategory, region, orderStatus)

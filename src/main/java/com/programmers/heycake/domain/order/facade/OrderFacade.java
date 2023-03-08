@@ -23,6 +23,7 @@ import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSi
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponses;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
+import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.service.HistoryService;
 import com.programmers.heycake.domain.order.service.OrderService;
 
@@ -59,7 +60,7 @@ public class OrderFacade {
 
 	@Transactional(readOnly = true)
 	public OrderGetSimpleResponses getOrders(
-			Long cursorId, int pageSize, CakeCategory cakeCategory, String region, String orderStatus
+			Long cursorId, int pageSize, CakeCategory cakeCategory, String region, OrderStatus orderStatus
 	) {
 		List<OrderGetServiceSimpleResponse> orderGetSimpleServiceResponses =
 				orderService.getOrders(cursorId, pageSize, cakeCategory, region, orderStatus);

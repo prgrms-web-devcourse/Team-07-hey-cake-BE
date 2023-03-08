@@ -51,7 +51,7 @@ public class OrderController {
 			@RequestParam int pageSize,
 			@RequestParam(required = false) CakeCategory cakeCategory,
 			@RequestParam(required = false) String region,
-			@RequestParam(required = false) String orderStatus
+			@RequestParam(required = false) OrderStatus orderStatus
 	) {
 		return ResponseEntity.ok(orderFacade.getOrders(cursorId, pageSize, cakeCategory, region, orderStatus));
 	}
