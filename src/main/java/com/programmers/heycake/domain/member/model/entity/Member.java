@@ -53,8 +53,8 @@ public class Member extends BaseEntity {
 		return this.memberAuthority == MemberAuthority.MARKET;
 	}
 
-	public boolean isSameMember(Member member) {
-		return Objects.equals(this.id, member.getId());
+	public boolean isDifferentMember(Member member) {
+		return !Objects.equals(this.id, member.getId());
 	}
 
 	public void changeAuthority(MemberAuthority authority) {
