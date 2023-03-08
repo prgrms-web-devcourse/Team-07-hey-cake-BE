@@ -81,8 +81,7 @@ public class CommentService {
 	}
 
 	public void deleteCommentWithoutAuth(Long commentId) {
-		Comment comment = getComment(commentId);
-		commentRepository.delete(comment);
+		commentRepository.deleteById(commentId);
 	}
 
 	private void verifyCommentDeleteAuthority(Comment comment, Long memberId) {
