@@ -55,8 +55,11 @@ public class CommentFacade {
 
 		Long savedCommentId = commentService.saveComment(commentSaveRequest.content(), commentSaveRequest.offerId(),
 				memberId);
-		imageIntegrationService.createAndUploadImage(commentSaveRequest.image(), COMMENT_SUB_PATH, savedCommentId,
-				ImageType.COMMENT);
+
+		if (commentSaveRequest.image() != null) {
+			imageIntegrationService.createAndUploadImage(commentSaveRequest.image(), COMMENT_SUB_PATH, savedCommentId,
+					ImageType.COMMENT);
+		}
 
 		return savedCommentId;
 	}
