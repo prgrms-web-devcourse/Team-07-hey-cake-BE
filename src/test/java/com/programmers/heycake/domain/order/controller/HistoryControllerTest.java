@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -39,7 +38,6 @@ import com.programmers.heycake.domain.member.repository.MemberRepository;
 import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
-import com.programmers.heycake.domain.order.facade.HistoryFacade;
 import com.programmers.heycake.domain.order.model.dto.request.HistoryControllerRequest;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
@@ -55,9 +53,6 @@ class HistoryControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
-
-	@Autowired
-	HistoryFacade historyFacade;
 
 	@Autowired
 	ObjectMapper objectMapper;
