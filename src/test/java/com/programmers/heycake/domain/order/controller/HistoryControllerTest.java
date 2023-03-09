@@ -173,10 +173,10 @@ class HistoryControllerTest {
 											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자")
 									),
 									responseFields(
-											fieldWithPath("message").description("error message"),
-											fieldWithPath("path").description("url path"),
-											fieldWithPath("time").description("error time"),
-											fieldWithPath("inputErrors").description("error details")
+											fieldWithPath("message").description("에러 메세지"),
+											fieldWithPath("path").description("에러 발생 uri"),
+											fieldWithPath("time").description("에러 발생 시각"),
+											fieldWithPath("inputErrors").description("에러 상세")
 									)
 							));
 		}
@@ -280,10 +280,10 @@ class HistoryControllerTest {
 											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자")
 									),
 									responseFields(
-											fieldWithPath("message").description("error message"),
-											fieldWithPath("path").description("url path"),
-											fieldWithPath("time").description("error time"),
-											fieldWithPath("inputErrors").description("error details")
+											fieldWithPath("message").description("에러 메세지"),
+											fieldWithPath("path").description("에러 발생 uri"),
+											fieldWithPath("time").description("에러 발생 시각"),
+											fieldWithPath("inputErrors").description("에러 상세")
 									)
 							));
 		}

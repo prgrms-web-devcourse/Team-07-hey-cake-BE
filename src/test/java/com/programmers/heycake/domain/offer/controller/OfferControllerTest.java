@@ -85,7 +85,7 @@ class OfferControllerTest {
 	class DeleteOffer {
 		@Test
 		@DisplayName("Success - Offer 를 삭제한다.")
-		void createHistorySuccess() throws Exception {
+		void deleteOfferSuccess() throws Exception {
 			//given
 			Member marketMember = memberRepository.save(getMember("marketMember"));
 			Member member = memberRepository.save(getMember("member"));
@@ -117,7 +117,7 @@ class OfferControllerTest {
 
 		@Test
 		@DisplayName("Fail - Offer 삭제 실패.(BadRequest)")
-		void createHistoryBadRequest() throws Exception {
+		void deleteOfferBadRequest() throws Exception {
 			//given
 			Member member = memberRepository.save(getMember("member"));
 			setContext(member.getId(), MemberAuthority.MARKET);
@@ -141,7 +141,7 @@ class OfferControllerTest {
 
 		@Test
 		@DisplayName("Fail - Offer 삭제 실패.(Unauthorized)")
-		void createHistoryUnauthorized() throws Exception {
+		void deleteOfferUnauthorized() throws Exception {
 			//given
 
 			//when //then
@@ -163,7 +163,7 @@ class OfferControllerTest {
 
 		@Test
 		@DisplayName("Fail - Offer 삭제 실패.(Forbidden)")
-		void createHistoryForbidden() throws Exception {
+		void deleteOfferForbidden() throws Exception {
 			//given
 			Member marketMember = memberRepository.save(getMember("testmarketmember"));
 			Member anotherMarketMember = memberRepository.save(getMember("testanothermarketmember"));
@@ -197,7 +197,7 @@ class OfferControllerTest {
 
 		@Test
 		@DisplayName("Fail - Offer 삭제 실패.(Conflict)")
-		void createHistoryConflict() throws Exception {
+		void deleteOfferConflict() throws Exception {
 			//given
 			Member marketMember = memberRepository.save(getMember("marketMember"));
 			Member member = memberRepository.save(getMember("member"));
