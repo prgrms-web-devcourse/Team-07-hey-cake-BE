@@ -110,7 +110,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ErrorResponse> handleAccessDeniedException(HttpServletRequest request, RuntimeException e) {
-		logWarn(e, request.getRequestURI());
+		logInfo(e, request.getRequestURI());
 		throw new AccessDeniedException(e.getMessage());
 	}
 
