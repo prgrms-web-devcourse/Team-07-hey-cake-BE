@@ -66,11 +66,27 @@ class OfferControllerTest {
 	@Autowired
 	MarketRepository marketRepository;
 
-	void setContext(Member member) {
-		SecurityContext context = SecurityContextHolder.getContext();
-		context.setAuthentication(
-				new UsernamePasswordAuthenticationToken(member.getId(), null,
-						List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+	private Offer setTestOffer(Order order, Market market) {
+		Offer offer = getOffer(market.getId(), 1000, "content");
+		offer.setOrder(order);
+		offerRepository.save(offer);
+		return offer;
+	}
+
+	private Market setTestMarket(Member marketMember, MarketEnrollment marketEnrollment) {
+		Market market = getMarket();
+		market.setMember(marketMember);
+		market.setMarketEnrollment(marketEnrollment);
+		marketRepository.save(market);
+		marketMember.changeAuthority(MemberAuthority.MARKET);
+		return market;
+	}
+
+	private MarketEnrollment setTestMarketEnrollment(Member marketMember) {
+		MarketEnrollment marketEnrollment = getMarketEnrollment();
+		marketEnrollment.setMember(marketMember);
+		marketEnrollmentRepository.save(marketEnrollment);
+		return marketEnrollment;
 	}
 
 	@Nested
@@ -81,29 +97,18 @@ class OfferControllerTest {
 		@DisplayName("Success - Offer 를 삭제한다.")
 		void createHistorySuccess() throws Exception {
 			//given
-			Member member = memberRepository.save(new Member("rhdtn311@naver.com", MemberAuthority.USER, "0000"));
-			Member member1 = memberRepository.save(new Member("rhdtn3211@naver.com", MemberAuthority.USER, "0000"));
+			Member marketMember = memberRepository.save(getMember("testmarketmember"));
+			Member member = memberRepository.save(getMember("testmember"));
 
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority("ROLE_MARKET"))));
+			setContext(marketMember.getId(), MemberAuthority.MARKET);
 
-			Order order = orderRepository.save(getOrder(member1.getId()));
+			Order order = orderRepository.save(getOrder(member.getId()));
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
-			marketEnrollment.setMember(member);
-			marketEnrollmentRepository.save(marketEnrollment);
+			MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketMember);
 
-			Market market = getMarket();
-			market.setMember(member);
-			market.setMarketEnrollment(marketEnrollment);
-			marketRepository.save(market);
-			member.changeAuthority(MemberAuthority.MARKET);
+			Market market = setTestMarket(marketMember, marketEnrollment);
 
-			Offer offer = getOffer(market.getId(), 1000, "content");
-			offer.setOrder(order);
-			offerRepository.save(offer);
+			Offer offer = setTestOffer(order, market);
 
 			//when //then
 			mockMvc.perform(delete("/api/v1/offers/{offerId}", offer.getId())
@@ -112,12 +117,12 @@ class OfferControllerTest {
 					).andExpect(status().isNoContent())
 					.andDo(print())
 					.andDo(document(
-							"offer/제안 삭제",
+							"offers/제안 삭제",
 							requestHeaders(
-									headerWithName("access_token").description("access token")
+									headerWithName("access_token").description("인가 토큰")
 							),
 							pathParameters(
-									parameterWithName("offerId").description("offer id")
+									parameterWithName("offerId").description("제안 식별자")
 							)
 					));
 		}
@@ -126,12 +131,9 @@ class OfferControllerTest {
 		@DisplayName("Fail - Offer 삭제 실패.(BadRequest)")
 		void createHistoryBadRequest() throws Exception {
 			//given
-			Member member = memberRepository.save(new Member("rhdtn311@naver.com", MemberAuthority.USER, "0000"));
+			Member member = memberRepository.save(getMember("testmember"));
 
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority("ROLE_MARKET"))));
+			setContext(member.getId(), MemberAuthority.MARKET);
 
 			//when //then
 			mockMvc.perform(delete("/api/v1/offers/{offerId}", -1)
@@ -142,10 +144,32 @@ class OfferControllerTest {
 					.andDo(document(
 							"offer/제안 삭제 실패(BadRequest)",
 							requestHeaders(
-									headerWithName("access_token").description("access token")
+									headerWithName("access_token").description("인가 토큰")
 							),
 							pathParameters(
-									parameterWithName("offerId").description("offer id")
+									parameterWithName("offerId").description("제안 식별자")
+							)
+					));
+		}
+
+		@Test
+		@DisplayName("Fail - Offer 삭제 실패.(Unauthorized)")
+		void createHistoryUnauthorized() throws Exception {
+			//given
+
+			//when //then
+			mockMvc.perform(delete("/api/v1/offers/{offerId}", 1)
+							.header("access_token", ACCESS_TOKEN)
+							.with(csrf())
+					).andExpect(status().isUnauthorized())
+					.andDo(print())
+					.andDo(document(
+							"offer/제안 삭제 실패(BadRequest)",
+							requestHeaders(
+									headerWithName("access_token").description("인가 토큰")
+							),
+							pathParameters(
+									parameterWithName("offerId").description("제안 식별자")
 							)
 					));
 		}
@@ -154,36 +178,21 @@ class OfferControllerTest {
 		@DisplayName("Fail - Offer 삭제 실패.(Forbidden)")
 		void createHistoryForbidden() throws Exception {
 			//given
-			Member member = memberRepository.save(new Member("rhdtn311@naver.com", MemberAuthority.USER, "0000"));
-			Member member1 = memberRepository.save(new Member("rhdtn3211@naver.com", MemberAuthority.USER, "0000"));
-			Member anotherMember = memberRepository.save(new Member("rhdtn321@naver.com", MemberAuthority.USER, "0000"));
+			Member marketMember = memberRepository.save(getMember("testmarketmember"));
+			Member member = memberRepository.save(getMember("testmember"));
+			Member anotherMarketMember = memberRepository.save(getMember("testanothermarketmember"));
 
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority("ROLE_MARKET"))));
+			setContext(marketMember.getId(), MemberAuthority.MARKET);
 
-			Order order = orderRepository.save(getOrder(member1.getId()));
+			Order order = orderRepository.save(getOrder(member.getId()));
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
-			marketEnrollment.setMember(member);
-			marketEnrollmentRepository.save(marketEnrollment);
+			MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketMember);
 
-			Market market = getMarket();
-			market.setMember(member);
-			market.setMarketEnrollment(marketEnrollment);
-			marketRepository.save(market);
-			member.changeAuthority(MemberAuthority.MARKET);
+			setTestMarket(marketMember, marketEnrollment);
 
-			Market anotherMarket = getMarket();
-			anotherMarket.setMember(anotherMember);
-			anotherMarket.setMarketEnrollment(marketEnrollment);
-			marketRepository.save(anotherMarket);
-			anotherMember.changeAuthority(MemberAuthority.MARKET);
+			Market anotherMarket = setTestMarket(anotherMarketMember, marketEnrollment);
 
-			Offer offer = getOffer(anotherMarket.getId(), 1000, "content");
-			offer.setOrder(order);
-			offerRepository.save(offer);
+			Offer offer = setTestOffer(order, anotherMarket);
 
 			//when //then
 			mockMvc.perform(delete("/api/v1/offers/{offerId}", offer.getId())
@@ -194,10 +203,10 @@ class OfferControllerTest {
 					.andDo(document(
 							"offer/제안 삭제 실패(Forbidden)",
 							requestHeaders(
-									headerWithName("access_token").description("access token")
+									headerWithName("access_token").description("인가 토큰")
 							),
 							pathParameters(
-									parameterWithName("offerId").description("offer id")
+									parameterWithName("offerId").description("제안 식별자")
 							)
 					));
 		}
@@ -206,29 +215,21 @@ class OfferControllerTest {
 		@DisplayName("Fail - Offer 삭제 실패.(Conflict)")
 		void createHistoryConflict() throws Exception {
 			//given
-			Member member = memberRepository.save(new Member("rhdtn311@naver.com", MemberAuthority.USER, "0000"));
-			Member member1 = memberRepository.save(new Member("rhdtn3211@naver.com", MemberAuthority.USER, "0000"));
+			Member marketMember = memberRepository.save(new Member("rhdtn311@naver.com", MemberAuthority.USER, "0000"));
+			Member member = memberRepository.save(new Member("rhdtn3211@naver.com", MemberAuthority.USER, "0000"));
 
 			SecurityContext context = SecurityContextHolder.getContext();
 			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(member.getId(), null,
+					new UsernamePasswordAuthenticationToken(marketMember.getId(), null,
 							List.of(new SimpleGrantedAuthority("ROLE_MARKET"))));
 
-			Order order = orderRepository.save(getOrder(member1.getId()));
+			Order order = orderRepository.save(getOrder(member.getId()));
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
-			marketEnrollment.setMember(member);
-			marketEnrollmentRepository.save(marketEnrollment);
+			MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketMember);
 
-			Market market = getMarket();
-			market.setMember(member);
-			market.setMarketEnrollment(marketEnrollment);
-			marketRepository.save(market);
-			member.changeAuthority(MemberAuthority.MARKET);
+			Market market = setTestMarket(marketMember, marketEnrollment);
 
-			Offer offer = getOffer(market.getId(), 1000, "content");
-			offer.setOrder(order);
-			offerRepository.save(offer);
+			Offer offer = setTestOffer(order, market);
 
 			order.upDateOrderStatus(OrderStatus.RESERVED);
 
@@ -241,10 +242,10 @@ class OfferControllerTest {
 					.andDo(document(
 							"offer/제안 삭제",
 							requestHeaders(
-									headerWithName("access_token").description("access token")
+									headerWithName("access_token").description("인가 토큰")
 							),
 							pathParameters(
-									parameterWithName("offerId").description("offer id")
+									parameterWithName("offerId").description("제안 식별자")
 							)
 					));
 		}
