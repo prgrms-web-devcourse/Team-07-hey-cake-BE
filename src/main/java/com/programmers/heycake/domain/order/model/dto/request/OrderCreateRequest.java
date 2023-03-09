@@ -21,28 +21,30 @@ import lombok.Builder;
 
 @Builder
 public record OrderCreateRequest(
-		@NotNull @Positive
+		@NotNull(message = "희망 가격은 필수입니다.")
+		@Positive(message = "희망 가격은 양수여야합니다.")
 		Integer hopePrice,
-		@NotBlank
+		@NotBlank(message = "희망 지역은 공백일 수 없습니다.")
 		String region,
-		@NotBlank @Length(max = 20)
+		@Length(max = 20, message = "주문 제목은 20자까지 입력할 수 있습니다.")
+		@NotBlank(message = "주문 제목은 공백일 수 없습니다.")
 		String title,
-		@NotNull
+		@NotNull(message = "희망 방문 시간은 필수입니다.")
 		@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 		LocalDateTime visitTime,
-		@NotNull
+		@NotNull(message = "케익 카테고리는 필수입니다.")
 		CakeCategory cakeCategory,
-		@NotNull
+		@NotNull(message = "케익 크기는 필수입니다.")
 		CakeSize cakeSize,
-		@NotNull
+		@NotNull(message = "케익 높이는 필수입니다.")
 		CakeHeight cakeHeight,
-		@NotNull
+		@NotNull(message = "빵 맛은 필수입니다.")
 		BreadFlavor breadFlavor,
-		@NotNull
+		@NotNull(message = "크림 맛은 필수입니다.")
 		CreamFlavor creamFlavor,
-		@NotBlank
+		@NotBlank(message = "추가 요구사항은 공백일 수 없습니다.")
 		String requirements,
-		@NotNull
+		@NotNull(message = "케익 이미지는 필수입니다.")
 		List<MultipartFile> cakeImages
 ) {
 }
