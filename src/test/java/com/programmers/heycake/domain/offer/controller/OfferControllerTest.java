@@ -9,8 +9,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.List;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,14 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
@@ -47,9 +40,6 @@ class OfferControllerTest {
 	private static final String ACCESS_TOKEN = "access_token";
 	@Autowired
 	MockMvc mockMvc;
-
-	@Autowired
-	ObjectMapper objectMapper;
 
 	@Autowired
 	OfferRepository offerRepository;
@@ -83,7 +73,7 @@ class OfferControllerTest {
 	}
 
 	private MarketEnrollment setTestMarketEnrollment(Member marketMember) {
-		MarketEnrollment marketEnrollment = getMarketEnrollment();
+		MarketEnrollment marketEnrollment = getMarketEnrollment("1231231231");
 		marketEnrollment.setMember(marketMember);
 		marketEnrollmentRepository.save(marketEnrollment);
 		return marketEnrollment;
@@ -97,15 +87,13 @@ class OfferControllerTest {
 		@DisplayName("Success - Offer 를 삭제한다.")
 		void createHistorySuccess() throws Exception {
 			//given
-			Member marketMember = memberRepository.save(getMember("testmarketmember"));
-			Member member = memberRepository.save(getMember("testmember"));
-
+			Member marketMember = memberRepository.save(getMember("marketMember"));
+			Member member = memberRepository.save(getMember("member"));
 			setContext(marketMember.getId(), MemberAuthority.MARKET);
 
 			Order order = orderRepository.save(getOrder(member.getId()));
 
 			MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketMember);
-
 			Market market = setTestMarket(marketMember, marketEnrollment);
 
 			Offer offer = setTestOffer(order, market);
@@ -131,8 +119,7 @@ class OfferControllerTest {
 		@DisplayName("Fail - Offer 삭제 실패.(BadRequest)")
 		void createHistoryBadRequest() throws Exception {
 			//given
-			Member member = memberRepository.save(getMember("testmember"));
-
+			Member member = memberRepository.save(getMember("member"));
 			setContext(member.getId(), MemberAuthority.MARKET);
 
 			//when //then
@@ -179,17 +166,14 @@ class OfferControllerTest {
 		void createHistoryForbidden() throws Exception {
 			//given
 			Member marketMember = memberRepository.save(getMember("testmarketmember"));
-			Member member = memberRepository.save(getMember("testmember"));
 			Member anotherMarketMember = memberRepository.save(getMember("testanothermarketmember"));
-
+			Member member = memberRepository.save(getMember("testmember"));
 			setContext(marketMember.getId(), MemberAuthority.MARKET);
 
 			Order order = orderRepository.save(getOrder(member.getId()));
 
 			MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketMember);
-
 			setTestMarket(marketMember, marketEnrollment);
-
 			Market anotherMarket = setTestMarket(anotherMarketMember, marketEnrollment);
 
 			Offer offer = setTestOffer(order, anotherMarket);
@@ -215,23 +199,17 @@ class OfferControllerTest {
 		@DisplayName("Fail - Offer 삭제 실패.(Conflict)")
 		void createHistoryConflict() throws Exception {
 			//given
-			Member marketMember = memberRepository.save(new Member("rhdtn311@naver.com", MemberAuthority.USER, "0000"));
-			Member member = memberRepository.save(new Member("rhdtn3211@naver.com", MemberAuthority.USER, "0000"));
-
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(marketMember.getId(), null,
-							List.of(new SimpleGrantedAuthority("ROLE_MARKET"))));
+			Member marketMember = memberRepository.save(getMember("marketMember"));
+			Member member = memberRepository.save(getMember("member"));
+			setContext(marketMember.getId(), MemberAuthority.MARKET);
 
 			Order order = orderRepository.save(getOrder(member.getId()));
+			order.upDateOrderStatus(OrderStatus.RESERVED);
 
 			MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketMember);
-
 			Market market = setTestMarket(marketMember, marketEnrollment);
 
 			Offer offer = setTestOffer(order, market);
-
-			order.upDateOrderStatus(OrderStatus.RESERVED);
 
 			//when //then
 			mockMvc.perform(delete("/api/v1/offers/{offerId}", offer.getId())
