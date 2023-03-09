@@ -3,9 +3,11 @@ package com.programmers.heycake.domain.order.controller;
 import static com.programmers.heycake.util.TestUtils.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -23,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
+import com.programmers.heycake.domain.order.model.entity.Order;
+import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 @Transactional
@@ -66,25 +70,25 @@ class OrderControllerTest {
 					).andExpect(status().isOk())
 					.andDo(print())
 					.andDo(document(
-							"order/주문 목록 조회",
+							"orders/주문 목록 조회 성공",
 							requestHeaders(
-									headerWithName("access_token").description("access token")
+									headerWithName("access_token").description("인가 토큰")
 							),
 							requestParameters(
-									parameterWithName("cursorId").description("cursor order id"),
-									parameterWithName("pageSize").description("order amount"),
-									parameterWithName("orderStatus").description("search option - order status")
+									parameterWithName("cursorId").description("커서 주문 식별자"),
+									parameterWithName("pageSize").description("페이지 크기"),
+									parameterWithName("orderStatus").description("주문 상태")
 							),
 							responseFields(
-									fieldWithPath("myOrderResponseList").description("order list"),
-									fieldWithPath("myOrderResponseList[].id").description("order id"),
-									fieldWithPath("myOrderResponseList[].title").description("order title"),
-									fieldWithPath("myOrderResponseList[].orderStatus").description("order orderStatus"),
-									fieldWithPath("myOrderResponseList[].region").description("order region"),
-									fieldWithPath("myOrderResponseList[].visitTime").description("order visitTime"),
-									fieldWithPath("myOrderResponseList[].createdAt").description("order createdAt"),
-									fieldWithPath("myOrderResponseList[].imageUrl").description("order imageUrl"),
-									fieldWithPath("lastCursorDate").description("lastCursorDate")
+									fieldWithPath("myOrderResponseList").description("주문 목록"),
+									fieldWithPath("myOrderResponseList[].id").description("주문 식별자"),
+									fieldWithPath("myOrderResponseList[].title").description("주문 제목"),
+									fieldWithPath("myOrderResponseList[].orderStatus").description("주문 상태"),
+									fieldWithPath("myOrderResponseList[].region").description("주문 지역"),
+									fieldWithPath("myOrderResponseList[].visitTime").description("방문 시간"),
+									fieldWithPath("myOrderResponseList[].createdAt").description("생성 시간"),
+									fieldWithPath("myOrderResponseList[].imageUrl").description("이미지 주소"),
+									fieldWithPath("lastCursorDate").description("커서 식별자")
 							)
 					));
 		}
@@ -104,24 +108,23 @@ class OrderControllerTest {
 					).andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(document(
-							"order/주문 목록 조회",
+							"orders/주문 목록 조회 실패(BadRequest)",
 							requestHeaders(
-									headerWithName("access_token").description("access token")
+									headerWithName("access_token").description("인가 토큰")
 							),
 							requestParameters(
-									parameterWithName("cursorId").description("cursor order id"),
-									parameterWithName("pageSize").description("order amount"),
-									parameterWithName("orderStatus").description("search option - order status")
+									parameterWithName("cursorId").description("커서 주문 식별자"),
+									parameterWithName("pageSize").description("페이지 크기"),
+									parameterWithName("orderStatus").description("주문 상태")
 							),
 							responseFields(
-									fieldWithPath("message").description("error message"),
-									fieldWithPath("path").description("url path"),
-									fieldWithPath("time").description("error time"),
-									fieldWithPath("inputErrors").description("error details"),
-									fieldWithPath("inputErrors[].field").description("invalid field"),
-									fieldWithPath("inputErrors[].rejectedValue").description("input value"),
-									fieldWithPath("inputErrors[].message").description("detail message")
-
+									fieldWithPath("message").description("에러 메세지"),
+									fieldWithPath("path").description("에러 발생 uri"),
+									fieldWithPath("time").description("에러 발생 시각"),
+									fieldWithPath("inputErrors").description("에러 상세"),
+									fieldWithPath("inputErrors[].field").description("에러 필드"),
+									fieldWithPath("inputErrors[].rejectedValue").description("에러 값"),
+									fieldWithPath("inputErrors[].message").description("상세 메세지")
 							)
 					));
 		}
@@ -137,20 +140,20 @@ class OrderControllerTest {
 					).andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document(
-							"order/주문 목록 조회",
+							"orders/주문 목록 조회 실패(Unauthorized)",
 							requestHeaders(
-									headerWithName("access_token").description("access token")
+									headerWithName("access_token").description("인가 토큰")
 							),
 							requestParameters(
-									parameterWithName("cursorId").description("cursor order id"),
-									parameterWithName("pageSize").description("order amount"),
-									parameterWithName("orderStatus").description("search option - order status")
+									parameterWithName("cursorId").description("커서 주문 식별자"),
+									parameterWithName("pageSize").description("페이지 크기"),
+									parameterWithName("orderStatus").description("주문 상태")
 							),
 							responseFields(
-									fieldWithPath("message").description("error message"),
-									fieldWithPath("path").description("url path"),
-									fieldWithPath("time").description("error time"),
-									fieldWithPath("inputErrors").description("error details")
+									fieldWithPath("message").description("에러 메세지"),
+									fieldWithPath("path").description("에러 발생 uri"),
+									fieldWithPath("time").description("에러 발생 시각"),
+									fieldWithPath("inputErrors").description("에러 상세")
 							)
 					));
 		}
@@ -169,20 +172,152 @@ class OrderControllerTest {
 					).andExpect(status().isForbidden())
 					.andDo(print())
 					.andDo(document(
-							"order/주문 목록 조회",
+							"orders/주문 목록 조회 실패(Forbidden)",
 							requestHeaders(
-									headerWithName("access_token").description("access token")
+									headerWithName("access_token").description("인가 토큰")
 							),
 							requestParameters(
-									parameterWithName("cursorId").description("cursor order id"),
-									parameterWithName("pageSize").description("order amount"),
-									parameterWithName("orderStatus").description("search option - order status")
+									parameterWithName("cursorId").description("커서 주문 식별자"),
+									parameterWithName("pageSize").description("페이지 크기"),
+									parameterWithName("orderStatus").description("주문 상태")
 							),
 							responseFields(
-									fieldWithPath("message").description("error message"),
-									fieldWithPath("path").description("url path"),
-									fieldWithPath("time").description("error time"),
-									fieldWithPath("inputErrors").description("error details")
+									fieldWithPath("message").description("에러 메세지"),
+									fieldWithPath("path").description("에러 발생 uri"),
+									fieldWithPath("time").description("에러 발생 시각"),
+									fieldWithPath("inputErrors").description("에러 상세")
+							)
+					));
+		}
+
+	}
+
+	@Nested
+	@DisplayName("deleteOrder")
+	@Transactional
+	class DeleteOrder {
+		@Test
+		@DisplayName("Success - Order 를 삭제한다.")
+		void deleteOrderSuccess() throws Exception {
+			//given
+			Member member = memberRepository.save(getMember("member"));
+			setContext(member.getId(), MemberAuthority.USER);
+
+			Order order = orderRepository.save(getOrder(member.getId()));
+
+			//when //then
+			mockMvc.perform(delete("/api/v1/orders/{orderId}", order.getId())
+							.header("access_token", ACCESS_TOKEN)
+							.with(csrf())
+					).andExpect(status().isNoContent())
+					.andDo(print())
+					.andDo(document(
+							"orders/주문 삭제 성공",
+							requestHeaders(
+									headerWithName("access_token").description("인가 토큰")
+							),
+							pathParameters(
+									parameterWithName("orderId").description("주문 식별자")
+							)
+					));
+		}
+
+		@Test
+		@DisplayName("Fail - Order 삭제 실패.(BadRequest)")
+		void deleteOrderBadRequest() throws Exception {
+			//given
+			Member member = memberRepository.save(getMember("member"));
+			setContext(member.getId(), MemberAuthority.USER);
+
+			//when //then
+			mockMvc.perform(delete("/api/v1/orders/{orderId}", -1)
+							.header("access_token", ACCESS_TOKEN)
+							.with(csrf())
+					).andExpect(status().isBadRequest())
+					.andDo(print())
+					.andDo(document(
+							"orders/주문 삭제 실패(BadRequest)",
+							requestHeaders(
+									headerWithName("access_token").description("인가 토큰")
+							),
+							pathParameters(
+									parameterWithName("orderId").description("주문 식별자")
+							)
+					));
+		}
+
+		@Test
+		@DisplayName("Fail - Order 삭제 실패.(Unauthorized)")
+		void deleteOrderUnauthorized() throws Exception {
+			//given
+
+			//when //then
+			mockMvc.perform(delete("/api/v1/orders/{orderId}", 1)
+							.header("access_token", ACCESS_TOKEN)
+							.with(csrf())
+					).andExpect(status().isUnauthorized())
+					.andDo(print())
+					.andDo(document(
+							"orders/주문 삭제 실패(Unauthorized)",
+							requestHeaders(
+									headerWithName("access_token").description("인가 토큰")
+							),
+							pathParameters(
+									parameterWithName("orderId").description("주문 식별자")
+							)
+					));
+		}
+
+		@Test
+		@DisplayName("Fail - Order 삭제 실패.(Forbidden)")
+		void deleteOrderForbidden() throws Exception {
+			//given
+			Member member = memberRepository.save(getMember("member"));
+			Member anotherMember = memberRepository.save(getMember("marketMember"));
+			setContext(anotherMember.getId(), MemberAuthority.USER);
+
+			Order order = orderRepository.save(getOrder(member.getId()));
+
+			//when //then
+			mockMvc.perform(delete("/api/v1/orders/{orderId}", order.getId())
+							.header("access_token", ACCESS_TOKEN)
+							.with(csrf())
+					).andExpect(status().isForbidden())
+					.andDo(print())
+					.andDo(document(
+							"orders/주문 삭제 실패(Forbidden)",
+							requestHeaders(
+									headerWithName("access_token").description("인가 토큰")
+							),
+							pathParameters(
+									parameterWithName("orderId").description("주문 식별자")
+							)
+					));
+		}
+
+		@Test
+		@DisplayName("Fail - Order 삭제 실패.(Conflict)")
+		void deleteOrderConflict() throws Exception {
+			//given
+			Member member = memberRepository.save(getMember("member"));
+			setContext(member.getId(), MemberAuthority.USER);
+
+			Order order = orderRepository.save(getOrder(member.getId()));
+			order.upDateOrderStatus(OrderStatus.RESERVED);
+
+			//when //then
+			mockMvc.perform(delete("/api/v1/orders/{orderId}", order.getId())
+							.header("access_token", ACCESS_TOKEN)
+							.with(csrf())
+					).andExpect(status().isConflict())
+					.andDo(print())
+					.andDo(document(
+							"orders/주문 삭제 실패(Conflict)",
+							requestHeaders(
+									headerWithName("access_token").description("인가 토큰")
+							),
+							pathParameters(
+									parameterWithName("orderId").description("주문 식별자")
 							)
 					));
 		}
