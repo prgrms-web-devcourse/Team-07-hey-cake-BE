@@ -32,7 +32,7 @@ public class EnrollmentService {
 	private final MemberRepository memberRepository;
 
 	@Transactional
-	public Long enrollMarket(EnrollmentCreateRequest request) {
+	public Long createEnrollment(EnrollmentCreateRequest request) {
 
 		MarketEnrollment enrollment = EnrollmentMapper.toEntity(request);
 
