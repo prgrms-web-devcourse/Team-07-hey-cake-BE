@@ -116,7 +116,7 @@ class HistoryControllerTest {
 					.andExpect(status().isCreated())
 					.andDo(print())
 					.andDo(
-							document("histories/주문 확정 생성",
+							document("histories/주문 확정 생성 성공",
 									requestHeaders(
 											headerWithName("access_token").description("인가 토큰")
 									),
@@ -131,7 +131,7 @@ class HistoryControllerTest {
 		}
 
 		@Test
-		@DisplayName("Fail - orderHistory 생성실패.(BadRequest)")
+		@DisplayName("Fail - orderHistory 생성 실패.(BadRequest)")
 		void createHistoryBadRequest() throws Exception {
 			//given
 			Member member = memberRepository.save(getMember("member"));
@@ -164,7 +164,7 @@ class HistoryControllerTest {
 					.andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(
-							document("histories/주문 확정 생성",
+							document("histories/주문 확정 생성 실패(BadRequest)",
 									requestHeaders(
 											headerWithName("access_token").description("인가 토큰")
 									),
@@ -196,7 +196,7 @@ class HistoryControllerTest {
 					.andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(
-							document("histories/사용자 인증 오류",
+							document("histories/주문 확정 생성 실패(Unauthorized)",
 									requestHeaders(
 											headerWithName("access_token").description("인가 토큰")
 									),
@@ -241,7 +241,7 @@ class HistoryControllerTest {
 					.andExpect(status().isForbidden())
 					.andDo(print())
 					.andDo(
-							document("histories/사용자 권한 오류",
+							document("histories/주문 확정 생성 실패(Forbidden)",
 									requestHeaders(
 											headerWithName("access_token").description("인가 토큰")
 									),
@@ -271,7 +271,7 @@ class HistoryControllerTest {
 					.andExpect(status().isNotFound())
 					.andDo(print())
 					.andDo(
-							document("histories/주문 확정 생성",
+							document("histories/주문 확정 생성 실패(NotFound)",
 									requestHeaders(
 											headerWithName("access_token").description("인가 토큰")
 									),

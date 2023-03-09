@@ -105,7 +105,7 @@ class OfferControllerTest {
 					).andExpect(status().isNoContent())
 					.andDo(print())
 					.andDo(document(
-							"offers/제안 삭제",
+							"offers/제안 삭제 성공",
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -129,7 +129,7 @@ class OfferControllerTest {
 					).andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(document(
-							"offer/제안 삭제 실패(BadRequest)",
+							"offers/제안 삭제 실패(BadRequest)",
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -151,7 +151,7 @@ class OfferControllerTest {
 					).andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document(
-							"offer/제안 삭제 실패(BadRequest)",
+							"offers/제안 삭제 실패(Unauthorized)",
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -165,9 +165,9 @@ class OfferControllerTest {
 		@DisplayName("Fail - Offer 삭제 실패.(Forbidden)")
 		void deleteOfferForbidden() throws Exception {
 			//given
-			Member marketMember = memberRepository.save(getMember("testmarketmember"));
-			Member anotherMarketMember = memberRepository.save(getMember("testanothermarketmember"));
-			Member member = memberRepository.save(getMember("testmember"));
+			Member marketMember = memberRepository.save(getMember("marketMember"));
+			Member anotherMarketMember = memberRepository.save(getMember("anotherMarketMember"));
+			Member member = memberRepository.save(getMember("member"));
 			setContext(marketMember.getId(), MemberAuthority.MARKET);
 
 			Order order = orderRepository.save(getOrder(member.getId()));
@@ -185,7 +185,7 @@ class OfferControllerTest {
 					).andExpect(status().isForbidden())
 					.andDo(print())
 					.andDo(document(
-							"offer/제안 삭제 실패(Forbidden)",
+							"offers/제안 삭제 실패(Forbidden)",
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -218,7 +218,7 @@ class OfferControllerTest {
 					).andExpect(status().isConflict())
 					.andDo(print())
 					.andDo(document(
-							"offer/제안 삭제",
+							"offers/제안 삭제 실패(Conflict)",
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
