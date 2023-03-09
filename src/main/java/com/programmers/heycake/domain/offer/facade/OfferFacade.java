@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.mapper.OfferMapper;
 import com.programmers.heycake.domain.comment.facade.CommentFacade;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.model.dto.response.MarketDetailNoImageResponse;
@@ -21,6 +20,7 @@ import com.programmers.heycake.domain.offer.model.dto.request.OfferSaveRequest;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
 import com.programmers.heycake.domain.offer.service.OfferService;
+import com.programmers.heycake.domain.order.service.HistoryService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,6 +35,7 @@ public class OfferFacade {
 	private final MemberService memberService;
 	private final ImageService imageService;
 	private final CommentFacade commentFacade;
+	private final HistoryService historyService;
 	private final ImageIntegrationService imageIntegrationService;
 
 	@Transactional
@@ -77,9 +78,10 @@ public class OfferFacade {
 		return offerResponses.stream()
 				.map(
 						offerResponse -> {
-							ImageResponses imageResponses = imageService.getImages(offerResponse.offerId(), ImageType.OFFER);
+							ImageResponses imageResponses = imageService.getImages(offerResponse.offerId(), OFFER);
 							MarketDetailNoImageResponse marketResponse = marketService.getMarket(offerResponse.marketId());
-							return OfferMapper.toOfferSummaryResponse(offerResponse, imageResponses, marketResponse);
+							boolean isPaid = historyService.isPaidOffer(offerResponse.marketId(), orderId);
+							return OfferMapper.toOfferSummaryResponse(offerResponse, imageResponses, marketResponse, isPaid);
 						}
 				)
 				.toList();
