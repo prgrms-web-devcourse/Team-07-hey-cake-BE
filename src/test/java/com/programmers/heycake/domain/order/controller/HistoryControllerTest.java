@@ -89,9 +89,8 @@ class HistoryControllerTest {
 			Member member = memberRepository.save(new Member("rhdtn311@naver.com", MemberAuthority.USER, "0000"));
 
 			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+			context.setAuthentication(new UsernamePasswordAuthenticationToken(member.getId(), null,
+					List.of(new SimpleGrantedAuthority("ROLE_USER"))));
 
 			Order order = orderRepository.save(getOrder(member.getId()));
 
@@ -116,77 +115,79 @@ class HistoryControllerTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(historyControllerRequest))
 							.header("access_token", ACCESS_TOKEN)
-							.with(csrf())
-					).andExpect(status().isCreated())
+							.with(csrf()))
+					.andExpect(status().isCreated())
 					.andDo(print())
-					.andDo(document(
-							"history/주문 확정 생성",
-							requestHeaders(
-									headerWithName("access_token").description("access token")
-							),
-							requestFields(
-									fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("orderId"),
-									fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("offerId")
-							),
-							responseHeaders(
-									headerWithName("location").description("saved location")
+					.andDo(
+							document("histories/주문 확정 생성",
+									requestHeaders(
+											headerWithName("access_token").description("인가 토큰")
+									),
+									requestFields(
+											fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("주문 식별자"),
+											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자")
+									),
+									responseHeaders(
+											headerWithName("location").description("저장 경로")
+									)
 							)
-					));
+					);
 		}
-	}
 
-	@Test
-	@DisplayName("Fail - 회원 인증 실패")
-	void createHistoryUnauthorizedFail() throws Exception {
-		//given
-		HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(2L, 2L);
+		@Test
+		@DisplayName("Fail - 회원 인증 실패")
+		void createHistoryUnauthorizedFail() throws Exception {
+			//given
+			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(2L, 2L);
 
-		//when //then
-		mockMvc.perform(post("/api/v1/histories")
-						.header("access_token", "asdf")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(historyControllerRequest))
-						.with(csrf())
-				).andExpect(status().isUnauthorized())
-				.andDo(print())
-				.andDo(document(
-						"history/사용자 인증 오류",
-						requestHeaders(
-								headerWithName("access_token").description("access token")
-						),
-						requestFields(
-								fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("orderId"),
-								fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("offerId")
-						)
-				));
-	}
+			//when //then
+			mockMvc.perform(post("/api/v1/histories")
+							.header("access_token", ACCESS_TOKEN)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(historyControllerRequest))
+							.with(csrf()))
+					.andExpect(status().isUnauthorized())
+					.andDo(print())
+					.andDo(
+							document("history/사용자 인증 오류",
+									requestHeaders(
+											headerWithName("access_token").description("인가 토큰")
+									),
+									requestFields(
+											fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("주문 식별자"),
+											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자")
+									)
+							)
+					);
+		}
 
-	@Test
-	@DisplayName("Fail - 회원 권한 없음.")
-	void createHistoryForbiddenFail() throws Exception {
-		//given
-		setContextHolder(2L, "USER");
-		HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(2L, 2L);
+		@Test
+		@DisplayName("Fail - 회원 권한 없음.")
+		void createHistoryForbiddenFail() throws Exception {
+			//given
+			setContextHolder(2L, "USER");
+			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(2L, 2L);
 
-		//when //then
-		mockMvc.perform(post("/api/v1/histories")
-						.header("access_token",
-								"TOKEN")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(historyControllerRequest))
-						.with(csrf())
-				).andExpect(status().isForbidden())
-				.andDo(print())
-				.andDo(document(
-						"history/사용자 권한 오류",
-						requestHeaders(
-								headerWithName("access_token").description("access token")
-						),
-						requestFields(
-								fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("orderId"),
-								fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("offerId")
-						)
-				));
+			//when //then
+			mockMvc.perform(post("/api/v1/histories")
+							.header("access_token", ACCESS_TOKEN)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(historyControllerRequest))
+							.with(csrf()))
+					.andExpect(status().isForbidden())
+					.andDo(print())
+					.andDo(
+							document("history/사용자 권한 오류",
+									requestHeaders(
+											headerWithName("access_token").description("인가 토큰")
+									),
+									requestFields(
+											fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("주문 식별자"),
+											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자")
+									)
+							)
+					);
+		}
 	}
 
 }
