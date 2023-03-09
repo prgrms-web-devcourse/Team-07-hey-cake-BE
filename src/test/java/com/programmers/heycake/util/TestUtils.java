@@ -40,7 +40,7 @@ public class TestUtils {
 	}
 
 	public static Member getMember() {
-		return new Member("John", MemberAuthority.USER, "0311");
+		return new Member("heycake@heycake.com", MemberAuthority.USER, "0311");
 	}
 
 	public static Member getMember(String email) {
