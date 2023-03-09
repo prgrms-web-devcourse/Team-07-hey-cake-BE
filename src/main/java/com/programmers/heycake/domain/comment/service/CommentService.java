@@ -50,7 +50,7 @@ public class CommentService {
 		Market market = getMarket(offer.getMarketId());
 		Member member = getMember(memberId);
 
-		if ((order.isNotWrittenBy(memberId)) && member.isSameMember(market.getMember())) {
+		if ((order.isNotWrittenBy(memberId)) && member.isDifferentMember(market.getMember())) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
 	}
@@ -81,8 +81,7 @@ public class CommentService {
 	}
 
 	public void deleteCommentWithoutAuth(Long commentId) {
-		Comment comment = getComment(commentId);
-		commentRepository.delete(comment);
+		commentRepository.deleteById(commentId);
 	}
 
 	private void verifyCommentDeleteAuthority(Comment comment, Long memberId) {

@@ -22,6 +22,10 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException {
 
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType(APPLICATION_JSON.toString());
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
 		ErrorResponse errorResponse = ErrorResponse.of(
 				"사용자 인증에 실패하였습니다.",
 				request.getRequestURI(),
@@ -32,14 +36,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		response.setContentType(APPLICATION_JSON.toString());
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-		PrintWriter writer = response.getWriter();
-
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());
 		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-		objectMapper.writeValueAsString(errorResponse);
 
-		writer.println(errorResponse);
+		PrintWriter writer = response.getWriter();
+		writer.write(objectMapper.writeValueAsString(errorResponse));
 		writer.flush();
 		writer.close();
 	}
