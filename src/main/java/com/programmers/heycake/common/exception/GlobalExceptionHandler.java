@@ -13,6 +13,7 @@ import javax.validation.Path;
 
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -70,6 +71,23 @@ public class GlobalExceptionHandler {
 				));
 	}
 
+	@ExceptionHandler(BindException.class)
+	public ResponseEntity<ErrorResponse> handleBindException(
+			HttpServletRequest request, BindException e
+	) {
+		logInfo(e, request.getRequestURI());
+
+		return ResponseEntity
+				.badRequest()
+				.body(
+						ErrorResponse.of(
+								BAD_REQUEST.getMessage(),
+								request.getRequestURI(),
+								makeFieldErrorsFromBindingResult(e.getBindingResult())
+						)
+				);
+	}
+
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
 			HttpServletRequest request, MethodArgumentTypeMismatchException e
@@ -91,6 +109,16 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(InvalidFormatException.class)
 	protected ResponseEntity<ErrorResponse> handleInvalidFormatException(
 			HttpServletRequest request, InvalidFormatException e
+	) {
+		logInfo(e, request.getRequestURI());
+
+		return ResponseEntity.badRequest()
+				.body(ErrorResponse.of(e.getMessage(), request.getRequestURI(), null));
+	}
+
+	@ExceptionHandler(NullPointerException.class)
+	protected ResponseEntity<ErrorResponse> handleNullPointerException(
+			HttpServletRequest request, NullPointerException e
 	) {
 		logInfo(e, request.getRequestURI());
 
@@ -131,7 +159,7 @@ public class GlobalExceptionHandler {
 				.stream()
 				.map(error -> new ErrorResponse.FieldError(
 						error.getField(),
-						Objects.requireNonNull(error.getRejectedValue()).toString(),
+						error.getRejectedValue(),
 						error.getDefaultMessage()
 				))
 				.toList();
