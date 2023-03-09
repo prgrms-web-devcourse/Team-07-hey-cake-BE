@@ -100,6 +100,10 @@ public class MarketEnrollment extends BaseEntity {
 		this.enrollmentStatus = EnrollmentStatus.WAITING;
 	}
 
+	public boolean hasOpenDateBeforeNow() {
+		return this.openDate.isBefore(LocalDate.now());
+	}
+
 	public boolean isSameStatus(EnrollmentStatus enrollmentStatus) {
 		return this.enrollmentStatus == enrollmentStatus;
 	}
