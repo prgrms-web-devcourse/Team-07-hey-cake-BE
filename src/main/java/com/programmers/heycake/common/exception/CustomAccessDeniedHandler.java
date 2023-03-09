@@ -34,7 +34,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
 		ErrorResponse errorResponse = ErrorResponse.of(
-				// "권한이 없습니다.",
 				e.getMessage(),
 				request.getRequestURI(),
 				null
