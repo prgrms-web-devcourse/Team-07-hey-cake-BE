@@ -44,6 +44,8 @@ public class HistoryQueryDslRepository {
 						qOrderHistory.order.region,
 						qOrderHistory.order.visitDate,
 						qOrderHistory.order.createdAt,
+						qOrderHistory.order.cakeInfo,
+						qOrderHistory.order.hopePrice,
 						qImage.imageUrl
 				)
 				.from(qOrderHistory)
@@ -69,6 +71,8 @@ public class HistoryQueryDslRepository {
 												qOrderHistory.order.region,
 												qOrderHistory.order.visitDate,
 												qOrderHistory.order.createdAt,
+												qOrderHistory.order.cakeInfo,
+												qOrderHistory.order.hopePrice,
 												qImage.imageUrl
 										)
 								)
