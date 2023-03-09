@@ -50,7 +50,7 @@ public class CommentService {
 		Market market = getMarket(offer.getMarketId());
 		Member member = getMember(memberId);
 
-		if ((order.isNotWrittenBy(memberId)) && member.isSameMember(market.getMember())) {
+		if ((order.isNotWrittenBy(memberId)) && member.isDifferentMember(market.getMember())) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
 	}

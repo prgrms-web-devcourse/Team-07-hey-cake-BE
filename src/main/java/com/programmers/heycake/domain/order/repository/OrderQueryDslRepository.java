@@ -86,6 +86,7 @@ public class OrderQueryDslRepository {
 			Long cursorId,
 			int pageSize,
 			CakeCategory cakeCategory,
+			OrderStatus orderStatus,
 			String region
 	) {
 		return jpaQueryFactory
@@ -93,7 +94,8 @@ public class OrderQueryDslRepository {
 				.where(
 						ltOrderId(cursorId),
 						eqRegion(region),
-						eqCakeCategory(cakeCategory)
+						eqCakeCategory(cakeCategory),
+						eqOrderStatus(orderStatus)
 				)
 				.limit(pageSize)
 				.orderBy(qOrder.createdAt.desc())

@@ -2,8 +2,8 @@ package com.programmers.heycake.common.util;
 
 import java.util.Objects;
 
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import lombok.AccessLevel;
@@ -16,7 +16,7 @@ public class AuthenticationUtil {
 	public static Long getMemberId() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
-			throw new AccessDeniedException("잘못된 접근입니다.");
+			throw new AuthenticationException("인증 실패") {/*no ops*/};
 		}
 		return (Long)authentication.getPrincipal();
 	}
