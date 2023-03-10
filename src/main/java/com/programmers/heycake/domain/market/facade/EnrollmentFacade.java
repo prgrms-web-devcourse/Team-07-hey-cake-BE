@@ -34,9 +34,9 @@ public class EnrollmentFacade {
 	private final MarketService marketService;
 
 	@Transactional
-	public Long enrollMarket(EnrollmentCreateRequest request) {
+	public Long createEnrollment(EnrollmentCreateRequest request) {
 
-		Long enrollmentId = enrollmentService.enrollMarket(request);
+		Long enrollmentId = enrollmentService.createEnrollment(request);
 
 		imageIntegrationService.createAndUploadImage(
 				request.businessLicenseImage(),
