@@ -41,7 +41,7 @@ public class EnrollmentService {
 
 		MarketEnrollment enrollment = EnrollmentMapper.toEntity(request);
 
-		if (enrollment.hasOpenDateBeforeNow()) {
+		if (enrollment.hasOpenDateAfterNow()) {
 			throw new BusinessException(BAD_REQUEST);
 		}
 
