@@ -1,12 +1,13 @@
 package com.programmers.heycake.domain.market.controller;
 
+import static com.programmers.heycake.domain.market.model.vo.EnrollmentStatus.*;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -22,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
+import com.programmers.heycake.domain.market.facade.EnrollmentFacade;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
@@ -49,6 +52,9 @@ class EnrollmentControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
+
+	@Autowired
+	private EnrollmentFacade enrollmentFacade;
 
 	@Autowired
 	private MarketEnrollmentRepository marketEnrollmentRepository;
@@ -92,7 +98,7 @@ class EnrollmentControllerTest {
 			SecurityContext context = SecurityContextHolder.getContext();
 			context.setAuthentication(
 					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+							List.of(new SimpleGrantedAuthority(USER.getRole()))));
 
 			// when
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
@@ -109,8 +115,7 @@ class EnrollmentControllerTest {
 							.param("detailAddress", userRequest.detailAddress())
 							.param("openTime", userRequest.openTime().toString())
 							.param("endTime", userRequest.endTime().toString())
-							.param("description", userRequest.description())
-							.with(csrf()))
+							.param("description", userRequest.description()))
 					.andExpect(status().isCreated())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 성공",
@@ -132,8 +137,7 @@ class EnrollmentControllerTest {
 									parameterWithName("detailAddress").description("상세 주소"),
 									parameterWithName("openTime").description("오픈 시간"),
 									parameterWithName("endTime").description("마감 시간"),
-									parameterWithName("description").description("업체 설명"),
-									parameterWithName("_csrf").description("토큰")
+									parameterWithName("description").description("업체 설명")
 							),
 							responseHeaders(
 									headerWithName("Location").description("생성된 데이터 URI")
@@ -148,19 +152,81 @@ class EnrollmentControllerTest {
 
 			assertThat(enrollments.size()).isEqualTo(1);
 			assertThat(savedEnrollment)
-					.hasFieldOrPropertyWithValue("businessNumber", userRequest.businessNumber())
-					.hasFieldOrPropertyWithValue("ownerName", userRequest.ownerName())
-					.hasFieldOrPropertyWithValue("openDate", userRequest.openDate())
-					.hasFieldOrPropertyWithValue("marketName", userRequest.marketName())
-					.hasFieldOrPropertyWithValue("phoneNumber", userRequest.phoneNumber())
+					.usingRecursiveComparison()
+					.ignoringFields(
+							"id", "marketAddress", "enrollmentStatus", "member", "createdAt", "updatedAt", "deletedAt"
+					)
+					.isEqualTo(userRequest);
+			assertThat(savedEnrollment)
 					.hasFieldOrPropertyWithValue("marketAddress.city", userRequest.city())
 					.hasFieldOrPropertyWithValue("marketAddress.district", userRequest.district())
 					.hasFieldOrPropertyWithValue("marketAddress.detailAddress", userRequest.detailAddress())
-					.hasFieldOrPropertyWithValue("openTime", userRequest.openTime())
-					.hasFieldOrPropertyWithValue("endTime", userRequest.endTime())
-					.hasFieldOrPropertyWithValue("description", userRequest.description());
+					.hasFieldOrPropertyWithValue("enrollmentStatus", WAITING);
 			assertThat(images.size()).isEqualTo(2);
 			assertThat(location).isEqualTo("/api/v1/enrollments/" + savedEnrollment.getId());
+		}
+
+		@Test
+		@DisplayName("Fail - 입력 요청 값이 잘못되면 400 응답으로 실패한다")
+		void createEnrollmentFailByBadRequest() throws Exception {
+			// given
+			Member member = TestUtils.getMember();
+			memberRepository.save(member);
+
+			SecurityContext context = SecurityContextHolder.getContext();
+			context.setAuthentication(
+					new UsernamePasswordAuthenticationToken(member.getId(), null,
+							List.of(new SimpleGrantedAuthority(USER.getRole()))));
+
+			// when & then
+			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
+							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
+							.file("marketImage", userRequest.marketImage().getBytes())
+							.header("access_token", ACCESS_TOKEN)
+							.param("businessNumber", " ")
+							.param("ownerName", " ")
+							.param("openDate", userRequest.openDate().toString())
+							.param("marketName", " ")
+							.param("phoneNumber", " ")
+							.param("city", " ")
+							.param("district", " ")
+							.param("detailAddress", " ")
+							.param("openTime", userRequest.openTime().toString())
+							.param("endTime", userRequest.endTime().toString())
+							.param("description", " "))
+					.andExpect(status().isBadRequest())
+					.andDo(print())
+					.andDo(document("MarketEnrollment/업체 신청 실패 - 입력 요청 값이 잘못된 경우",
+							requestHeaders(
+									headerWithName("access_token").description("Access token 정보")
+							),
+							requestParts(
+									partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
+									partWithName("marketImage").description("업체 대표 이미지")
+							),
+							requestParameters(
+									parameterWithName("businessNumber").description("사업자 등록 번호"),
+									parameterWithName("ownerName").description("대표자 이름"),
+									parameterWithName("openDate").description("개업 일자"),
+									parameterWithName("marketName").description("상호명"),
+									parameterWithName("phoneNumber").description("업체 전화번호"),
+									parameterWithName("city").description("주소 시"),
+									parameterWithName("district").description("주소 구"),
+									parameterWithName("detailAddress").description("상세 주소"),
+									parameterWithName("openTime").description("오픈 시간"),
+									parameterWithName("endTime").description("마감 시간"),
+									parameterWithName("description").description("업체 설명")
+							),
+							responseFields(
+									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+									fieldWithPath("inputErrors").type(JsonFieldType.ARRAY).description("검증 실패 에러 정보"),
+									fieldWithPath("inputErrors[].field").type(JsonFieldType.STRING).description("검증 실패한 필드"),
+									fieldWithPath("inputErrors[].rejectedValue").type(JsonFieldType.STRING).description("실패한 요청 값"),
+									fieldWithPath("inputErrors[].message").type(JsonFieldType.STRING).description("검증 실패 예외 메세지")
+							)))
+					.andReturn();
 		}
 
 		@Test
@@ -174,7 +240,7 @@ class EnrollmentControllerTest {
 			SecurityContext context = SecurityContextHolder.getContext();
 			context.setAuthentication(
 					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+							List.of(new SimpleGrantedAuthority(USER.getRole()))));
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
@@ -191,8 +257,7 @@ class EnrollmentControllerTest {
 							.param("detailAddress", userRequest.detailAddress())
 							.param("openTime", userRequest.openTime().toString())
 							.param("endTime", userRequest.endTime().toString())
-							.param("description", userRequest.description())
-							.with(csrf()))
+							.param("description", userRequest.description()))
 					.andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 실패 - 개업일이 현재 시각보다 늦은 경우",
@@ -214,8 +279,13 @@ class EnrollmentControllerTest {
 									parameterWithName("detailAddress").description("상세 주소"),
 									parameterWithName("openTime").description("오픈 시간"),
 									parameterWithName("endTime").description("마감 시간"),
-									parameterWithName("description").description("업체 설명"),
-									parameterWithName("_csrf").description("토큰")
+									parameterWithName("description").description("업체 설명")
+							),
+							responseFields(
+									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
 							)))
 					.andReturn();
 		}
@@ -237,8 +307,7 @@ class EnrollmentControllerTest {
 							.param("detailAddress", userRequest.detailAddress())
 							.param("openTime", userRequest.openTime().toString())
 							.param("endTime", userRequest.endTime().toString())
-							.param("description", userRequest.description())
-							.with(csrf()))
+							.param("description", userRequest.description()))
 					.andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 실패 - 회원 인증 실패",
@@ -260,8 +329,13 @@ class EnrollmentControllerTest {
 									parameterWithName("detailAddress").description("상세 주소"),
 									parameterWithName("openTime").description("오픈 시간"),
 									parameterWithName("endTime").description("마감 시간"),
-									parameterWithName("description").description("업체 설명"),
-									parameterWithName("_csrf").description("토큰")
+									parameterWithName("description").description("업체 설명")
+							),
+							responseFields(
+									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
 							)))
 					.andReturn();
 		}
@@ -276,7 +350,7 @@ class EnrollmentControllerTest {
 			SecurityContext context = SecurityContextHolder.getContext();
 			context.setAuthentication(
 					new UsernamePasswordAuthenticationToken(marketMember.getId(), null,
-							List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+							List.of(new SimpleGrantedAuthority(MARKET.getRole()))));
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
@@ -293,8 +367,7 @@ class EnrollmentControllerTest {
 							.param("detailAddress", userRequest.detailAddress())
 							.param("openTime", userRequest.openTime().toString())
 							.param("endTime", userRequest.endTime().toString())
-							.param("description", userRequest.description())
-							.with(csrf()))
+							.param("description", userRequest.description()))
 					.andExpect(status().isForbidden())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 실패 - 이미 업체인 경우",
@@ -316,11 +389,156 @@ class EnrollmentControllerTest {
 									parameterWithName("detailAddress").description("상세 주소"),
 									parameterWithName("openTime").description("오픈 시간"),
 									parameterWithName("endTime").description("마감 시간"),
-									parameterWithName("description").description("업체 설명"),
-									parameterWithName("_csrf").description("토큰")
+									parameterWithName("description").description("업체 설명")
+							),
+							responseFields(
+									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
+							)))
+					.andReturn();
+		}
+	}
+
+	@Nested
+	@DisplayName("getMarketEnrollment")
+	@Transactional
+	class GetMarketEnrollment {
+
+		@Test
+		@DisplayName("Success - 업체 신청 상세 정보 조회를 하면 201로 응답으로 성공한다")
+		void getMarketEnrollmentSuccess() throws Exception {
+			// given
+			Member adminMember = new Member("heycake@heycake.com", ADMIN, "1010");
+			memberRepository.save(adminMember);
+
+			SecurityContext context = SecurityContextHolder.getContext();
+			context.setAuthentication(
+					new UsernamePasswordAuthenticationToken(adminMember.getId(), null,
+							List.of(new SimpleGrantedAuthority(ADMIN.getRole()))));
+
+			Long enrollmentId = enrollmentFacade.createEnrollment(userRequest);
+
+			// when & then
+			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollmentId)
+							.header("access_token", ACCESS_TOKEN))
+					.andExpect(status().isOk())
+					.andDo(print())
+					.andDo(document("MarketEnrollment/업체 신청 상세 조회 성공",
+							requestHeaders(
+									headerWithName("access_token").description("Access token 정보")
+							),
+							responseFields(
+									fieldWithPath("phoneNumber").description("업체 전화번호"),
+									fieldWithPath("marketAddress").description("업체 주소"),
+									fieldWithPath("marketAddress.city").description("업체 주소 - 시"),
+									fieldWithPath("marketAddress.district").description("업체 주소 -  구"),
+									fieldWithPath("marketAddress.detailAddress").description("업체 주소 - 상세 주소"),
+									fieldWithPath("openTime").description("오픈 시간"),
+									fieldWithPath("endTime").description("마감 시간"),
+									fieldWithPath("description").description("업체 설명"),
+									fieldWithPath("marketName").description("상호명"),
+									fieldWithPath("businessNumber").description("사업자 등록 번호"),
+									fieldWithPath("ownerName").description("대표자 이름"),
+									fieldWithPath("marketImage").description("업체 이미지 URL")
 							)))
 					.andReturn();
 		}
 
+		@Test
+		@DisplayName("Fail - 회원 인증에 실패하여 401 응답으로 실패한다")
+		void getMarketEnrollmentFailByUnauthorized() throws Exception {
+			// given
+			Member member = TestUtils.getMember();
+			memberRepository.save(member);
+
+			SecurityContext context = SecurityContextHolder.getContext();
+			context.setAuthentication(
+					new UsernamePasswordAuthenticationToken(member.getId(), null,
+							List.of(new SimpleGrantedAuthority(USER.getRole()))));
+
+			Long enrollmentId = enrollmentFacade.createEnrollment(userRequest);
+
+			SecurityContextHolder.clearContext();
+
+			// when & then
+			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollmentId)
+							.header("access_token", ACCESS_TOKEN))
+					.andExpect(status().isUnauthorized())
+					.andDo(print())
+					.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 회원 인증 실패",
+							requestHeaders(
+									headerWithName("access_token").description("Access token 정보")
+							),
+							responseFields(
+									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
+							)))
+					.andReturn();
+		}
+
+		@Test
+		@DisplayName("Fail - 관리자가 아닌 회원이 요청을 하면 403 응답으로 실패한다")
+		void getMarketEnrollmentFailByNotAdmin() throws Exception {
+			// given
+			Member member = TestUtils.getMember();
+			memberRepository.save(member);
+
+			SecurityContext context = SecurityContextHolder.getContext();
+			context.setAuthentication(
+					new UsernamePasswordAuthenticationToken(member.getId(), null,
+							List.of(new SimpleGrantedAuthority(USER.getRole()))));
+
+			Long enrollmentId = enrollmentFacade.createEnrollment(userRequest);
+
+			// when & then
+			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollmentId)
+							.header("access_token", ACCESS_TOKEN))
+					.andExpect(status().isForbidden())
+					.andDo(print())
+					.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 관리자가 아닌 회원이 요청한 경우",
+							requestHeaders(
+									headerWithName("access_token").description("Access token 정보")
+							),
+							responseFields(
+									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
+							)))
+					.andReturn();
+		}
+
+		@Test
+		@DisplayName("Fail - 존재하지 않는 업체 신청 id 를 조회하면 404 응답으로 실패한다")
+		void getMarketEnrollmentFailByNotFound() throws Exception {
+			Member adminMember = new Member("heycake@heycake.com", ADMIN, "1010");
+			memberRepository.save(adminMember);
+
+			SecurityContext context = SecurityContextHolder.getContext();
+			context.setAuthentication(
+					new UsernamePasswordAuthenticationToken(adminMember.getId(), null,
+							List.of(new SimpleGrantedAuthority(ADMIN.getRole()))));
+
+			// when & then
+			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", 0L)
+							.header("access_token", ACCESS_TOKEN))
+					.andExpect(status().isNotFound())
+					.andDo(print())
+					.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 존재하지 않는 id 인 경우",
+							requestHeaders(
+									headerWithName("access_token").description("Access token 정보")
+							),
+							responseFields(
+									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
+							)))
+					.andReturn();
+		}
 	}
 }
