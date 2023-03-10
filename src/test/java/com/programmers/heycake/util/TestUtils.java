@@ -3,14 +3,12 @@ package com.programmers.heycake.util;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.programmers.heycake.domain.image.model.entity.Image;
@@ -32,15 +30,8 @@ import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 
 public class TestUtils {
 
-	public static void setContextHolder(Long memberId, String role) {
-		List<GrantedAuthority> authorities = new ArrayList<>(Collections.singleton(new SimpleGrantedAuthority("USER")));
-		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-				new UsernamePasswordAuthenticationToken(memberId, null, authorities);
-		SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-	}
-
 	public static Member getMember() {
-		return new Member("John", MemberAuthority.USER, "0311");
+		return new Member("heycake@heycake.com", MemberAuthority.USER, "0311");
 	}
 
 	public static Member getMember(String email) {
@@ -57,9 +48,9 @@ public class TestUtils {
 				.build();
 	}
 
-	public static MarketEnrollment getMarketEnrollment() {
+	public static MarketEnrollment getMarketEnrollment(String businessNumber) {
 		return MarketEnrollment.builder()
-				.businessNumber("0123456789")
+				.businessNumber(businessNumber)
 				.ownerName("Owner.Kong")
 				.openDate(LocalDate.now())
 				.marketName("서울 제과점")
@@ -150,4 +141,12 @@ public class TestUtils {
 				"test".getBytes()
 		);
 	}
+
+	public static void setContext(Long memberId, MemberAuthority memberAuthority) {
+		SecurityContext context = SecurityContextHolder.getContext();
+		context.setAuthentication(
+				new UsernamePasswordAuthenticationToken(memberId, null,
+						List.of(new SimpleGrantedAuthority(memberAuthority.getRole()))));
+	}
+
 }

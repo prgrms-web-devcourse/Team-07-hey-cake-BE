@@ -34,11 +34,11 @@ public class EnrollmentController {
 	private final EnrollmentFacade enrollmentFacade;
 
 	@PostMapping
-	public ResponseEntity<Void> enrollMarket(
+	public ResponseEntity<Void> createEnrollment(
 			@Valid @ModelAttribute EnrollmentCreateRequest createRequest,
 			HttpServletRequest request
 	) {
-		Long enrollmentId = enrollmentFacade.enrollMarket(createRequest);
+		Long enrollmentId = enrollmentFacade.createEnrollment(createRequest);
 		URI location = URI.create(request.getRequestURI() + "/" + enrollmentId);
 		return ResponseEntity.created(location).build();
 	}

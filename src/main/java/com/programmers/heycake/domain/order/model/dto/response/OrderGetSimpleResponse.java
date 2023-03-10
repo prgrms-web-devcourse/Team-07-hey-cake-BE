@@ -18,6 +18,7 @@ public record OrderGetSimpleResponse(
 		List<String> images,
 		OrderStatus orderStatus,
 		int hopePrice,
+		int offerCount,
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 		LocalDateTime visitTime,
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

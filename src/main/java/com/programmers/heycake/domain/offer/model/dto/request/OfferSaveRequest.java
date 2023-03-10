@@ -8,15 +8,9 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
 
 public record OfferSaveRequest(
-		@NotNull
-		@Positive
-		Long orderId,
-		@Positive
-		int expectedPrice,
-		@Length(max = 500)
-		@NotBlank
-		String content,
-		@NotNull
-		MultipartFile offerImage
+		@NotNull @Positive Long orderId,
+		@Positive int expectedPrice,
+		@Length(max = 500) @NotBlank String content,
+		@NotNull MultipartFile offerImage
 ) {
 }

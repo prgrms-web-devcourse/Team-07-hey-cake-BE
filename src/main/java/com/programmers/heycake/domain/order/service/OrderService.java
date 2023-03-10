@@ -57,11 +57,10 @@ public class OrderService {
 				myOrderRequest.pageSize()
 		);
 
-		LocalDateTime lastTime =
-				orderList.isEmpty() ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).visitTime();
+		Long lastId = orderList.isEmpty()
+				? Long.MAX_VALUE : orderList.get(orderList.size() - 1).id();
 
-		return toMyOrderResponseList(orderList, lastTime);
-
+		return toMyOrderResponseList(orderList, lastId);
 	}
 
 	@Transactional
@@ -110,6 +109,14 @@ public class OrderService {
 		identifyAuthor(orderId);
 		isNew(orderId);
 		orderRepository.deleteById(orderId);
+	}
+
+	@Transactional(readOnly = true)
+	public void hasOffer(Long orderId, Long offerId) {
+		List<Offer> offerList = getOrder(orderId).getOffers();
+		if (offerList.stream().noneMatch(offer -> offer.isMatch(offerId))) {
+			throw new BusinessException(ErrorCode.BAD_REQUEST);
+		}
 	}
 
 	public Order getOrder(Long orderId) {
