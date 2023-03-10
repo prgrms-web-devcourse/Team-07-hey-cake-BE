@@ -111,6 +111,14 @@ public class OrderService {
 		orderRepository.deleteById(orderId);
 	}
 
+	@Transactional(readOnly = true)
+	public void hasOffer(Long orderId, Long offerId) {
+		List<Offer> offerList = getOrder(orderId).getOffers();
+		if (offerList.stream().noneMatch(offer -> offer.isMatch(offerId))) {
+			throw new BusinessException(ErrorCode.BAD_REQUEST);
+		}
+	}
+
 	public Order getOrder(Long orderId) {
 		return orderRepository.findById(orderId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));

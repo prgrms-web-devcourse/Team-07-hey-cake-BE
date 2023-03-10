@@ -7,6 +7,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -27,6 +29,7 @@ import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 
 import lombok.RequiredArgsConstructor;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
@@ -62,6 +65,7 @@ public class OrderController {
 	}
 
 	@GetMapping("/my")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_MARKET')")
 	public ResponseEntity<MyOrderResponseList> getOrderList(
 			@RequestParam(required = false) @Positive Long cursorId,
 			@RequestParam(defaultValue = "10") @Positive Integer pageSize,
@@ -74,7 +78,7 @@ public class OrderController {
 	}
 
 	@DeleteMapping("/{orderId}")
-	public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
+	public ResponseEntity<Void> deleteOrder(@PathVariable @Positive Long orderId) {
 		orderFacade.deleteOrder(orderId);
 		return ResponseEntity.noContent().build();
 	}
