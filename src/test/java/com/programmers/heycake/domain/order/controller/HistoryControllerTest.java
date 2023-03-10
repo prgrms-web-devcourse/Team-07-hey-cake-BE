@@ -100,9 +100,9 @@ class HistoryControllerTest {
 			Order order = orderRepository.save(getOrder(member.getId()));
 
 			MarketEnrollment marketEnrollment = setTestMarketEnrollment(member, "1231231234");
-			Market market = HistoryControllerTest.this.setTestMarket(member, marketEnrollment);
+			Market market = setTestMarket(member, marketEnrollment);
 
-			Offer offer = HistoryControllerTest.this.setTestOffer(order, market);
+			Offer offer = setTestOffer(order, market);
 
 			HistoryControllerRequest historyControllerRequest =
 					new HistoryControllerRequest(order.getId(), offer.getId());

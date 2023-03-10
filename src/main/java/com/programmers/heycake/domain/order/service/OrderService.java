@@ -115,7 +115,7 @@ public class OrderService {
 	@Transactional(readOnly = true)
 	public void hasOffer(Long orderId, Long offerId) {
 		List<Offer> offerList = getOrder(orderId).getOffers();
-		if (offerList.stream().noneMatch(offer -> offer.getId().equals(offerId))) {
+		if (offerList.stream().noneMatch(offer -> offer.isMatch(offerId))) {
 			throw new BusinessException(ErrorCode.BAD_REQUEST);
 		}
 	}
