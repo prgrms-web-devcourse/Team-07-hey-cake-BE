@@ -55,7 +55,7 @@ public class MemberService {
 
 		if (!memberRepository.existsByEmail(memberInfo.email())) {
 			memberRepository.save(
-					new Member(memberInfo.email(), USER, memberInfo.birthday())
+					new Member(memberInfo.email(), USER, memberInfo.birthday(), memberInfo.nickname())
 			);
 		}
 

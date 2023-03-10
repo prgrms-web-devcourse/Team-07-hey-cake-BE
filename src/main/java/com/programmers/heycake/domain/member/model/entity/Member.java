@@ -43,10 +43,14 @@ public class Member extends BaseEntity {
 	@Column(name = "birth", nullable = true)
 	private String birth;
 
-	public Member(String email, MemberAuthority memberAuthority, String birth) {
+	@Column(name = "nickname", nullable = false)
+	private String nickname;
+
+	public Member(String email, MemberAuthority memberAuthority, String birth, String nickname) {
 		this.email = email;
 		this.memberAuthority = memberAuthority;
 		this.birth = birth;
+		this.nickname = nickname;
 	}
 
 	public boolean isMarket() {

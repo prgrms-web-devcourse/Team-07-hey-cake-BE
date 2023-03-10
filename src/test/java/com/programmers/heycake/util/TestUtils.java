@@ -31,11 +31,11 @@ import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 public class TestUtils {
 
 	public static Member getMember() {
-		return new Member("heycake@heycake.com", MemberAuthority.USER, "0311");
+		return new Member("heycake@heycake.com", MemberAuthority.USER, "0311", "nickname");
 	}
 
 	public static Member getMember(String email) {
-		return new Member(email, MemberAuthority.USER, "0311");
+		return new Member(email, MemberAuthority.USER, "0311", "nickname");
 	}
 
 	public static Market getMarket() {
