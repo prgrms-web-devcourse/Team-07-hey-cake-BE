@@ -1,5 +1,6 @@
 package com.programmers.heycake.domain.member.service;
 
+import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
 
 import java.util.Optional;
@@ -21,7 +22,6 @@ import org.springframework.web.client.RestTemplate;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.jwt.Jwt;
-import com.programmers.heycake.common.util.AuthenticationUtil;
 import com.programmers.heycake.domain.member.model.dto.MemberInfo;
 import com.programmers.heycake.domain.member.model.dto.response.TokenResponse;
 import com.programmers.heycake.domain.member.model.entity.Member;
@@ -194,8 +194,7 @@ public class MemberService {
 
 	@Transactional
 	public void logout() {
-		Long memberId = AuthenticationUtil.getMemberId();
-		tokenRepository.findByMemberId(memberId)
+		tokenRepository.findByMemberId(getMemberId())
 				.ifPresent(tokenRepository::delete);
 	}
 
