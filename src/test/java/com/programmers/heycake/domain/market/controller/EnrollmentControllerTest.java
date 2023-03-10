@@ -24,10 +24,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,10 +87,7 @@ class EnrollmentControllerTest {
 			Member member = TestUtils.getMember();
 			memberRepository.save(member);
 
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority(USER.getRole()))));
+			TestUtils.setContext(member.getId(), USER);
 
 			// when
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
@@ -169,10 +162,7 @@ class EnrollmentControllerTest {
 			Member member = TestUtils.getMember();
 			memberRepository.save(member);
 
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority(USER.getRole()))));
+			TestUtils.setContext(member.getId(), USER);
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
@@ -233,10 +223,7 @@ class EnrollmentControllerTest {
 			Member member = TestUtils.getMember();
 			memberRepository.save(member);
 
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority(USER.getRole()))));
+			TestUtils.setContext(member.getId(), USER);
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
@@ -343,10 +330,7 @@ class EnrollmentControllerTest {
 			Member marketMember = new Member("heycake@heycake.com", MARKET, "1010", "kwon");
 			memberRepository.save(marketMember);
 
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(marketMember.getId(), null,
-							List.of(new SimpleGrantedAuthority(MARKET.getRole()))));
+			TestUtils.setContext(marketMember.getId(), MARKET);
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
