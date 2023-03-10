@@ -164,7 +164,11 @@ public class MemberService {
 				.getJSONObject("profile")
 				.getString("profile_image_url");
 
-		return new MemberInfo(email, birthday, profileUrl);
+		String nickname = responseBody.getJSONObject("kakao_account")
+				.getJSONObject("profile")
+				.getString("nickname");
+
+		return new MemberInfo(email, birthday, profileUrl, nickname);
 	}
 
 	@Transactional
