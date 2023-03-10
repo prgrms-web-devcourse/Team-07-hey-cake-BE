@@ -1,7 +1,5 @@
 package com.programmers.heycake.domain.member.controller;
 
-import java.io.IOException;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -24,18 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MemberController {
 
-	private static final String LOGIN_DONE_REDIRECT_URL = "http://localhost:3000/main";
-
 	private final MemberService memberService;
 
 	@PostMapping("/login")
 	public ResponseEntity<TokenResponse> login(
-			@RequestBody AuthenticationCodeRequest authenticationCodeRequest) throws IOException {
-		log.info("login start: {}", authenticationCodeRequest.code());
-
+			@RequestBody AuthenticationCodeRequest authenticationCodeRequest) {
 		TokenResponse tokenResponse = memberService.loginForKakao(authenticationCodeRequest.code());
-
-		log.info("login end: {}", authenticationCodeRequest.code());
 
 		return ResponseEntity.ok(tokenResponse);
 	}

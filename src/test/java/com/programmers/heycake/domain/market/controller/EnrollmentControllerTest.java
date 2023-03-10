@@ -270,7 +270,7 @@ class EnrollmentControllerTest {
 		@DisplayName("Fail - 이미 업체인 유저가 업체 신청을 하면 403 응답으로 실패한다")
 		void createEnrollmentFailByAlreadyMarket() throws Exception {
 			// given
-			Member marketMember = new Member("heycake@heycake.com", MARKET, "1010");
+			Member marketMember = new Member("heycake@heycake.com", MARKET, "1010", "nickname");
 			memberRepository.save(marketMember);
 
 			SecurityContext context = SecurityContextHolder.getContext();
