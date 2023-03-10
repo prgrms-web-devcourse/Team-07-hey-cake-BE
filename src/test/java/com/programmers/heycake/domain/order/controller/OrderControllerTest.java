@@ -94,7 +94,7 @@ class OrderControllerTest {
 									fieldWithPath("myOrderResponseList[].cakeInfo.breadFlavor").description("빵 맛"),
 									fieldWithPath("myOrderResponseList[].cakeInfo.creamFlavor").description("크림 맛"),
 									fieldWithPath("myOrderResponseList[].cakeInfo.requirements").description("요청 사항"),
-									fieldWithPath("myOrderResponseList[].hopePrice").description("희망 가"),
+									fieldWithPath("myOrderResponseList[].hopePrice").description("희망 가격"),
 									fieldWithPath("myOrderResponseList[].imageUrl").description("이미지 주소"),
 									fieldWithPath("cursorId").description("커서 식별자")
 							)
