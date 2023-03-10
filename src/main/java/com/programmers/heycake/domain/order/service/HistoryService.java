@@ -56,6 +56,10 @@ public class HistoryService {
 				? Long.MAX_VALUE : orderHistories.get(orderHistories.size() - 1).id();
 
 		return toMyOrderResponseList(orderHistories, lastId);
+	}
 
+	@Transactional(readOnly = true)
+	public boolean isPaidOffer(Long marketId, Long orderId) {
+		return historyRepository.existsByMarketIdAndOrderId(marketId, orderId);
 	}
 }
