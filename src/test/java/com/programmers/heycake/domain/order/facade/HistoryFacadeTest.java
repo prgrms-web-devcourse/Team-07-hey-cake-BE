@@ -47,7 +47,7 @@ public class HistoryFacadeTest {
 		@WithMockCustomUser(memberId = 1L)
 		void createHistorySuccess() {
 			//given
-			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(1L, 1L);
+			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(1L, 1L, true);
 			OrderDto orderDto = OrderDto.builder().id(1L).build();
 			OfferDto offerDto = OfferDto.builder().orderDto(orderDto).build();
 
