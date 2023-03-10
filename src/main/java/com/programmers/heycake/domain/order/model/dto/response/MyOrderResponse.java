@@ -3,6 +3,7 @@ package com.programmers.heycake.domain.order.model.dto.response;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 
 import lombok.Builder;
@@ -17,6 +18,8 @@ public record MyOrderResponse(
 		LocalDateTime visitTime,
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 		LocalDateTime createdAt,
+		CakeInfo cakeInfo,
+		int hopePrice,
 		String imageUrl
 ) {
 }

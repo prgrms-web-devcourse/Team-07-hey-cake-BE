@@ -36,6 +36,7 @@ public class HistoryService {
 	@Transactional(readOnly = true)
 	public MyOrderResponseList getMyOrderList(MyOrderRequest myOrderRequest, Long marketId) {
 		LocalDateTime cursorTime = null;
+
 		if (myOrderRequest.cursorId() != null) {
 			Optional<Order> order = historyRepository.findById(myOrderRequest.cursorId())
 					.map(OrderHistory::getOrder);
@@ -51,11 +52,10 @@ public class HistoryService {
 				myOrderRequest.pageSize()
 		);
 
-		LocalDateTime lastTime =
-				orderHistories.isEmpty() ? LocalDateTime.MAX :
-						orderHistories.get(orderHistories.size() - 1).visitTime();
+		Long lastId = orderHistories.isEmpty()
+				? Long.MAX_VALUE : orderHistories.get(orderHistories.size() - 1).id();
 
-		return toMyOrderResponseList(orderHistories, lastTime);
+		return toMyOrderResponseList(orderHistories, lastId);
 
 	}
 }
