@@ -162,107 +162,165 @@ class EnrollmentControllerTest {
 			assertThat(images.size()).isEqualTo(2);
 			assertThat(location).isEqualTo("/api/v1/enrollments/" + savedEnrollment.getId());
 		}
-	}
 
-	@Test
-	@DisplayName("Fail - 회원 인증에 실패하여 401 응답으로 실패한다")
-	void createEnrollmentFailByUnAuthorized() throws Exception {
-		MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
-						.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
-						.file("marketImage", userRequest.marketImage().getBytes())
-						.header("access_token", ACCESS_TOKEN)
-						.param("businessNumber", userRequest.businessNumber())
-						.param("ownerName", userRequest.ownerName())
-						.param("openDate", userRequest.openDate().toString())
-						.param("marketName", userRequest.marketName())
-						.param("phoneNumber", userRequest.phoneNumber())
-						.param("city", userRequest.city())
-						.param("district", userRequest.district())
-						.param("detailAddress", userRequest.detailAddress())
-						.param("openTime", userRequest.openTime().toString())
-						.param("endTime", userRequest.endTime().toString())
-						.param("description", userRequest.description())
-						.with(csrf()))
-				.andExpect(status().isUnauthorized())
-				.andDo(print())
-				.andDo(document("MarketEnrollment/업체 신청 실패 - 회원 인증 실패",
-						requestHeaders(
-								headerWithName("access_token").description("Access token 정보")
-						),
-						requestParts(
-								partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
-								partWithName("marketImage").description("업체 대표 이미지")
-						),
-						requestParameters(
-								parameterWithName("businessNumber").description("사업자 등록 번호"),
-								parameterWithName("ownerName").description("대표자 이름"),
-								parameterWithName("openDate").description("개업 일자"),
-								parameterWithName("marketName").description("상호명"),
-								parameterWithName("phoneNumber").description("업체 전화번호"),
-								parameterWithName("city").description("주소 시"),
-								parameterWithName("district").description("주소 구"),
-								parameterWithName("detailAddress").description("상세 주소"),
-								parameterWithName("openTime").description("오픈 시간"),
-								parameterWithName("endTime").description("마감 시간"),
-								parameterWithName("description").description("업체 설명"),
-								parameterWithName("_csrf").description("토큰")
-						)))
-				.andReturn();
-	}
+		@Test
+		@DisplayName("Fail - 현재 시각보다 개업일이 늦으면 400 응답으로 실패한다")
+		void createEnrollmentFailByOpenDateAfterNow() throws Exception {
+			// given
+			LocalDate openDateAfterNow = LocalDate.now().plusDays(1);
+			Member member = TestUtils.getMember();
+			memberRepository.save(member);
 
-	@Test
-	@DisplayName("Fail - 이미 업체인 유저가 업체 신청을 하면 403 응답으로 실패한다")
-	void createEnrollmentFailByAlreadyMarket() throws Exception {
-		// given
-		Member marketMember = new Member("heycake@heycake.com", MARKET, "1010");
-		memberRepository.save(marketMember);
+			SecurityContext context = SecurityContextHolder.getContext();
+			context.setAuthentication(
+					new UsernamePasswordAuthenticationToken(member.getId(), null,
+							List.of(new SimpleGrantedAuthority("ROLE_USER"))));
 
-		SecurityContext context = SecurityContextHolder.getContext();
-		context.setAuthentication(
-				new UsernamePasswordAuthenticationToken(marketMember.getId(), null,
-						List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+			// when & then
+			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
+							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
+							.file("marketImage", userRequest.marketImage().getBytes())
+							.header("access_token", ACCESS_TOKEN)
+							.param("businessNumber", userRequest.businessNumber())
+							.param("ownerName", userRequest.ownerName())
+							.param("openDate", openDateAfterNow.toString())
+							.param("marketName", userRequest.marketName())
+							.param("phoneNumber", userRequest.phoneNumber())
+							.param("city", userRequest.city())
+							.param("district", userRequest.district())
+							.param("detailAddress", userRequest.detailAddress())
+							.param("openTime", userRequest.openTime().toString())
+							.param("endTime", userRequest.endTime().toString())
+							.param("description", userRequest.description())
+							.with(csrf()))
+					.andExpect(status().isBadRequest())
+					.andDo(print())
+					.andDo(document("MarketEnrollment/업체 신청 실패 - 개업일이 현재 시각보다 늦은 경우",
+							requestHeaders(
+									headerWithName("access_token").description("Access token 정보")
+							),
+							requestParts(
+									partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
+									partWithName("marketImage").description("업체 대표 이미지")
+							),
+							requestParameters(
+									parameterWithName("businessNumber").description("사업자 등록 번호"),
+									parameterWithName("ownerName").description("대표자 이름"),
+									parameterWithName("openDate").description("개업 일자"),
+									parameterWithName("marketName").description("상호명"),
+									parameterWithName("phoneNumber").description("업체 전화번호"),
+									parameterWithName("city").description("주소 시"),
+									parameterWithName("district").description("주소 구"),
+									parameterWithName("detailAddress").description("상세 주소"),
+									parameterWithName("openTime").description("오픈 시간"),
+									parameterWithName("endTime").description("마감 시간"),
+									parameterWithName("description").description("업체 설명"),
+									parameterWithName("_csrf").description("토큰")
+							)))
+					.andReturn();
+		}
 
-		// when & then
-		MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
-						.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
-						.file("marketImage", userRequest.marketImage().getBytes())
-						.header("access_token", ACCESS_TOKEN)
-						.param("businessNumber", userRequest.businessNumber())
-						.param("ownerName", userRequest.ownerName())
-						.param("openDate", userRequest.openDate().toString())
-						.param("marketName", userRequest.marketName())
-						.param("phoneNumber", userRequest.phoneNumber())
-						.param("city", userRequest.city())
-						.param("district", userRequest.district())
-						.param("detailAddress", userRequest.detailAddress())
-						.param("openTime", userRequest.openTime().toString())
-						.param("endTime", userRequest.endTime().toString())
-						.param("description", userRequest.description())
-						.with(csrf()))
-				.andExpect(status().isForbidden())
-				.andDo(print())
-				.andDo(document("MarketEnrollment/업체 신청 실패 - 이미 업체인 경우",
-						requestHeaders(
-								headerWithName("access_token").description("Access token 정보")
-						),
-						requestParts(
-								partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
-								partWithName("marketImage").description("업체 대표 이미지")
-						),
-						requestParameters(
-								parameterWithName("businessNumber").description("사업자 등록 번호"),
-								parameterWithName("ownerName").description("대표자 이름"),
-								parameterWithName("openDate").description("개업 일자"),
-								parameterWithName("marketName").description("상호명"),
-								parameterWithName("phoneNumber").description("업체 전화번호"),
-								parameterWithName("city").description("주소 시"),
-								parameterWithName("district").description("주소 구"),
-								parameterWithName("detailAddress").description("상세 주소"),
-								parameterWithName("openTime").description("오픈 시간"),
-								parameterWithName("endTime").description("마감 시간"),
-								parameterWithName("description").description("업체 설명"),
-								parameterWithName("_csrf").description("토큰")
-						)))
-				.andReturn();
+		@Test
+		@DisplayName("Fail - 회원 인증에 실패하여 401 응답으로 실패한다")
+		void createEnrollmentFailByUnAuthorized() throws Exception {
+			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
+							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
+							.file("marketImage", userRequest.marketImage().getBytes())
+							.header("access_token", ACCESS_TOKEN)
+							.param("businessNumber", userRequest.businessNumber())
+							.param("ownerName", userRequest.ownerName())
+							.param("openDate", userRequest.openDate().toString())
+							.param("marketName", userRequest.marketName())
+							.param("phoneNumber", userRequest.phoneNumber())
+							.param("city", userRequest.city())
+							.param("district", userRequest.district())
+							.param("detailAddress", userRequest.detailAddress())
+							.param("openTime", userRequest.openTime().toString())
+							.param("endTime", userRequest.endTime().toString())
+							.param("description", userRequest.description())
+							.with(csrf()))
+					.andExpect(status().isUnauthorized())
+					.andDo(print())
+					.andDo(document("MarketEnrollment/업체 신청 실패 - 회원 인증 실패",
+							requestHeaders(
+									headerWithName("access_token").description("Access token 정보")
+							),
+							requestParts(
+									partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
+									partWithName("marketImage").description("업체 대표 이미지")
+							),
+							requestParameters(
+									parameterWithName("businessNumber").description("사업자 등록 번호"),
+									parameterWithName("ownerName").description("대표자 이름"),
+									parameterWithName("openDate").description("개업 일자"),
+									parameterWithName("marketName").description("상호명"),
+									parameterWithName("phoneNumber").description("업체 전화번호"),
+									parameterWithName("city").description("주소 시"),
+									parameterWithName("district").description("주소 구"),
+									parameterWithName("detailAddress").description("상세 주소"),
+									parameterWithName("openTime").description("오픈 시간"),
+									parameterWithName("endTime").description("마감 시간"),
+									parameterWithName("description").description("업체 설명"),
+									parameterWithName("_csrf").description("토큰")
+							)))
+					.andReturn();
+		}
+
+		@Test
+		@DisplayName("Fail - 이미 업체인 유저가 업체 신청을 하면 403 응답으로 실패한다")
+		void createEnrollmentFailByAlreadyMarket() throws Exception {
+			// given
+			Member marketMember = new Member("heycake@heycake.com", MARKET, "1010");
+			memberRepository.save(marketMember);
+
+			SecurityContext context = SecurityContextHolder.getContext();
+			context.setAuthentication(
+					new UsernamePasswordAuthenticationToken(marketMember.getId(), null,
+							List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+
+			// when & then
+			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
+							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
+							.file("marketImage", userRequest.marketImage().getBytes())
+							.header("access_token", ACCESS_TOKEN)
+							.param("businessNumber", userRequest.businessNumber())
+							.param("ownerName", userRequest.ownerName())
+							.param("openDate", userRequest.openDate().toString())
+							.param("marketName", userRequest.marketName())
+							.param("phoneNumber", userRequest.phoneNumber())
+							.param("city", userRequest.city())
+							.param("district", userRequest.district())
+							.param("detailAddress", userRequest.detailAddress())
+							.param("openTime", userRequest.openTime().toString())
+							.param("endTime", userRequest.endTime().toString())
+							.param("description", userRequest.description())
+							.with(csrf()))
+					.andExpect(status().isForbidden())
+					.andDo(print())
+					.andDo(document("MarketEnrollment/업체 신청 실패 - 이미 업체인 경우",
+							requestHeaders(
+									headerWithName("access_token").description("Access token 정보")
+							),
+							requestParts(
+									partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
+									partWithName("marketImage").description("업체 대표 이미지")
+							),
+							requestParameters(
+									parameterWithName("businessNumber").description("사업자 등록 번호"),
+									parameterWithName("ownerName").description("대표자 이름"),
+									parameterWithName("openDate").description("개업 일자"),
+									parameterWithName("marketName").description("상호명"),
+									parameterWithName("phoneNumber").description("업체 전화번호"),
+									parameterWithName("city").description("주소 시"),
+									parameterWithName("district").description("주소 구"),
+									parameterWithName("detailAddress").description("상세 주소"),
+									parameterWithName("openTime").description("오픈 시간"),
+									parameterWithName("endTime").description("마감 시간"),
+									parameterWithName("description").description("업체 설명"),
+									parameterWithName("_csrf").description("토큰")
+							)))
+					.andReturn();
+		}
+
 	}
 }
