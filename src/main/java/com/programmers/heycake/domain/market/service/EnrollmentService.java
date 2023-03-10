@@ -5,6 +5,7 @@ import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 
 import java.util.List;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +46,7 @@ public class EnrollmentService {
 					throw new BusinessException(ENTITY_NOT_FOUND);
 				});
 		if (member.isMarket()) {
-			throw new BusinessException(FORBIDDEN);
+			throw new AccessDeniedException("이미 업체인 고객입니다.");
 		}
 
 		enrollment.setMember(member);
