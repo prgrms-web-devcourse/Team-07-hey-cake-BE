@@ -52,8 +52,7 @@ public class HistoryService {
 				myOrderRequest.pageSize()
 		);
 
-		Long lastId = orderHistories.isEmpty()
-				? Long.MAX_VALUE : orderHistories.get(orderHistories.size() - 1).id();
+		Long lastId = orderHistories.isEmpty() ? 0L : orderHistories.get(orderHistories.size() - 1).id();
 
 		return toMyOrderResponseList(orderHistories, lastId);
 	}

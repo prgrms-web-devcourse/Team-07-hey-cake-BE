@@ -57,8 +57,7 @@ public class OrderService {
 				myOrderRequest.pageSize()
 		);
 
-		Long lastId = orderList.isEmpty()
-				? Long.MAX_VALUE : orderList.get(orderList.size() - 1).id();
+		Long lastId = orderList.isEmpty() ? 0L : orderList.get(orderList.size() - 1).id();
 
 		return toMyOrderResponseList(orderList, lastId);
 	}
