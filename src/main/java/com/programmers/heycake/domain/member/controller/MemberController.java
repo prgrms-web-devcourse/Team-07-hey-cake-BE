@@ -24,13 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MemberController {
 
-	private static final String LOGIN_DONE_REDIRECT_URL = "http://localhost:3000/main";
-
 	private final MemberService memberService;
 
 	@PostMapping("/login")
 	public ResponseEntity<TokenResponse> login(
-			@RequestBody AuthenticationCodeRequest authenticationCodeRequest) throws IOException {
+			@RequestBody AuthenticationCodeRequest authenticationCodeRequest) {
 		log.info("login start: {}", authenticationCodeRequest.code());
 
 		TokenResponse tokenResponse = memberService.loginForKakao(authenticationCodeRequest.code());

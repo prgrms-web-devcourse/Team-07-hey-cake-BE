@@ -151,8 +151,14 @@ public class MemberService {
 		String email = responseBody.getJSONObject("kakao_account")
 				.getString("email");
 
-		String birthday = responseBody.getJSONObject("kakao_account")
-				.getString("birthday");
+		boolean hasBirthday = responseBody.getJSONObject("kakao_account")
+				.has("birth");
+
+		String birthday = null;
+		if (hasBirthday) {
+			birthday = responseBody.getJSONObject("kakao_account")
+					.getString("birthday");
+		}
 
 		String profileUrl = responseBody.getJSONObject("kakao_account")
 				.getJSONObject("profile")
