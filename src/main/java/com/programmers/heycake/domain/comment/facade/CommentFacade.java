@@ -16,6 +16,8 @@ import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
+import com.programmers.heycake.domain.member.model.dto.response.MemberResponse;
+import com.programmers.heycake.domain.member.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +27,7 @@ public class CommentFacade {
 
 	private static final String COMMENT_SUB_PATH = "images/comments";
 
+	private final MemberService memberService;
 	private final CommentService commentService;
 	private final ImageIntegrationService imageIntegrationService;
 	private final ImageService imageService;
@@ -70,8 +73,9 @@ public class CommentFacade {
 		return commentResponses.stream()
 				.map(
 						commentResponse -> {
+							MemberResponse memberResponse = memberService.getMemberResponseByMemberId(commentResponse.memberId());
 							ImageResponses imageResponse = imageService.getImages(commentResponse.commentId(), ImageType.COMMENT);
-							return CommentMapper.toCommentSummaryResponse(commentResponse, imageResponse);
+							return CommentMapper.toCommentSummaryResponse(commentResponse, imageResponse, memberResponse);
 						}
 				).toList();
 	}
