@@ -4,8 +4,10 @@ import java.net.URI;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,6 +22,7 @@ import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryRespo
 
 import lombok.RequiredArgsConstructor;
 
+@Validated
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
@@ -35,7 +38,7 @@ public class OfferController {
 	}
 
 	@DeleteMapping("/api/v1/offers/{offerId}")
-	public ResponseEntity<Void> deleteOffer(@PathVariable Long offerId) {
+	public ResponseEntity<Void> deleteOffer(@PathVariable @Positive Long offerId) {
 		offerFacade.deleteOffer(offerId);
 		return ResponseEntity.noContent().build();
 	}

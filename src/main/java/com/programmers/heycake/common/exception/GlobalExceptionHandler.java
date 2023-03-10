@@ -67,8 +67,8 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.badRequest()
 				.body(ErrorResponse.of(
 						BAD_REQUEST.getMessage(),
-						request.getRequestURI()
-						, makeFieldErrorsFromConstraintViolations(e.getConstraintViolations())
+						request.getRequestURI(),
+						makeFieldErrorsFromConstraintViolations(e.getConstraintViolations())
 				));
 	}
 
@@ -137,7 +137,8 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
-	public ResponseEntity<ErrorResponse> handleAccessDeniedException(HttpServletRequest request, RuntimeException e) {
+	public ResponseEntity<ErrorResponse> handleAccessDeniedException(HttpServletRequest request,
+			AccessDeniedException e) {
 		logInfo(e, request.getRequestURI());
 		throw new AccessDeniedException(e.getMessage());
 	}

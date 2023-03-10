@@ -71,4 +71,8 @@ public class Offer extends BaseEntity {
 	public boolean identifyAuthor(Long marketId) {
 		return Objects.equals(this.marketId, marketId);
 	}
+
+	public boolean isMatch(Long offerId) {
+		return this.id.equals(offerId);
+	}
 }
