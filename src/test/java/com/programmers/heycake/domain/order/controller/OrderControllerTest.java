@@ -87,8 +87,16 @@ class OrderControllerTest {
 									fieldWithPath("myOrderResponseList[].region").description("주문 지역"),
 									fieldWithPath("myOrderResponseList[].visitTime").description("방문 시간"),
 									fieldWithPath("myOrderResponseList[].createdAt").description("생성 시간"),
+									fieldWithPath("myOrderResponseList[].cakeInfo").description("생성 시간"),
+									fieldWithPath("myOrderResponseList[].cakeInfo.cakeCategory").description("케익 종류"),
+									fieldWithPath("myOrderResponseList[].cakeInfo.cakeSize").description("케익 크기"),
+									fieldWithPath("myOrderResponseList[].cakeInfo.cakeHeight").description("케익 높이"),
+									fieldWithPath("myOrderResponseList[].cakeInfo.breadFlavor").description("빵 맛"),
+									fieldWithPath("myOrderResponseList[].cakeInfo.creamFlavor").description("크림 맛"),
+									fieldWithPath("myOrderResponseList[].cakeInfo.requirements").description("요청 사항"),
+									fieldWithPath("myOrderResponseList[].hopePrice").description("희망 가"),
 									fieldWithPath("myOrderResponseList[].imageUrl").description("이미지 주소"),
-									fieldWithPath("lastCursorDate").description("커서 식별자")
+									fieldWithPath("cursorId").description("커서 식별자")
 							)
 					));
 		}
