@@ -1,5 +1,6 @@
 package com.programmers.heycake.domain.member.service;
 
+import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
 
 import java.util.Optional;
@@ -189,6 +190,12 @@ public class MemberService {
 		tokenRepository.save(token);
 
 		return tokenResponse;
+	}
+
+	@Transactional
+	public void logout() {
+		tokenRepository.findByMemberId(getMemberId())
+				.ifPresent(tokenRepository::delete);
 	}
 
 	@Transactional(readOnly = true)

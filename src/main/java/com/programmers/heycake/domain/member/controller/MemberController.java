@@ -7,10 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.member.model.dto.request.AuthenticationCodeRequest;
@@ -40,6 +38,12 @@ public class MemberController {
 		log.info("login end: {}", authenticationCodeRequest.code());
 
 		return ResponseEntity.ok(tokenResponse);
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<Void> logout() {
+		memberService.logout();
+		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("api/v1/members/refresh")
