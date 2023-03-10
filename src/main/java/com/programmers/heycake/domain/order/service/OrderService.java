@@ -57,11 +57,10 @@ public class OrderService {
 				myOrderRequest.pageSize()
 		);
 
-		LocalDateTime lastTime =
-				orderList.isEmpty() ? LocalDateTime.MAX : orderList.get(orderList.size() - 1).visitTime();
+		Long lastId = orderList.isEmpty()
+				? Long.MAX_VALUE : orderList.get(orderList.size() - 1).id();
 
-		return toMyOrderResponseList(orderList, lastTime);
-
+		return toMyOrderResponseList(orderList, lastId);
 	}
 
 	@Transactional

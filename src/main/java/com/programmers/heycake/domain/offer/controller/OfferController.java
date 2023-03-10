@@ -3,6 +3,7 @@ package com.programmers.heycake.domain.offer.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class OfferController {
 	private final OfferFacade offerFacade;
 
 	@PostMapping("/api/v1/offers")
-	public ResponseEntity<Void> saveOffer(@ModelAttribute OfferSaveRequest offerSaveRequest) {
+	public ResponseEntity<Void> saveOffer(@Valid @ModelAttribute OfferSaveRequest offerSaveRequest) {
 
 		Long savedOfferId = offerFacade.saveOffer(offerSaveRequest);
 		return ResponseEntity.created(URI.create("/api/v1/offers/" + savedOfferId)).build();

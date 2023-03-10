@@ -4,7 +4,6 @@ import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 import static lombok.AccessLevel.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
@@ -139,7 +138,7 @@ public class OrderMapper {
 
 	public static MyOrderResponseList toMyOrderResponseList(
 			List<MyOrderResponse> orderList,
-			LocalDateTime lastTime) {
-		return new MyOrderResponseList(orderList, lastTime);
+			Long cursorId) {
+		return new MyOrderResponseList(orderList, cursorId);
 	}
 }

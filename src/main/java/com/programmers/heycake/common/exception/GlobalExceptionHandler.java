@@ -13,6 +13,7 @@ import javax.validation.Path;
 
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -71,6 +72,23 @@ public class GlobalExceptionHandler {
 				));
 	}
 
+	@ExceptionHandler(BindException.class)
+	public ResponseEntity<ErrorResponse> handleBindException(
+			HttpServletRequest request, BindException e
+	) {
+		logInfo(e, request.getRequestURI());
+
+		return ResponseEntity
+				.badRequest()
+				.body(
+						ErrorResponse.of(
+								BAD_REQUEST.getMessage(),
+								request.getRequestURI(),
+								makeFieldErrorsFromBindingResult(e.getBindingResult())
+						)
+				);
+	}
+
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
 			HttpServletRequest request, MethodArgumentTypeMismatchException e
@@ -99,6 +117,16 @@ public class GlobalExceptionHandler {
 				.body(ErrorResponse.of(e.getMessage(), request.getRequestURI(), null));
 	}
 
+	@ExceptionHandler(NullPointerException.class)
+	protected ResponseEntity<ErrorResponse> handleNullPointerException(
+			HttpServletRequest request, NullPointerException e
+	) {
+		logInfo(e, request.getRequestURI());
+
+		return ResponseEntity.badRequest()
+				.body(ErrorResponse.of(e.getMessage(), request.getRequestURI(), null));
+	}
+
 	@ExceptionHandler(BusinessException.class)
 	public ResponseEntity<ErrorResponse> handleBusinessException(HttpServletRequest request, BusinessException e) {
 		logInfo(e, request.getRequestURI());
@@ -114,6 +142,7 @@ public class GlobalExceptionHandler {
 		logInfo(e, request.getRequestURI());
 		throw new AccessDeniedException(e.getMessage());
 	}
+
 
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<ErrorResponse> handleRuntimeException(HttpServletRequest request, RuntimeException e) {
@@ -139,7 +168,7 @@ public class GlobalExceptionHandler {
 				.stream()
 				.map(error -> new ErrorResponse.FieldError(
 						error.getField(),
-						Objects.requireNonNull(error.getRejectedValue()).toString(),
+						error.getRejectedValue(),
 						error.getDefaultMessage()
 				))
 				.toList();
