@@ -53,12 +53,12 @@ class OrderControllerTest {
 	}
 
 	@Nested
-	@DisplayName("getOrderList")
+	@DisplayName("getMyOrderList")
 	@Transactional
-	class GetOrderList {
+	class GetMyOrderList {
 		@Test
-		@DisplayName("Success - getOrderList 조회한다.")
-		void getOrderListSuccess() throws Exception {
+		@DisplayName("Success - getMyOrderList 조회한다.")
+		void getMyOrderListSuccess() throws Exception {
 			//given
 			Member member = memberRepository.save(getMember("member"));
 			setContext(member.getId(), MemberAuthority.USER);
@@ -94,7 +94,7 @@ class OrderControllerTest {
 									fieldWithPath("myOrderResponseList[].cakeInfo.breadFlavor").description("빵 맛"),
 									fieldWithPath("myOrderResponseList[].cakeInfo.creamFlavor").description("크림 맛"),
 									fieldWithPath("myOrderResponseList[].cakeInfo.requirements").description("요청 사항"),
-									fieldWithPath("myOrderResponseList[].hopePrice").description("희망 가"),
+									fieldWithPath("myOrderResponseList[].hopePrice").description("희망 가격"),
 									fieldWithPath("myOrderResponseList[].imageUrl").description("이미지 주소"),
 									fieldWithPath("cursorId").description("커서 식별자")
 							)
@@ -102,8 +102,8 @@ class OrderControllerTest {
 		}
 
 		@Test
-		@DisplayName("Fail - getOrderList 조회 실패.(BadRequest)")
-		void getOrderListBadRequest() throws Exception {
+		@DisplayName("Fail - getMyOrderList 조회 실패.(BadRequest)")
+		void getMyOrderListBadRequest() throws Exception {
 			//given
 			Member member = memberRepository.save(getMember("member"));
 
@@ -138,8 +138,8 @@ class OrderControllerTest {
 		}
 
 		@Test
-		@DisplayName("Fail - getOrderList 조회 실패.(Unauthorized)")
-		void getOrderListUnauthorized() throws Exception {
+		@DisplayName("Fail - getMyOrderList 조회 실패.(Unauthorized)")
+		void getMyOrderListUnauthorized() throws Exception {
 			//given
 
 			//when //then
@@ -168,8 +168,8 @@ class OrderControllerTest {
 
 		@Test
 		@WithAnonymousUser
-		@DisplayName("Fail - getOrderList 조회 실패.(Forbidden)")
-		void getOrderListForbidden() throws Exception {
+		@DisplayName("Fail - getMyOrderList 조회 실패.(Forbidden)")
+		void getMyOrderListForbidden() throws Exception {
 			//given
 			Member member = memberRepository.save(getMember("member"));
 			setContext(member.getId(), MemberAuthority.ADMIN);
