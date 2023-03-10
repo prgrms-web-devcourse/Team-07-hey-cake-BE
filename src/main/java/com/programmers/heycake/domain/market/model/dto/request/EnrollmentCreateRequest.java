@@ -14,17 +14,17 @@ import lombok.Builder;
 
 @Builder
 public record EnrollmentCreateRequest(
-		@NotBlank @Length(max = 10) String businessNumber,
-		@NotBlank @Length(max = 10) String ownerName,
+		@Length(max = 10) @NotBlank String businessNumber,
+		@Length(max = 10) @NotBlank String ownerName,
 		@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate openDate,
-		@NotBlank @Length(max = 20) String marketName,
-		@NotBlank @Length(max = 20) String phoneNumber,
-		@NotBlank @Length(max = 10) String city,
-		@NotBlank @Length(max = 10) String district,
-		@NotBlank @Length(max = 80) String detailAddress,
+		@Length(max = 20) @NotBlank String marketName,
+		@Length(max = 20) @NotBlank String phoneNumber,
+		@Length(max = 10) @NotBlank String city,
+		@Length(max = 10) @NotBlank String district,
+		@Length(max = 80) @NotBlank String detailAddress,
 		@NotNull @DateTimeFormat(pattern = "HH:mm") LocalTime openTime,
 		@NotNull @DateTimeFormat(pattern = "HH:mm") LocalTime endTime,
-		@NotBlank @Length(max = 500) String description,
+		@Length(max = 500) @NotBlank String description,
 		@NotNull MultipartFile businessLicenseImage,
 		@NotNull MultipartFile marketImage
 ) {
