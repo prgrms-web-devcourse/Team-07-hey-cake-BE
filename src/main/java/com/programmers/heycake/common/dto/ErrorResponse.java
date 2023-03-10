@@ -13,7 +13,7 @@ public record ErrorResponse(
 		List<FieldError> inputErrors
 ) {
 
-	public record FieldError(String field, String rejectedValue, String message) {
+	public record FieldError(String field, Object rejectedValue, String message) {
 	}
 
 	public static ErrorResponse of(String message, String path, List<FieldError> inputErrors) {
