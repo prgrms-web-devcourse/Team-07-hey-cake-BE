@@ -37,8 +37,8 @@ public class HistoryFacade {
 		return historyService.createHistory(historyFacadeRequest);
 	}
 
-	private static OrderStatus checkPayment(Boolean isPaid) {
-		if (isPaid.equals(true)) {
+	private OrderStatus checkPayment(Boolean isPaid) {
+		if (isPaid) {
 			return OrderStatus.PAID;
 		}
 		return OrderStatus.RESERVED;
