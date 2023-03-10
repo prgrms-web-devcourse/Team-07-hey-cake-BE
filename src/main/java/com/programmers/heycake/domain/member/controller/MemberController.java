@@ -1,7 +1,5 @@
 package com.programmers.heycake.domain.member.controller;
 
-import java.io.IOException;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -29,11 +27,7 @@ public class MemberController {
 	@PostMapping("/login")
 	public ResponseEntity<TokenResponse> login(
 			@RequestBody AuthenticationCodeRequest authenticationCodeRequest) {
-		log.info("login start: {}", authenticationCodeRequest.code());
-
 		TokenResponse tokenResponse = memberService.loginForKakao(authenticationCodeRequest.code());
-
-		log.info("login end: {}", authenticationCodeRequest.code());
 
 		return ResponseEntity.ok(tokenResponse);
 	}
