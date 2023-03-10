@@ -45,6 +45,8 @@ public class OrderQueryDslRepository {
 						qOrder.region,
 						qOrder.visitDate,
 						qOrder.createdAt,
+						qOrder.cakeInfo,
+						qOrder.hopePrice,
 						qImage.imageUrl
 				)
 				.from(qOrder)
@@ -70,6 +72,8 @@ public class OrderQueryDslRepository {
 												qOrder.region,
 												qOrder.visitDate,
 												qOrder.createdAt,
+												qOrder.cakeInfo,
+												qOrder.hopePrice,
 												qImage.imageUrl
 										)
 								)
