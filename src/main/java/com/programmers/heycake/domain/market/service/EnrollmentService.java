@@ -43,7 +43,7 @@ public class EnrollmentService {
 
 		Member member = memberRepository.findById(getMemberId())
 				.orElseThrow(() -> {
-					throw new BusinessException(UNAUTHORIZED);
+					throw new BusinessException(ENTITY_NOT_FOUND);
 				});
 		if (member.isMarket()) {
 			throw new BusinessException(FORBIDDEN);
