@@ -37,13 +37,17 @@ public class EnrollmentService {
 	private final MarketRepository marketRepository;
 
 	@Transactional
-	public Long enrollMarket(EnrollmentCreateRequest request) {
+	public Long createEnrollment(EnrollmentCreateRequest request) {
 
 		MarketEnrollment enrollment = EnrollmentMapper.toEntity(request);
 
+		if (enrollment.hasOpenDateAfterNow()) {
+			throw new BusinessException(BAD_REQUEST);
+		}
+
 		Member member = memberRepository.findById(getMemberId())
 				.orElseThrow(() -> {
-					throw new BusinessException(UNAUTHORIZED);
+					throw new BusinessException(ENTITY_NOT_FOUND);
 				});
 		if (member.isMarket()) {
 			throw new BusinessException(FORBIDDEN);

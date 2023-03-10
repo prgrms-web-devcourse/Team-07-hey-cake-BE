@@ -25,6 +25,7 @@ public class HistoryFacade {
 
 	@Transactional
 	public Long createHistory(HistoryControllerRequest historyControllerRequest) {
+		orderService.hasOffer(historyControllerRequest.orderId(), historyControllerRequest.offerId());
 		orderService.updateOrderState(historyControllerRequest.orderId(), OrderStatus.RESERVED);
 		OfferDto offerDto = offerService.getOfferById(historyControllerRequest.offerId());
 		Order order = orderService.getOrder(offerDto.orderDto().id());

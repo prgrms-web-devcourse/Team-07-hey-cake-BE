@@ -4,7 +4,6 @@ import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 import static lombok.AccessLevel.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
@@ -69,6 +68,7 @@ public class OrderMapper {
 				.cakeInfo(order.getCakeInfo())
 				.orderStatus(order.getOrderStatus())
 				.hopePrice(order.getHopePrice())
+				.offerCount(order.getOffers().size())
 				.region(order.getRegion())
 				.visitDate(order.getVisitDate())
 				.createdAt(order.getCreatedAt())
@@ -85,6 +85,7 @@ public class OrderMapper {
 				.cakeInfo(orderSimpleGetServiceResponse.cakeInfo())
 				.orderStatus(orderSimpleGetServiceResponse.orderStatus())
 				.hopePrice(orderSimpleGetServiceResponse.hopePrice())
+				.offerCount(orderSimpleGetServiceResponse.offerCount())
 				.images(imageResponses.images()
 						.stream()
 						.map(ImageResponse::imageUrl)
@@ -139,7 +140,7 @@ public class OrderMapper {
 
 	public static MyOrderResponseList toMyOrderResponseList(
 			List<MyOrderResponse> orderList,
-			LocalDateTime lastTime) {
-		return new MyOrderResponseList(orderList, lastTime);
+			Long cursorId) {
+		return new MyOrderResponseList(orderList, cursorId);
 	}
 }
