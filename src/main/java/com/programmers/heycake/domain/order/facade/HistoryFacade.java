@@ -26,11 +26,21 @@ public class HistoryFacade {
 	@Transactional
 	public Long createHistory(HistoryControllerRequest historyControllerRequest) {
 		orderService.hasOffer(historyControllerRequest.orderId(), historyControllerRequest.offerId());
-		orderService.updateOrderState(historyControllerRequest.orderId(), OrderStatus.RESERVED);
+
+		OrderStatus orderStatus = checkPayment(historyControllerRequest.isPaid());
+		orderService.updateOrderState(historyControllerRequest.orderId(), orderStatus);
+
 		OfferDto offerDto = offerService.getOfferById(historyControllerRequest.offerId());
 		Order order = orderService.getOrder(offerDto.orderDto().id());
 		HistoryFacadeRequest historyFacadeRequest = new HistoryFacadeRequest(getMemberId(), offerDto.marketId(), order);
 
 		return historyService.createHistory(historyFacadeRequest);
+	}
+
+	private static OrderStatus checkPayment(Boolean isPaid) {
+		if (isPaid.equals(true)) {
+			return OrderStatus.PAID;
+		}
+		return OrderStatus.RESERVED;
 	}
 }
