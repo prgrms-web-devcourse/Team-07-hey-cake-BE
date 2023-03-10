@@ -41,6 +41,10 @@ public class EnrollmentService {
 
 		MarketEnrollment enrollment = EnrollmentMapper.toEntity(request);
 
+		if (enrollment.hasOpenDateBeforeNow()) {
+			throw new BusinessException(BAD_REQUEST);
+		}
+
 		Member member = memberRepository.findById(getMemberId())
 				.orElseThrow(() -> {
 					throw new BusinessException(UNAUTHORIZED);
