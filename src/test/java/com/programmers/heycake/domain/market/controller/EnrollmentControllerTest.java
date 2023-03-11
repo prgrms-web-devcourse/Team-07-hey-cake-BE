@@ -102,16 +102,20 @@ class EnrollmentControllerTest {
 	@Transactional
 	class CreateEnrollment {
 
-		@Test
-		@DisplayName("Success - 업체 신청에 성공하여 201 응답으로 성공한다")
-		void createEnrollmentSuccess() throws Exception {
-			// given
-			Member member = TestUtils.getMember();
+		private Member member;
+
+		@BeforeEach
+		void setUp() {
+			member = TestUtils.getMember();
 			memberRepository.save(member);
 
 			TestUtils.setContext(member.getId(), USER);
+		}
 
-			// when
+		@Test
+		@DisplayName("Success - 업체 신청에 성공하여 201 응답으로 성공한다")
+		void createEnrollmentSuccess() throws Exception {
+			// given & when
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
 							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 							.file("marketImage", userRequest.marketImage().getBytes())
@@ -180,13 +184,7 @@ class EnrollmentControllerTest {
 		@Test
 		@DisplayName("Fail - 입력 요청 값이 잘못되면 400 응답으로 실패한다")
 		void createEnrollmentFailByBadRequest() throws Exception {
-			// given
-			Member member = TestUtils.getMember();
-			memberRepository.save(member);
-
-			TestUtils.setContext(member.getId(), USER);
-
-			// when & then
+			// given & when & then
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
 							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 							.file("marketImage", userRequest.marketImage().getBytes())
@@ -242,10 +240,6 @@ class EnrollmentControllerTest {
 		void createEnrollmentFailByOpenDateAfterNow() throws Exception {
 			// given
 			LocalDate openDateAfterNow = LocalDate.now().plusDays(1);
-			Member member = TestUtils.getMember();
-			memberRepository.save(member);
-
-			TestUtils.setContext(member.getId(), USER);
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
@@ -298,6 +292,10 @@ class EnrollmentControllerTest {
 		@Test
 		@DisplayName("Fail - 회원 인증에 실패하여 401 응답으로 실패한다")
 		void createEnrollmentFailByUnAuthorized() throws Exception {
+			// given
+			SecurityContextHolder.clearContext();
+
+			// when & then
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
 							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 							.file("marketImage", userRequest.marketImage().getBytes())
@@ -349,9 +347,10 @@ class EnrollmentControllerTest {
 		@DisplayName("Fail - 이미 업체인 유저가 업체 신청을 하면 403 응답으로 실패한다")
 		void createEnrollmentFailByAlreadyMarket() throws Exception {
 			// given
-			Member marketMember = new Member("heycake@heycake.com", MARKET, "1010", "kwon");
+			Member marketMember = new Member("market@heycake.com", MARKET, "1010", "kwon");
 			memberRepository.save(marketMember);
 
+			SecurityContextHolder.clearContext();
 			TestUtils.setContext(marketMember.getId(), MARKET);
 
 			// when & then
