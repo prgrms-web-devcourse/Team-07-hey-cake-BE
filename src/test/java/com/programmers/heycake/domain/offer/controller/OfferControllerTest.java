@@ -139,12 +139,12 @@ class OfferControllerTest {
 					).andExpect(status().isNoContent())
 					.andDo(print())
 					.andDo(document(
-							"offers/제안 삭제 성공",
+							"offers/오퍼 삭제 성공",
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
 							pathParameters(
-									parameterWithName("offerId").description("제안 식별자")
+									parameterWithName("offerId").description("오퍼 식별자")
 							)
 					));
 		}
@@ -163,12 +163,12 @@ class OfferControllerTest {
 					).andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(document(
-							"offers/제안 삭제 실패(BadRequest)",
+							"offers/오퍼 삭제 실패(BadRequest)",
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
 							pathParameters(
-									parameterWithName("offerId").description("제안 식별자")
+									parameterWithName("offerId").description("오퍼 식별자")
 							)
 					));
 		}
@@ -185,12 +185,12 @@ class OfferControllerTest {
 					).andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document(
-							"offers/제안 삭제 실패(Unauthorized)",
+							"offers/오퍼 삭제 실패(Unauthorized)",
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
 							pathParameters(
-									parameterWithName("offerId").description("제안 식별자")
+									parameterWithName("offerId").description("오퍼 식별자")
 							)
 					));
 		}
@@ -219,12 +219,12 @@ class OfferControllerTest {
 					).andExpect(status().isForbidden())
 					.andDo(print())
 					.andDo(document(
-							"offers/제안 삭제 실패(Forbidden)",
+							"offers/오퍼 삭제 실패(Forbidden)",
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
 							pathParameters(
-									parameterWithName("offerId").description("제안 식별자")
+									parameterWithName("offerId").description("오퍼 식별자")
 							)
 					));
 		}
@@ -252,12 +252,12 @@ class OfferControllerTest {
 					).andExpect(status().isConflict())
 					.andDo(print())
 					.andDo(document(
-							"offers/제안 삭제 실패(Conflict)",
+							"offers/오퍼 삭제 실패(Conflict)",
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
 							pathParameters(
-									parameterWithName("offerId").description("제안 식별자")
+									parameterWithName("offerId").description("오퍼 식별자")
 							)
 					));
 		}
@@ -269,7 +269,7 @@ class OfferControllerTest {
 	class SaveOffer {
 
 		@Test
-		@DisplayName("Success - 제안 생성에 성공한다.")
+		@DisplayName("Success - 오퍼 생성에 성공한다.")
 		void saveOfferSuccess() throws Exception {
 			// given
 			Member writeOrderMember = getMember("writer@naver.com");
@@ -311,7 +311,7 @@ class OfferControllerTest {
 					)
 					.andDo(print())
 					.andExpect(status().isCreated())
-					.andDo(document("offer/제안 생성 성공",
+					.andDo(document("offer/오퍼 생성 성공",
 									preprocessRequest(prettyPrint()),
 									preprocessResponse(prettyPrint()),
 									requestHeaders(
@@ -377,7 +377,7 @@ class OfferControllerTest {
 					.andExpect(jsonPath("path").value("/api/v1/offers"))
 					.andExpect(jsonPath("time").exists())
 					.andExpect(jsonPath("inputErrors").isEmpty())
-					.andDo(document("offer/제안 생성 실패 - 사용자 인증 실패",
+					.andDo(document("offer/오퍼 생성 실패 - 사용자 인증 실패",
 									preprocessRequest(prettyPrint()),
 									preprocessResponse(prettyPrint()),
 									requestHeaders(
@@ -442,7 +442,7 @@ class OfferControllerTest {
 					.andExpect(jsonPath("time").exists())
 					.andExpect(jsonPath("inputErrors").isEmpty())
 
-					.andDo(document("offer/제안 생성 실패 - 주문이 존재하지 않는 경우",
+					.andDo(document("offer/오퍼 생성 실패 - 주문이 존재하지 않는 경우",
 									preprocessRequest(prettyPrint()),
 									preprocessResponse(prettyPrint()),
 									requestHeaders(
@@ -505,7 +505,7 @@ class OfferControllerTest {
 					.andExpect(jsonPath("path").value("/api/v1/offers"))
 					.andExpect(jsonPath("time").exists())
 					.andExpect(jsonPath("inputErrors").isEmpty())
-					.andDo(document("offer/제안 생성 실패 - 글 작성 회원이 업주가 아닌 경우",
+					.andDo(document("offer/오퍼 생성 실패 - 글 작성 회원이 업주가 아닌 경우",
 									preprocessRequest(prettyPrint()),
 									preprocessResponse(prettyPrint()),
 									requestHeaders(
@@ -535,7 +535,7 @@ class OfferControllerTest {
 		}
 
 		@Test
-		@DisplayName("Fail - 이미 제안 글을 작성하적 있는 업주인 경우 실패한다.")
+		@DisplayName("Fail - 이미 오퍼 글을 작성하적 있는 업주인 경우 실패한다.")
 		void saveOfferAlreadyWriteOfferFail() throws Exception {
 			// given
 			Member writeOrderMember = getMember("writer@naver.com");
@@ -585,7 +585,7 @@ class OfferControllerTest {
 					.andExpect(jsonPath("path").value("/api/v1/offers"))
 					.andExpect(jsonPath("time").exists())
 					.andExpect(jsonPath("inputErrors").isEmpty())
-					.andDo(document("offer/제안 생성 실패 - 이미 해당 글에 제안 글을 작성한 적 있는 경우",
+					.andDo(document("offer/오퍼 생성 실패 - 이미 해당 글에 오퍼 글을 작성한 적 있는 경우",
 									preprocessRequest(prettyPrint()),
 									preprocessResponse(prettyPrint()),
 									requestHeaders(
@@ -652,7 +652,7 @@ class OfferControllerTest {
 					.andExpect(jsonPath("path").value("/api/v1/offers"))
 					.andExpect(jsonPath("time").exists())
 					.andExpect(jsonPath("inputErrors").isEmpty())
-					.andDo(document("offer/제안 생성 실패 - 픽업 날짜가 지난 주문인 경우",
+					.andDo(document("offer/오퍼 생성 실패 - 픽업 날짜가 지난 주문인 경우",
 									preprocessRequest(prettyPrint()),
 									preprocessResponse(prettyPrint()),
 									requestHeaders(
@@ -722,7 +722,7 @@ class OfferControllerTest {
 					.andExpect(jsonPath("path").value("/api/v1/offers"))
 					.andExpect(jsonPath("time").exists())
 					.andExpect(jsonPath("inputErrors").isEmpty())
-					.andDo(document("offer/제안 생성 실패 - 이미 완료된 주문인 경우",
+					.andDo(document("offer/오퍼 생성 실패 - 이미 완료된 주문인 경우",
 									preprocessRequest(prettyPrint()),
 									preprocessResponse(prettyPrint()),
 									requestHeaders(
