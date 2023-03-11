@@ -1,5 +1,6 @@
 package com.programmers.heycake.domain.market.controller;
 
+import static com.programmers.heycake.common.exception.ErrorCode.*;
 import static com.programmers.heycake.domain.market.model.vo.EnrollmentStatus.*;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
@@ -28,10 +29,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
 import com.programmers.heycake.domain.market.facade.EnrollmentFacade;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailWithImageResponse;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
@@ -48,6 +51,9 @@ class EnrollmentControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
+
+	@Autowired
+	private EnrollmentController enrollmentController;
 
 	@Autowired
 	private EnrollmentFacade enrollmentFacade;
@@ -431,6 +437,17 @@ class EnrollmentControllerTest {
 									fieldWithPath("marketImage").description("업체 이미지 URL")
 							)))
 					.andReturn();
+
+			MarketEnrollment enrollment = marketEnrollmentRepository.findById(enrollmentId).get();
+			;
+			EnrollmentDetailWithImageResponse enrollmentResponse
+					= enrollmentController.getMarketEnrollment(enrollmentId).getBody();
+
+			assertThat(enrollment).usingRecursiveComparison()
+					.ignoringFields(
+							"id", "openDate", "enrollmentStatus", "member", "createdAt", "updatedAt", "deletedAt"
+					)
+					.isEqualTo(enrollmentResponse);
 		}
 
 		@Test
@@ -519,6 +536,10 @@ class EnrollmentControllerTest {
 									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
 							)))
 					.andReturn();
+
+			assertThatThrownBy(() -> enrollmentController.getMarketEnrollment(0L))
+					.isExactlyInstanceOf(BusinessException.class)
+					.hasMessage(ENTITY_NOT_FOUND.getMessage());
 		}
 	}
 }
