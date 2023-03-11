@@ -55,7 +55,7 @@ public class MemberService {
 
 		if (!memberRepository.existsByEmail(memberInfo.email())) {
 			memberRepository.save(
-					new Member(memberInfo.email(), USER, memberInfo.birthday())
+					new Member(memberInfo.email(), USER, memberInfo.birthday(), memberInfo.nickname())
 			);
 		}
 
@@ -151,14 +151,24 @@ public class MemberService {
 		String email = responseBody.getJSONObject("kakao_account")
 				.getString("email");
 
-		String birthday = responseBody.getJSONObject("kakao_account")
-				.getString("birthday");
+		boolean hasBirthday = responseBody.getJSONObject("kakao_account")
+				.has("birth");
+
+		String birthday = null;
+		if (hasBirthday) {
+			birthday = responseBody.getJSONObject("kakao_account")
+					.getString("birthday");
+		}
 
 		String profileUrl = responseBody.getJSONObject("kakao_account")
 				.getJSONObject("profile")
 				.getString("profile_image_url");
 
-		return new MemberInfo(email, birthday, profileUrl);
+		String nickname = responseBody.getJSONObject("kakao_account")
+				.getJSONObject("profile")
+				.getString("nickname");
+
+		return new MemberInfo(email, birthday, profileUrl, nickname);
 	}
 
 	@Transactional

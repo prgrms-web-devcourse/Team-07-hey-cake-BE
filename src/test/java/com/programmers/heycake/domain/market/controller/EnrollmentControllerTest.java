@@ -24,10 +24,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,10 +91,7 @@ class EnrollmentControllerTest {
 			Member member = TestUtils.getMember();
 			memberRepository.save(member);
 
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority(USER.getRole()))));
+			TestUtils.setContext(member.getId(), USER);
 
 			// when
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
@@ -173,10 +166,7 @@ class EnrollmentControllerTest {
 			Member member = TestUtils.getMember();
 			memberRepository.save(member);
 
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority(USER.getRole()))));
+			TestUtils.setContext(member.getId(), USER);
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
@@ -237,10 +227,7 @@ class EnrollmentControllerTest {
 			Member member = TestUtils.getMember();
 			memberRepository.save(member);
 
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority(USER.getRole()))));
+			TestUtils.setContext(member.getId(), USER);
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
@@ -344,13 +331,10 @@ class EnrollmentControllerTest {
 		@DisplayName("Fail - 이미 업체인 유저가 업체 신청을 하면 403 응답으로 실패한다")
 		void createEnrollmentFailByAlreadyMarket() throws Exception {
 			// given
-			Member marketMember = new Member("heycake@heycake.com", MARKET, "1010");
+			Member marketMember = new Member("heycake@heycake.com", MARKET, "1010", "kwon");
 			memberRepository.save(marketMember);
 
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(marketMember.getId(), null,
-							List.of(new SimpleGrantedAuthority(MARKET.getRole()))));
+			TestUtils.setContext(marketMember.getId(), MARKET);
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
@@ -396,6 +380,12 @@ class EnrollmentControllerTest {
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
 									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
+							),
+							responseFields(
+									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
 							)))
 					.andReturn();
 		}
@@ -410,13 +400,10 @@ class EnrollmentControllerTest {
 		@DisplayName("Success - 업체 신청 상세 정보 조회를 하면 201로 응답으로 성공한다")
 		void getMarketEnrollmentSuccess() throws Exception {
 			// given
-			Member adminMember = new Member("heycake@heycake.com", ADMIN, "1010");
+			Member adminMember = new Member("heycake@heycake.com", ADMIN, "1010", "kwon");
 			memberRepository.save(adminMember);
 
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(adminMember.getId(), null,
-							List.of(new SimpleGrantedAuthority(ADMIN.getRole()))));
+			TestUtils.setContext(adminMember.getId(), ADMIN);
 
 			Long enrollmentId = enrollmentFacade.createEnrollment(userRequest);
 
@@ -449,79 +436,72 @@ class EnrollmentControllerTest {
 		@Test
 		@DisplayName("Fail - 회원 인증에 실패하여 401 응답으로 실패한다")
 		void getMarketEnrollmentFailByUnauthorized() throws Exception {
-			// given
-			Member member = TestUtils.getMember();
-			memberRepository.save(member);
-
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority(USER.getRole()))));
-
-			Long enrollmentId = enrollmentFacade.createEnrollment(userRequest);
-
-			SecurityContextHolder.clearContext();
-
-			// when & then
-			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollmentId)
-							.header("access_token", ACCESS_TOKEN))
-					.andExpect(status().isUnauthorized())
-					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 회원 인증 실패",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							responseFields(
-									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
-									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
-									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)))
-					.andReturn();
+			// // given
+			// todo 업체 신청 조회 권한 permitAll -> Admin 으로 변경 시 활성화
+			// Member member = TestUtils.getMember();
+			// memberRepository.save(member);
+			//
+			// TestUtils.setContext(member.getId(), USER);
+			//
+			// Long enrollmentId = enrollmentFacade.createEnrollment(userRequest);
+			//
+			// SecurityContextHolder.clearContext();
+			//
+			// // when & then
+			// MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollmentId)
+			// 				.header("access_token", ACCESS_TOKEN))
+			// 		.andExpect(status().isUnauthorized())
+			// 		.andDo(print())
+			// 		.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 회원 인증 실패",
+			// 				requestHeaders(
+			// 						headerWithName("access_token").description("Access token 정보")
+			// 				),
+			// 				responseFields(
+			// 						fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+			// 						fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+			// 						fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+			// 						fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
+			// 				)))
+			// 		.andReturn();
 		}
 
 		@Test
 		@DisplayName("Fail - 관리자가 아닌 회원이 요청을 하면 403 응답으로 실패한다")
 		void getMarketEnrollmentFailByNotAdmin() throws Exception {
 			// given
-			Member member = TestUtils.getMember();
-			memberRepository.save(member);
-
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(member.getId(), null,
-							List.of(new SimpleGrantedAuthority(USER.getRole()))));
-
-			Long enrollmentId = enrollmentFacade.createEnrollment(userRequest);
-
-			// when & then
-			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollmentId)
-							.header("access_token", ACCESS_TOKEN))
-					.andExpect(status().isForbidden())
-					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 관리자가 아닌 회원이 요청한 경우",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							responseFields(
-									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
-									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
-									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)))
-					.andReturn();
+			// todo 업체 신청 조회 권한 permitAll -> Admin 으로 변경 시 활성화
+			// Member member = TestUtils.getMember();
+			// memberRepository.save(member);
+			//
+			// TestUtils.setContext(member.getId(), USER);
+			//
+			// Long enrollmentId = enrollmentFacade.createEnrollment(userRequest);
+			//
+			// // when & then
+			// MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollmentId)
+			// 				.header("access_token", ACCESS_TOKEN))
+			// 		.andExpect(status().isForbidden())
+			// 		.andDo(print())
+			// 		.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 관리자가 아닌 회원이 요청한 경우",
+			// 				requestHeaders(
+			// 						headerWithName("access_token").description("Access token 정보")
+			// 				),
+			// 				responseFields(
+			// 						fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+			// 						fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+			// 						fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+			// 						fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
+			// 				)))
+			// 		.andReturn();
 		}
 
 		@Test
 		@DisplayName("Fail - 존재하지 않는 업체 신청 id 를 조회하면 404 응답으로 실패한다")
 		void getMarketEnrollmentFailByNotFound() throws Exception {
-			Member adminMember = new Member("heycake@heycake.com", ADMIN, "1010");
+			Member adminMember = new Member("heycake@heycake.com", ADMIN, "1010", "kwon");
 			memberRepository.save(adminMember);
 
-			SecurityContext context = SecurityContextHolder.getContext();
-			context.setAuthentication(
-					new UsernamePasswordAuthenticationToken(adminMember.getId(), null,
-							List.of(new SimpleGrantedAuthority(ADMIN.getRole()))));
+			TestUtils.setContext(adminMember.getId(), ADMIN);
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", 0L)

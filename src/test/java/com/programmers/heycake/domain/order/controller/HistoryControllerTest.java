@@ -105,7 +105,7 @@ class HistoryControllerTest {
 			Offer offer = setTestOffer(order, market);
 
 			HistoryControllerRequest historyControllerRequest =
-					new HistoryControllerRequest(order.getId(), offer.getId());
+					new HistoryControllerRequest(order.getId(), offer.getId(), true);
 
 			//when //then
 			mockMvc.perform(post("/api/v1/histories")
@@ -122,7 +122,8 @@ class HistoryControllerTest {
 									),
 									requestFields(
 											fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("주문 식별자"),
-											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자")
+											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자"),
+											fieldWithPath("isPaid").type(JsonFieldType.BOOLEAN).description("결제 여부")
 									),
 									responseHeaders(
 											headerWithName("location").description("저장 경로")
@@ -153,7 +154,7 @@ class HistoryControllerTest {
 			Offer anotherOffer = setTestOffer(anotherOrder, anotherMarket);
 
 			HistoryControllerRequest historyControllerRequest =
-					new HistoryControllerRequest(order.getId(), anotherOffer.getId());
+					new HistoryControllerRequest(order.getId(), anotherOffer.getId(), true);
 
 			//when //then
 			mockMvc.perform(post("/api/v1/histories")
@@ -170,7 +171,8 @@ class HistoryControllerTest {
 									),
 									requestFields(
 											fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("주문 식별자"),
-											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자")
+											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자"),
+											fieldWithPath("isPaid").type(JsonFieldType.BOOLEAN).description("결제 여부")
 									),
 									responseFields(
 											fieldWithPath("message").description("에러 메세지"),
@@ -185,7 +187,7 @@ class HistoryControllerTest {
 		@DisplayName("Fail - orderHistory 생성실패.(Unauthorized)")
 		void createHistoryUnauthorized() throws Exception {
 			//given
-			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(2L, 2L);
+			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(2L, 2L, true);
 
 			//when //then
 			mockMvc.perform(post("/api/v1/histories")
@@ -202,7 +204,8 @@ class HistoryControllerTest {
 									),
 									requestFields(
 											fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("주문 식별자"),
-											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자")
+											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자"),
+											fieldWithPath("isPaid").type(JsonFieldType.BOOLEAN).description("결제 여부")
 									)
 							));
 		}
@@ -230,7 +233,7 @@ class HistoryControllerTest {
 			Offer anotherOffer = setTestOffer(anotherOrder, anotherMarket);
 
 			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(anotherOrder.getId(),
-					anotherOffer.getId());
+					anotherOffer.getId(), true);
 
 			//when //then
 			mockMvc.perform(post("/api/v1/histories")
@@ -247,7 +250,8 @@ class HistoryControllerTest {
 									),
 									requestFields(
 											fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("주문 식별자"),
-											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자")
+											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자"),
+											fieldWithPath("isPaid").type(JsonFieldType.BOOLEAN).description("결제 여부")
 									)
 							));
 		}
@@ -260,7 +264,7 @@ class HistoryControllerTest {
 			setContext(member.getId(), MemberAuthority.USER);
 
 			HistoryControllerRequest historyControllerRequest =
-					new HistoryControllerRequest(Long.MAX_VALUE, Long.MAX_VALUE);
+					new HistoryControllerRequest(0L, 0L, true);
 
 			//when //then
 			mockMvc.perform(post("/api/v1/histories")
@@ -277,7 +281,8 @@ class HistoryControllerTest {
 									),
 									requestFields(
 											fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("주문 식별자"),
-											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자")
+											fieldWithPath("offerId").type(JsonFieldType.NUMBER).description("제안 식별자"),
+											fieldWithPath("isPaid").type(JsonFieldType.BOOLEAN).description("결제 여부")
 									),
 									responseFields(
 											fieldWithPath("message").description("에러 메세지"),

@@ -5,6 +5,7 @@ import javax.validation.constraints.Positive;
 
 public record HistoryControllerRequest(
 		@NotNull @Positive Long orderId,
-		@NotNull @Positive Long offerId
+		@NotNull @Positive Long offerId,
+		@NotNull Boolean isPaid
 ) {
 }
