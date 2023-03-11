@@ -269,7 +269,6 @@ class OfferControllerTest {
 	class SaveOffer {
 
 		@Test
-		@WithMockUser
 		@DisplayName("Success - 제안 생성에 성공한다.")
 		void saveOfferSuccess() throws Exception {
 			// given
@@ -357,7 +356,6 @@ class OfferControllerTest {
 		}
 
 		@Test
-		@WithAnonymousUser
 		@DisplayName("Fail - 사용자 인증에 실패한다.")
 		void saveOfferAuthenticationFail() throws Exception {
 			// given
@@ -409,8 +407,7 @@ class OfferControllerTest {
 		}
 
 		@Test
-		@WithMockUser
-		@DisplayName("Fail - 존재하지 않는 주문인 경우 실패한다. - saveOffer")
+		@DisplayName("Fail - 존재하지 않는 주문인 경우 실패한다.")
 		void saveOfferNotExistsOrderFail() throws Exception {
 			// given
 			Member writeOrderMember = getMember("writer@naver.com");
@@ -475,8 +472,7 @@ class OfferControllerTest {
 		}
 
 		@Test
-		@WithMockUser
-		@DisplayName("Fail - 글 작성 회원이 업주가 아닌 경우 실패한다. - saveOffer")
+		@DisplayName("Fail - 글 작성 회원이 업주가 아닌 경우 실패한다.")
 		void saveOfferWriterIsNotMarketFail() throws Exception {
 			// given
 			Member writeOrderMember = getMember("writer@naver.com");
@@ -539,8 +535,7 @@ class OfferControllerTest {
 		}
 
 		@Test
-		@WithMockUser
-		@DisplayName("Fail - 이미 제안 글을 작성하적 있는 업주인 경우 실패한다. - saveOffer")
+		@DisplayName("Fail - 이미 제안 글을 작성하적 있는 업주인 경우 실패한다.")
 		void saveOfferAlreadyWriteOfferFail() throws Exception {
 			// given
 			Member writeOrderMember = getMember("writer@naver.com");
@@ -611,7 +606,7 @@ class OfferControllerTest {
 
 		@Test
 		@WithMockUser
-		@DisplayName("Fail - 픽업 날짜가 지난 주문인 경우 실패한다. - saveOffer")
+		@DisplayName("Fail - 픽업 날짜가 지난 주문인 경우 실패한다.")
 		void saveOfferPassedByVisitDateFail() throws Exception {
 			// given
 			Member writeOrderMember = getMember("writer@naver.com");
@@ -680,8 +675,7 @@ class OfferControllerTest {
 		}
 
 		@EnumSource(value = OrderStatus.class, names = {"RESERVED", "PAID"})
-		@WithMockUser
-		@DisplayName("Fail - 이미 완료된 주문인 경우 실패한다. - saveOffer")
+		@DisplayName("Fail - 이미 완료된 주문인 경우 실패한다.")
 		@ParameterizedTest
 		void saveOfferAlreadyDoneOrderFail(OrderStatus orderStatus) throws Exception {
 			// given
