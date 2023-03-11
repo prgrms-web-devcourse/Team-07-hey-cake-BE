@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -77,6 +78,11 @@ class OrderControllerTest {
 	private ImageService imageService;
 
 	private static final String ACCESS_TOKEN = "access_token";
+
+	@AfterEach
+	void tearDown() {
+		orderRepository.deleteAll();
+	}
 
 	void setOrders(Member member, int amount) {
 		for (int i = 0; i < amount; i++) {
@@ -225,6 +231,116 @@ class OrderControllerTest {
 									fieldWithPath("path").description("에러 발생 uri"),
 									fieldWithPath("time").description("에러 발생 시각"),
 									fieldWithPath("inputErrors").description("에러 상세")
+							)
+					));
+		}
+	}
+
+	@Nested
+	@DisplayName("주문 리스트 조회")
+	@Transactional
+	class GetOrdersTest {
+		@Test
+		@DisplayName("Success - Order 상세 조회 성공")
+		@Transactional
+		void getOrderSuccess() throws Exception {
+			Order order = orderRepository.save(getOrder(1L));
+
+			mockMvc.perform(get("/api/v1/orders/{orderId}", order.getId()))
+					.andExpect(status().isOk())
+					.andDo(print())
+					.andDo(document("orders/주문 조회 성공",
+							responseFields(
+									fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("주문 아이디"),
+									fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("작성자 아이디"),
+									fieldWithPath("title").type(JsonFieldType.STRING).description("주문 제목"),
+									fieldWithPath("region").type(JsonFieldType.STRING).description("희망 지역"),
+									fieldWithPath("orderStatus").type(JsonFieldType.STRING).description("주문 상태"),
+									fieldWithPath("hopePrice").type(JsonFieldType.NUMBER).description("희망 가격"),
+									fieldWithPath("visitDate").type(JsonFieldType.STRING).description("희망 방문 시간"),
+									fieldWithPath("cakeInfo").type(JsonFieldType.OBJECT).description("케익 정보"),
+									fieldWithPath("cakeInfo.cakeCategory").type(JsonFieldType.STRING).description("케익 카테고리"),
+									fieldWithPath("cakeInfo.cakeSize").type(JsonFieldType.STRING).description("케익 사이즈"),
+									fieldWithPath("cakeInfo.cakeHeight").type(JsonFieldType.STRING).description("케익 높이"),
+									fieldWithPath("cakeInfo.breadFlavor").type(JsonFieldType.STRING).description("빵 맛"),
+									fieldWithPath("cakeInfo.creamFlavor").type(JsonFieldType.STRING).description("크림 맛"),
+									fieldWithPath("cakeInfo.requirements").type(JsonFieldType.STRING).description("추가 내용"),
+									fieldWithPath("offerCount").type(JsonFieldType.NUMBER).description("업체가 제안한 건수"),
+									fieldWithPath("images").type(JsonFieldType.ARRAY).description("이미지 "),
+									fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간"),
+									fieldWithPath("updatedAt").type(JsonFieldType.STRING).description("수정 시간")
+							)
+					));
+		}
+
+		@Test
+		@DisplayName("Fail - Order 상세 조회 실패.(NotFound)")
+		@Transactional
+		void getOrderFailByNotFound() throws Exception {
+			mockMvc.perform(get("/api/v1/orders/{orderId}", -1))
+					.andExpect(status().isNotFound())
+					.andDo(print())
+					.andDo(document("orders/주문 조회 실패",
+							responseFields(
+									fieldWithPath("message").type(JsonFieldType.STRING).description("오류 메시지"),
+									fieldWithPath("path").type(JsonFieldType.STRING).description("오류 경로"),
+									fieldWithPath("time").type(JsonFieldType.STRING).description("오류 발생한 시간"),
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("오류가 발생한 필드")
+							)
+					));
+		}
+	}
+
+	@Nested
+	@DisplayName("주문 상세 조회")
+	@Transactional
+	class GetOrderTest {
+		@Test
+		@DisplayName("Success - Order 상세 조회 성공")
+		@Transactional
+		void getOrderSuccess() throws Exception {
+			Order order = orderRepository.save(getOrder(1L));
+
+			mockMvc.perform(get("/api/v1/orders/{orderId}", order.getId()))
+					.andExpect(status().isOk())
+					.andDo(print())
+					.andDo(document("orders/주문 조회 성공",
+							responseFields(
+									fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("주문 아이디"),
+									fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("작성자 아이디"),
+									fieldWithPath("title").type(JsonFieldType.STRING).description("주문 제목"),
+									fieldWithPath("region").type(JsonFieldType.STRING).description("희망 지역"),
+									fieldWithPath("orderStatus").type(JsonFieldType.STRING).description("주문 상태"),
+									fieldWithPath("hopePrice").type(JsonFieldType.NUMBER).description("희망 가격"),
+									fieldWithPath("visitDate").type(JsonFieldType.STRING).description("희망 방문 시간"),
+									fieldWithPath("cakeInfo").type(JsonFieldType.OBJECT).description("케익 정보"),
+									fieldWithPath("cakeInfo.cakeCategory").type(JsonFieldType.STRING).description("케익 카테고리"),
+									fieldWithPath("cakeInfo.cakeSize").type(JsonFieldType.STRING).description("케익 사이즈"),
+									fieldWithPath("cakeInfo.cakeHeight").type(JsonFieldType.STRING).description("케익 높이"),
+									fieldWithPath("cakeInfo.breadFlavor").type(JsonFieldType.STRING).description("빵 맛"),
+									fieldWithPath("cakeInfo.creamFlavor").type(JsonFieldType.STRING).description("크림 맛"),
+									fieldWithPath("cakeInfo.requirements").type(JsonFieldType.STRING).description("추가 내용"),
+									fieldWithPath("offerCount").type(JsonFieldType.NUMBER).description("업체가 제안한 건수"),
+									fieldWithPath("images").type(JsonFieldType.ARRAY).description("이미지 "),
+									fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간"),
+									fieldWithPath("updatedAt").type(JsonFieldType.STRING).description("수정 시간")
+							)
+					));
+		}
+
+		@Test
+		@DisplayName("Fail - Order 상세 조회 실패.(NotFound)")
+		@Transactional
+		void getOrderFailByNotFound() throws Exception {
+			mockMvc.perform(get("/api/v1/orders/{orderId}", -1))
+					.andExpect(status().isNotFound())
+					.andDo(print())
+					.andDo(document("orders/주문 조회 실패",
+							responseFields(
+									fieldWithPath("message").type(JsonFieldType.STRING).description("오류 메시지"),
+									fieldWithPath("path").type(JsonFieldType.STRING).description("오류 경로"),
+									fieldWithPath("time").type(JsonFieldType.STRING).description("오류 발생한 시간"),
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("오류가 발생한 필드")
 							)
 					));
 		}
