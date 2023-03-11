@@ -396,7 +396,7 @@ class OfferControllerTest {
 					.andExpect(jsonPath("time").exists())
 					.andExpect(jsonPath("inputErrors").isEmpty())
 					.andDo(
-							document("offer/오퍼 조회 실패 - 존재하지 않는 오퍼인 경우 실패한다.",
+							document("offer/오퍼 조회 실패 - 존재하지 않는 오퍼인 경우",
 									pathParameters(
 											parameterWithName("orderId").description("주문 id")
 									),
