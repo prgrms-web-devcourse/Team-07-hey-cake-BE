@@ -48,6 +48,20 @@ public class TestUtils {
 				.build();
 	}
 
+	public static MarketEnrollment getMarketEnrollment() {
+		return MarketEnrollment.builder()
+				.businessNumber("1234567890")
+				.ownerName("Owner.Kong")
+				.openDate(LocalDate.now())
+				.marketName("서울 제과점")
+				.phoneNumber("01012345678")
+				.marketAddress(new MarketAddress("서울", "성동구", "응봉동"))
+				.openTime(LocalTime.now())
+				.endTime(LocalTime.now())
+				.description("업장 설명")
+				.build();
+	}
+
 	public static MarketEnrollment getMarketEnrollment(String businessNumber) {
 		return MarketEnrollment.builder()
 				.businessNumber(businessNumber)
