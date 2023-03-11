@@ -1,6 +1,9 @@
 package com.programmers.heycake.domain.order.controller;
 
+import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
 import static com.programmers.heycake.util.TestUtils.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -8,29 +11,55 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.programmers.heycake.domain.image.model.dto.ImageResponse;
+import com.programmers.heycake.domain.image.model.dto.ImageResponses;
+import com.programmers.heycake.domain.image.model.vo.ImageType;
+import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
+import com.programmers.heycake.domain.order.model.vo.BreadFlavor;
+import com.programmers.heycake.domain.order.model.vo.CakeCategory;
+import com.programmers.heycake.domain.order.model.vo.CakeHeight;
+import com.programmers.heycake.domain.order.model.vo.CakeSize;
+import com.programmers.heycake.domain.order.model.vo.CreamFlavor;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
+import com.programmers.heycake.util.TestUtils;
 
-@Transactional
 @SpringBootTest(properties = {"spring.config.location=classpath:application-test.yml"})
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 class OrderControllerTest {
@@ -43,6 +72,9 @@ class OrderControllerTest {
 
 	@Autowired
 	MemberRepository memberRepository;
+
+	@Autowired
+	private ImageService imageService;
 
 	private static final String ACCESS_TOKEN = "access_token";
 
@@ -61,7 +93,7 @@ class OrderControllerTest {
 		void getMyOrderListSuccess() throws Exception {
 			//given
 			Member member = memberRepository.save(getMember("member"));
-			setContext(member.getId(), MemberAuthority.USER);
+			setContext(member.getId(), USER);
 			setOrders(member, 10);
 
 			//when //then
@@ -97,8 +129,7 @@ class OrderControllerTest {
 									fieldWithPath("myOrderResponseList[].hopePrice").description("희망 가격"),
 									fieldWithPath("myOrderResponseList[].imageUrl").description("이미지 주소"),
 									fieldWithPath("cursorId").description("커서 식별자")
-							)
-					));
+							)));
 		}
 
 		@Test
@@ -107,7 +138,7 @@ class OrderControllerTest {
 			//given
 			Member member = memberRepository.save(getMember("member"));
 
-			setContext(member.getId(), MemberAuthority.USER);
+			setContext(member.getId(), USER);
 			setOrders(member, 10);
 
 			//when //then
@@ -197,7 +228,257 @@ class OrderControllerTest {
 							)
 					));
 		}
+	}
 
+	@Nested
+	@Transactional
+	class CreateOrderTest {
+		@DisplayName("Success - Order 생성 성공")
+		@MethodSource("com.programmers.heycake.domain.order.argument.TestArguments#OrderCreateRequestSuccessArguments")
+		@Transactional
+		@ParameterizedTest
+		void createOrderSuccess(
+				Integer hopePrice, String region, String title,
+				LocalDateTime visitTime, CakeCategory cakeCategory, CakeSize cakeSize,
+				CakeHeight cakeHeight, BreadFlavor breadFlavor, CreamFlavor creamFlavor,
+				String requirements, List<MultipartFile> cakeImages
+		) throws Exception {
+
+			Long memberId = 1L;
+
+			TestUtils.setContext(1L, USER);
+
+			MvcResult mvcResult =
+					mockMvc.perform(multipart("/api/v1/orders")
+									.file("cakeImages", cakeImages.get(0).getBytes())
+									.file("cakeImages", cakeImages.get(1).getBytes())
+									.header("access_token", "validAccessToken")
+									.param("title", title)
+									.param("cakeCategory", cakeCategory.toString())
+									.param("cakeHeight", cakeHeight.toString())
+									.param("cakeSize", cakeSize.toString())
+									.param("creamFlavor", creamFlavor.toString())
+									.param("breadFlavor", breadFlavor.toString())
+									.param("requirements", requirements)
+									.param("hopePrice", hopePrice.toString())
+									.param("region", region)
+									.param("visitTime", visitTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+							)
+							.andExpect(status().isCreated())
+							.andDo(print())
+							.andDo(document("orders/주문 생성 성공",
+									requestParts(
+											partWithName("cakeImages").description("케익 이미지")
+									),
+									requestHeaders(
+											headerWithName("access_token").description("jwt 인증 토큰")
+									),
+									requestParameters(
+											parameterWithName("title").description("제목"),
+											parameterWithName("cakeCategory").description("케익 카테고리"),
+											parameterWithName("cakeHeight").description("케익 높이"),
+											parameterWithName("cakeSize").description("케익 사이즈"),
+											parameterWithName("creamFlavor").description("크림 맛"),
+											parameterWithName("breadFlavor").description("빵 맛"),
+											parameterWithName("requirements").description("추가 요구사항"),
+											parameterWithName("hopePrice").description("희망 가격"),
+											parameterWithName("region").description("지역"),
+											parameterWithName("visitTime").description("방문 시간")
+									),
+									responseHeaders(
+											headerWithName("Location").description("생성된 데이터 URI")
+									)
+							))
+							.andReturn();
+
+			String orderId = mvcResult.getResponse()
+					.getHeader("Location")
+					.substring(15);
+			ImageResponses imageResponses = imageService.getImages(Long.parseLong(orderId), ImageType.ORDER);
+			List<ImageResponse> images = imageResponses.images();
+
+			assertThat(images.size()).isEqualTo(2);
+		}
+
+		@Test
+		@DisplayName("Fail - Order 생성 실패.(UnAuthorized)")
+		void createOrderFailByUnAuthorized() throws Exception {
+			MockMultipartFile testImageFile = new MockMultipartFile(
+					"cakeImages",
+					"test.png",
+					IMAGE_PNG_VALUE,
+					"imageFile".getBytes()
+			);
+
+			mockMvc.perform(multipart("/api/v1/orders")
+							.file("cakeImages", testImageFile.getBytes())
+							.header("access_token", "inValidAccessToken")
+							.param("title", "제목")
+							.param("cakeCategory", "PHOTO")
+							.param("cakeHeight", "ONE_LAYER")
+							.param("cakeSize", "MINI")
+							.param("creamFlavor", "CREAM_CHEESE")
+							.param("breadFlavor", "GREEN_TEA")
+							.param("requirements", "좋게 해주세요")
+							.param("hopePrice", "1000000")
+							.param("region", "강남구")
+							.param("visitTime", "2023-02-04 11:11:11")
+					)
+					.andExpect(status().isUnauthorized())
+					.andDo(print())
+					.andDo(document("orders/주문 생성 실패(UnAuthorize)",
+							requestParts(
+									partWithName("cakeImages").description("케익 이미지")
+							),
+							requestHeaders(
+									headerWithName("access_token").description("jwt 인증 토큰")
+							),
+							requestParameters(
+									parameterWithName("title").description("제목"),
+									parameterWithName("cakeCategory").description("케익 카테고리"),
+									parameterWithName("cakeHeight").description("케익 높이"),
+									parameterWithName("cakeSize").description("케익 사이즈"),
+									parameterWithName("creamFlavor").description("크림 맛"),
+									parameterWithName("breadFlavor").description("빵 맛"),
+									parameterWithName("requirements").description("추가 요구사항"),
+									parameterWithName("hopePrice").description("희망 가격"),
+									parameterWithName("region").description("지역"),
+									parameterWithName("visitTime").description("방문 시간")
+							),
+							responseFields(
+									fieldWithPath("message").type(JsonFieldType.STRING).description("오류 메시지"),
+									fieldWithPath("path").type(JsonFieldType.STRING).description("오류가 발생한 경로"),
+									fieldWithPath("time").type(JsonFieldType.STRING).description("오류가 발생한 시간"),
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("오류를 발생시킨 필드")
+							)
+					));
+		}
+
+		@Test
+		@Transactional
+		@DisplayName("Fail - Order 생성 실패.(Forbidden)")
+		void createOrderFailByForbidden() throws Exception {
+			MockMultipartFile testImageFile = new MockMultipartFile(
+					"testImageFile",
+					"test.png",
+					IMAGE_PNG_VALUE,
+					"imageFile".getBytes()
+			);
+
+			TestUtils.setContext(1L, MARKET);
+
+			mockMvc.perform(multipart("/api/v1/orders")
+							.file("cakeImages", testImageFile.getBytes())
+							.header("access_token", "inValidRoleToken")
+							.param("title", "제목")
+							.param("cakeCategory", "PHOTO")
+							.param("cakeHeight", "ONE_LAYER")
+							.param("cakeSize", "MINI")
+							.param("creamFlavor", "CREAM_CHEESE")
+							.param("breadFlavor", "GREEN_TEA")
+							.param("requirements", "좋게 해주세요")
+							.param("hopePrice", "1000000")
+							.param("region", "강남구")
+							.param("visitTime", "2023-02-04 11:11:11")
+					)
+					.andExpect(status().isForbidden())
+					.andDo(print())
+					.andDo(document("orders/주문 생성 실패(Forbidden)",
+							requestParts(
+									partWithName("cakeImages").description("케익 이미지")
+							),
+							requestHeaders(
+									headerWithName("access_token").description("jwt 인증 토큰")
+							),
+							requestParameters(
+									parameterWithName("title").description("제목"),
+									parameterWithName("cakeCategory").description("케익 카테고리"),
+									parameterWithName("cakeHeight").description("케익 높이"),
+									parameterWithName("cakeSize").description("케익 사이즈"),
+									parameterWithName("creamFlavor").description("크림 맛"),
+									parameterWithName("breadFlavor").description("빵 맛"),
+									parameterWithName("requirements").description("추가 요구사항"),
+									parameterWithName("hopePrice").description("희망 가격"),
+									parameterWithName("region").description("지역"),
+									parameterWithName("visitTime").description("방문 시간")
+							),
+							responseFields(
+									fieldWithPath("message").type(JsonFieldType.STRING).description("오류 메시지"),
+									fieldWithPath("path").type(JsonFieldType.STRING).description("오류가 발생한 경로"),
+									fieldWithPath("time").type(JsonFieldType.STRING).description("오류가 발생한 시간"),
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("오류를 발생시킨 필드")
+							)
+					));
+		}
+
+		@DisplayName("Fail - Order 생성 실패.(invalidArgument)")
+		@MethodSource("com.programmers.heycake.domain.order.argument.TestArguments#OrderCreateRequestFailArguments")
+		@ParameterizedTest
+		void createOrderFailByInvalidArgument(
+				Integer hopePrice, String region, String title,
+				LocalDateTime visitTime, CakeCategory cakeCategory, CakeSize cakeSize,
+				CakeHeight cakeHeight, BreadFlavor breadFlavor, CreamFlavor creamFlavor,
+				String requirements, List<MultipartFile> cakeImages
+		) throws Exception {
+			Long memberId = 1L;
+			SecurityContext securityContext = SecurityContextHolder.getContext();
+			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+					new UsernamePasswordAuthenticationToken(
+							memberId,
+							null,
+							List.of(new SimpleGrantedAuthority(USER.getRole()))
+					);
+			securityContext.setAuthentication(usernamePasswordAuthenticationToken);
+
+			mockMvc.perform(multipart("/api/v1/orders")
+							.file("cakeImages", cakeImages != null ? cakeImages.get(0).getBytes() : null)
+							.file("cakeImages", cakeImages != null ? cakeImages.get(1).getBytes() : null)
+							.header("access_token", "validAccessToken")
+							.param("title", title)
+							.param("cakeCategory", cakeCategory != null ? cakeCategory.toString() : null)
+							.param("cakeHeight", cakeHeight != null ? cakeHeight.toString() : null)
+							.param("cakeSize", cakeSize != null ? cakeSize.toString() : null)
+							.param("creamFlavor", creamFlavor != null ? creamFlavor.toString() : null)
+							.param("breadFlavor", breadFlavor != null ? breadFlavor.toString() : null)
+							.param("requirements", requirements)
+							.param("hopePrice", hopePrice != null ? hopePrice.toString() : null)
+							.param("region", region)
+							.param("visitTime", visitTime != null ?
+									visitTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")) : null
+							)
+					)
+					.andExpect(status().isBadRequest())
+					.andDo(print())
+					.andDo(document("orders/주문 생성 실패(Forbidden)",
+							requestParts(
+									partWithName("cakeImages").description("케익 이미지")
+							),
+							requestHeaders(
+									headerWithName("access_token").description("jwt 인증 토큰")
+							),
+							requestParameters(
+									parameterWithName("title").description("제목"),
+									parameterWithName("cakeCategory").description("케익 카테고리"),
+									parameterWithName("cakeHeight").description("케익 높이"),
+									parameterWithName("cakeSize").description("케익 사이즈"),
+									parameterWithName("creamFlavor").description("크림 맛"),
+									parameterWithName("breadFlavor").description("빵 맛"),
+									parameterWithName("requirements").description("추가 요구사항"),
+									parameterWithName("hopePrice").description("희망 가격"),
+									parameterWithName("region").description("지역"),
+									parameterWithName("visitTime").description("방문 시간")
+							),
+							responseFields(
+									fieldWithPath("message").type(JsonFieldType.STRING).description("오류 메시지"),
+									fieldWithPath("path").type(JsonFieldType.STRING).description("오류가 발생한 경로"),
+									fieldWithPath("time").type(JsonFieldType.STRING).description("오류가 발생한 시간"),
+									fieldWithPath("inputErrors").type(JsonFieldType.ARRAY).description("오류를 발생시킨 필드"),
+									fieldWithPath("inputErrors[].field").type(JsonFieldType.STRING).description("오류를 발생시킨 필드"),
+									fieldWithPath("inputErrors[].rejectedValue").type(JsonFieldType.NULL).description("오류를 발생시킨 필드"),
+									fieldWithPath("inputErrors[].message").type(JsonFieldType.STRING).description("오류를 발생시킨 필드에 대한 설명")
+							)
+					));
+		}
 	}
 
 	@Nested
@@ -209,7 +490,7 @@ class OrderControllerTest {
 		void deleteOrderSuccess() throws Exception {
 			//given
 			Member member = memberRepository.save(getMember("member"));
-			setContext(member.getId(), MemberAuthority.USER);
+			setContext(member.getId(), USER);
 
 			Order order = orderRepository.save(getOrder(member.getId()));
 
@@ -235,7 +516,7 @@ class OrderControllerTest {
 		void deleteOrderBadRequest() throws Exception {
 			//given
 			Member member = memberRepository.save(getMember("member"));
-			setContext(member.getId(), MemberAuthority.USER);
+			setContext(member.getId(), USER);
 
 			//when //then
 			mockMvc.perform(delete("/api/v1/orders/{orderId}", -1)
@@ -282,7 +563,7 @@ class OrderControllerTest {
 			//given
 			Member member = memberRepository.save(getMember("member"));
 			Member anotherMember = memberRepository.save(getMember("marketMember"));
-			setContext(anotherMember.getId(), MemberAuthority.USER);
+			setContext(anotherMember.getId(), USER);
 
 			Order order = orderRepository.save(getOrder(member.getId()));
 
@@ -308,7 +589,7 @@ class OrderControllerTest {
 		void deleteOrderConflict() throws Exception {
 			//given
 			Member member = memberRepository.save(getMember("member"));
-			setContext(member.getId(), MemberAuthority.USER);
+			setContext(member.getId(), USER);
 
 			Order order = orderRepository.save(getOrder(member.getId()));
 			order.upDateOrderStatus(OrderStatus.RESERVED);
@@ -329,7 +610,5 @@ class OrderControllerTest {
 							)
 					));
 		}
-
 	}
-
 }
