@@ -1,3 +1,11 @@
 == 업체 신청
 
 operation::MarketEnrollment/업체 신청 성공[snippets='http-request,request-parameters,request-parts,response-headers']
+
+= 오퍼
+== 오퍼 조회
+=== 오퍼 조회 성공
+operation::offer/오퍼 조회 성공[snippets='http-request,path-parameters,http-response,response-fields']
+=== 오퍼 조회 실패
+
+operation::offer/오퍼 조회 실패 - 존재하지 않는 오퍼인 경우[snippets='http-request,path-parameters,http-response,response-fields']
