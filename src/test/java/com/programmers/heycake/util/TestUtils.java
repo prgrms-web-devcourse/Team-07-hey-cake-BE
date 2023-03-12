@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
+import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.MarketAddress;
@@ -147,6 +148,24 @@ public class TestUtils {
 		context.setAuthentication(
 				new UsernamePasswordAuthenticationToken(memberId, null,
 						List.of(new SimpleGrantedAuthority(memberAuthority.getRole()))));
+	}
+
+	public static EnrollmentCreateRequest getEnrollmentRequest(String businessNumber) {
+		return EnrollmentCreateRequest.builder()
+				.businessNumber(businessNumber)
+				.ownerName("권성준")
+				.openDate(LocalDate.of(1997, 10, 10))
+				.marketName("성준이네")
+				.phoneNumber("01012345678")
+				.city("서울특별시")
+				.district("강남구")
+				.detailAddress("테헤란로")
+				.openTime(LocalTime.of(9, 0))
+				.endTime(LocalTime.of(18, 0))
+				.description("성준's 가게")
+				.businessLicenseImage(getMockFile())
+				.marketImage(getMockFile())
+				.build();
 	}
 
 }
