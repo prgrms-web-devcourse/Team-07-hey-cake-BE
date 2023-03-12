@@ -605,6 +605,7 @@ class EnrollmentControllerTest {
 
 	@Nested
 	@DisplayName("changeEnrollmentStatus")
+	@Transactional
 	class ChangeEnrollmentStatus {
 
 		private Member user;
@@ -633,7 +634,7 @@ class EnrollmentControllerTest {
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 
 			// when
-			MvcResult mvcResult = mockMvc.perform(patch(
+			mockMvc.perform(patch(
 							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
 					)
 							.header("access_token", ACCESS_TOKEN)
@@ -648,8 +649,7 @@ class EnrollmentControllerTest {
 							requestFields(
 									fieldWithPath("status").type(JsonFieldType.STRING).description("변경 후 상태")
 							)
-					))
-					.andReturn();
+					));
 
 			// then
 			MarketEnrollment findEnrollment = marketEnrollmentRepository.findById(savedEnrollment.getId()).get();
@@ -666,7 +666,7 @@ class EnrollmentControllerTest {
 			EnrollmentUpdateStatusRequest deletedRequest = new EnrollmentUpdateStatusRequest(DELETED);
 
 			// when
-			MvcResult mvcResult = mockMvc.perform(patch(
+			mockMvc.perform(patch(
 							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
 					)
 							.header("access_token", ACCESS_TOKEN)
@@ -681,8 +681,7 @@ class EnrollmentControllerTest {
 							requestFields(
 									fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")
 							)
-					))
-					.andReturn();
+					));
 
 			// then
 			MarketEnrollment findEnrollment = marketEnrollmentRepository.findById(savedEnrollment.getId()).get();
@@ -698,7 +697,7 @@ class EnrollmentControllerTest {
 			EnrollmentUpdateStatusRequest waitingRequest = new EnrollmentUpdateStatusRequest(WAITING);
 
 			// when
-			MvcResult mvcResult = mockMvc.perform(patch(
+			mockMvc.perform(patch(
 							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
 					)
 							.header("access_token", ACCESS_TOKEN)
@@ -713,8 +712,7 @@ class EnrollmentControllerTest {
 							requestFields(
 									fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")
 							)
-					))
-					.andReturn();
+					));
 
 			// then
 			MarketEnrollment findEnrollment = marketEnrollmentRepository.findById(savedEnrollment.getId()).get();
@@ -729,7 +727,7 @@ class EnrollmentControllerTest {
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 
 			// when & then
-			MvcResult mvcResult = mockMvc.perform(patch(
+			mockMvc.perform(patch(
 							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
 					)
 							.header("access_token", ACCESS_TOKEN)
@@ -749,8 +747,9 @@ class EnrollmentControllerTest {
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
 									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)))
-					.andReturn();
+							)));
+
+			assertThat(savedEnrollment.getEnrollmentStatus()).isEqualTo(WAITING);
 		}
 
 		@Test
@@ -762,7 +761,7 @@ class EnrollmentControllerTest {
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 
 			// when & then
-			MvcResult mvcResult = mockMvc.perform(patch(
+			mockMvc.perform(patch(
 							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
 					)
 							.header("access_token", ACCESS_TOKEN)
@@ -782,8 +781,9 @@ class EnrollmentControllerTest {
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
 									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)))
-					.andReturn();
+							)));
+
+			assertThat(savedEnrollment.getEnrollmentStatus()).isEqualTo(WAITING);
 		}
 
 		@Test
@@ -792,7 +792,7 @@ class EnrollmentControllerTest {
 			// given
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 
-			// when
+			// when & then
 			MvcResult mvcResult = mockMvc.perform(patch("/api/v1/enrollments/{enrollmentId}", 0L)
 							.header("access_token", ACCESS_TOKEN)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -814,8 +814,7 @@ class EnrollmentControllerTest {
 							)))
 					.andReturn();
 
-			// then
-			assertThatThrownBy(() -> enrollmentController.changeEnrollmentStatus(0L, approvedRequest))
+			assertThat(mvcResult.getResolvedException())
 					.isExactlyInstanceOf(BusinessException.class)
 					.hasMessage(ENTITY_NOT_FOUND.getMessage());
 		}
@@ -826,7 +825,7 @@ class EnrollmentControllerTest {
 			// given
 			EnrollmentUpdateStatusRequest waitingRequest = new EnrollmentUpdateStatusRequest(WAITING);
 
-			// when
+			// when & then
 			MvcResult mvcResult = mockMvc.perform(patch(
 							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
 					)
@@ -850,8 +849,8 @@ class EnrollmentControllerTest {
 							)))
 					.andReturn();
 
-			// then
-			assertThatThrownBy(() -> enrollmentController.changeEnrollmentStatus(savedEnrollment.getId(), waitingRequest))
+			assertThat(savedEnrollment.getEnrollmentStatus()).isEqualTo(WAITING);
+			assertThat(mvcResult.getResolvedException())
 					.isExactlyInstanceOf(BusinessException.class)
 					.hasMessage(DUPLICATED.getMessage());
 		}
@@ -863,7 +862,7 @@ class EnrollmentControllerTest {
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 			enrollmentController.changeEnrollmentStatus(savedEnrollment.getId(), approvedRequest);
 
-			// when
+			// when & then
 			MvcResult mvcResult = mockMvc.perform(patch(
 							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
 					)
@@ -887,11 +886,9 @@ class EnrollmentControllerTest {
 							)))
 					.andReturn();
 
-			// then
-			assertThatThrownBy(() -> enrollmentController.changeEnrollmentStatus(savedEnrollment.getId(), approvedRequest))
+			assertThat(mvcResult.getResolvedException())
 					.isExactlyInstanceOf(BusinessException.class)
 					.hasMessage(DUPLICATED.getMessage());
 		}
-
 	}
 }
