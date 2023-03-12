@@ -22,7 +22,9 @@ import org.springframework.web.client.RestTemplate;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.jwt.Jwt;
+import com.programmers.heycake.common.mapper.MemberMapper;
 import com.programmers.heycake.domain.member.model.dto.MemberInfo;
+import com.programmers.heycake.domain.member.model.dto.response.MemberResponse;
 import com.programmers.heycake.domain.member.model.dto.response.TokenResponse;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.entity.Token;
@@ -220,5 +222,12 @@ public class MemberService {
 	@Transactional(readOnly = true)
 	public boolean isMarketById(Long memberId) {
 		return getMemberById(memberId).isMarket();
+	}
+
+	public MemberResponse getMemberResponseByMemberId(Long memberId) {
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+
+		return MemberMapper.toMemberResponse(member);
 	}
 }
