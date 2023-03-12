@@ -463,67 +463,67 @@ class EnrollmentControllerTest {
 					.isEqualTo(enrollmentResponse);
 		}
 
-		@Test
-		@DisplayName("Fail - 회원 인증에 실패하여 401 응답으로 실패한다")
-		void getMarketEnrollmentFailByUnauthorized() throws Exception {
-			// // given
-			// todo 업체 신청 조회 권한 permitAll -> Admin 으로 변경 시 활성화
-			// Member member = TestUtils.getMember();
-			// memberRepository.save(member);
-			//
-			// TestUtils.setContext(member.getId(), USER);
-			//
-			// Long enrollmentId = enrollmentFacade.createEnrollment(userRequest);
-			//
-			// SecurityContextHolder.clearContext();
-			//
-			// // when & then
-			// MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollmentId)
-			// 				.header("access_token", ACCESS_TOKEN))
-			// 		.andExpect(status().isUnauthorized())
-			// 		.andDo(print())
-			// 		.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 회원 인증 실패",
-			// 				requestHeaders(
-			// 						headerWithName("access_token").description("Access token 정보")
-			// 				),
-			// 				responseFields(
-			// 						fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
-			// 						fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
-			// 						fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-			// 						fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-			// 				)))
-			// 		.andReturn();
-		}
+		// todo 업체 신청 조회 권한 permitAll -> Admin 으로 변경 시 활성화
+		// @Test
+		// @DisplayName("Fail - 회원 인증에 실패하여 401 응답으로 실패한다")
+		// void getMarketEnrollmentFailByUnauthorized() throws Exception {
+		// 	// given
+		// 	Member member = TestUtils.getMember();
+		// 	memberRepository.save(member);
+		//
+		// 	TestUtils.setContext(member.getId(), USER);
+		//
+		// 	Long enrollmentId = enrollmentFacade.createEnrollment(userRequest);
+		//
+		// 	SecurityContextHolder.clearContext();
+		//
+		// 	// when & then
+		// 	MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollmentId)
+		// 					.header("access_token", ACCESS_TOKEN))
+		// 			.andExpect(status().isUnauthorized())
+		// 			.andDo(print())
+		// 			.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 회원 인증 실패",
+		// 					requestHeaders(
+		// 							headerWithName("access_token").description("Access token 정보")
+		// 					),
+		// 					responseFields(
+		// 							fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+		// 							fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+		// 							fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+		// 							fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
+		// 					)))
+		// 			.andReturn();
+		// }
 
-		@Test
-		@DisplayName("Fail - 관리자가 아닌 회원이 요청을 하면 403 응답으로 실패한다")
-		void getMarketEnrollmentFailByNotAdmin() throws Exception {
-			// given
-			// todo 업체 신청 조회 권한 permitAll -> Admin 으로 변경 시 활성화
-			// Member member = TestUtils.getMember();
-			// memberRepository.save(member);
-			//
-			// TestUtils.setContext(member.getId(), USER);
-			//
-			// Long enrollmentId = enrollmentFacade.createEnrollment(userRequest);
-			//
-			// // when & then
-			// MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollmentId)
-			// 				.header("access_token", ACCESS_TOKEN))
-			// 		.andExpect(status().isForbidden())
-			// 		.andDo(print())
-			// 		.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 관리자가 아닌 회원이 요청한 경우",
-			// 				requestHeaders(
-			// 						headerWithName("access_token").description("Access token 정보")
-			// 				),
-			// 				responseFields(
-			// 						fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
-			// 						fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
-			// 						fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-			// 						fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-			// 				)))
-			// 		.andReturn();
-		}
+		// todo 업체 신청 조회 권한 permitAll -> Admin 으로 변경 시 활성화
+		// @Test
+		// @DisplayName("Fail - 관리자가 아닌 회원이 요청을 하면 403 응답으로 실패한다")
+		// void getMarketEnrollmentFailByNotAdmin() throws Exception {
+		// 	// given
+		// 	Member member = TestUtils.getMember();
+		// 	memberRepository.save(member);
+		//
+		// 	TestUtils.setContext(member.getId(), USER);
+		//
+		// 	Long enrollmentId = enrollmentFacade.createEnrollment(userRequest);
+		//
+		// 	// when & then
+		// 	MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollmentId)
+		// 					.header("access_token", ACCESS_TOKEN))
+		// 			.andExpect(status().isForbidden())
+		// 			.andDo(print())
+		// 			.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 관리자가 아닌 회원이 요청한 경우",
+		// 					requestHeaders(
+		// 							headerWithName("access_token").description("Access token 정보")
+		// 					),
+		// 					responseFields(
+		// 							fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+		// 							fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+		// 							fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+		// 							fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
+		// 					)))
+		// 			.andReturn();
+		// }
 
 		@Test
 		@DisplayName("Fail - 존재하지 않는 업체 신청 id 를 조회하면 404 응답으로 실패한다")
