@@ -1,7 +1,9 @@
 package com.programmers.heycake.domain.market.controller;
 
 import static com.programmers.heycake.common.exception.ErrorCode.*;
+import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 import static com.programmers.heycake.domain.market.model.vo.EnrollmentStatus.*;
+import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.MARKET;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
@@ -12,10 +14,12 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,7 +39,6 @@ import org.springframework.validation.BindException;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
-import com.programmers.heycake.domain.market.facade.EnrollmentFacade;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailWithImageResponse;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
@@ -54,12 +57,6 @@ class EnrollmentControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
-
-	@Autowired
-	private EnrollmentController enrollmentController;
-
-	@Autowired
-	private EnrollmentFacade enrollmentFacade;
 
 	@Autowired
 	private MarketEnrollmentRepository marketEnrollmentRepository;
@@ -415,19 +412,34 @@ class EnrollmentControllerTest {
 	@Transactional
 	class GetMarketEnrollment {
 
+		private Member adminMember;
+
+		@BeforeEach
+		void setUp() {
+			adminMember = new Member("admin@heycake.com", ADMIN, "1010", "kwon");
+			memberRepository.save(adminMember);
+
+			TestUtils.setContext(adminMember.getId(), ADMIN);
+		}
+
 		@Test
 		@DisplayName("Success - 업체 신청 상세 정보 조회를 하면 201로 응답으로 성공한다")
 		void getMarketEnrollmentSuccess() throws Exception {
 			// given
-			Member adminMember = new Member("heycake@heycake.com", ADMIN, "1010", "kwon");
-			memberRepository.save(adminMember);
+			Member member = TestUtils.getMember();
+			memberRepository.save(member);
 
-			TestUtils.setContext(adminMember.getId(), ADMIN);
+			MarketEnrollment enrollment = TestUtils.getMarketEnrollment("1234567890");
+			enrollment.setMember(member);
+			marketEnrollmentRepository.save(enrollment);
 
-			Long enrollmentId = enrollmentFacade.createEnrollment(userRequest);
+			Image image = new Image(enrollment.getId(), ENROLLMENT_MARKET, "imageUrl");
+			imageRepository.save(image);
+
+			EnrollmentDetailWithImageResponse enrollmentResponse = getEnrollmentResponse(enrollment, image);
 
 			// when & then
-			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollmentId)
+			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollment.getId())
 							.header("access_token", ACCESS_TOKEN))
 					.andExpect(status().isOk())
 					.andDo(print())
@@ -451,16 +463,22 @@ class EnrollmentControllerTest {
 							)))
 					.andReturn();
 
-			MarketEnrollment enrollment = marketEnrollmentRepository.findById(enrollmentId).get();
-			;
-			EnrollmentDetailWithImageResponse enrollmentResponse
-					= enrollmentController.getMarketEnrollment(enrollmentId).getBody();
+			JSONObject response = new JSONObject(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8));
 
-			assertThat(enrollment).usingRecursiveComparison()
-					.ignoringFields(
-							"id", "openDate", "enrollmentStatus", "member", "createdAt", "updatedAt", "deletedAt"
-					)
-					.isEqualTo(enrollmentResponse);
+			assertThat(response.getString("phoneNumber")).isEqualTo(enrollmentResponse.phoneNumber());
+			assertThat(response.getJSONObject("marketAddress").getString("city"))
+					.isEqualTo(enrollmentResponse.marketAddress().getCity());
+			assertThat(response.getJSONObject("marketAddress").getString("district"))
+					.isEqualTo(enrollmentResponse.marketAddress().getDistrict());
+			assertThat(response.getJSONObject("marketAddress").getString("detailAddress"))
+					.isEqualTo(enrollmentResponse.marketAddress().getDetailAddress());
+			assertThat(response.getString("openTime")).isEqualTo(enrollmentResponse.openTime().toString());
+			assertThat(response.getString("endTime")).isEqualTo(enrollmentResponse.endTime().toString());
+			assertThat(response.getString("description")).isEqualTo(enrollmentResponse.description());
+			assertThat(response.getString("marketName")).isEqualTo(enrollmentResponse.marketName());
+			assertThat(response.getString("businessNumber")).isEqualTo(enrollmentResponse.businessNumber());
+			assertThat(response.getString("ownerName")).isEqualTo(enrollmentResponse.ownerName());
+			assertThat(response.getString("marketImage")).isEqualTo(enrollmentResponse.marketImage());
 		}
 
 		// todo 업체 신청 조회 권한 permitAll -> Admin 으로 변경 시 활성화
@@ -528,12 +546,7 @@ class EnrollmentControllerTest {
 		@Test
 		@DisplayName("Fail - 존재하지 않는 업체 신청 id 를 조회하면 404 응답으로 실패한다")
 		void getMarketEnrollmentFailByNotFound() throws Exception {
-			Member adminMember = new Member("heycake@heycake.com", ADMIN, "1010", "kwon");
-			memberRepository.save(adminMember);
-
-			TestUtils.setContext(adminMember.getId(), ADMIN);
-
-			// when & then
+			// given & when & then
 			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", 0L)
 							.header("access_token", ACCESS_TOKEN))
 					.andExpect(status().isNotFound())
@@ -557,4 +570,21 @@ class EnrollmentControllerTest {
 					.hasMessage(ENTITY_NOT_FOUND.getMessage());
 		}
 	}
+
+	private EnrollmentDetailWithImageResponse getEnrollmentResponse(
+			MarketEnrollment enrollment, Image image
+	) {
+		return EnrollmentDetailWithImageResponse.builder()
+				.phoneNumber(enrollment.getPhoneNumber())
+				.marketAddress(enrollment.getMarketAddress())
+				.openTime(enrollment.getOpenTime())
+				.endTime(enrollment.getEndTime())
+				.description(enrollment.getDescription())
+				.marketName(enrollment.getMarketName())
+				.businessNumber(enrollment.getBusinessNumber())
+				.ownerName(enrollment.getOwnerName())
+				.marketImage(image.getImageUrl())
+				.build();
+	}
+
 }

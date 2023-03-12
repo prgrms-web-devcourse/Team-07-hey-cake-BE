@@ -56,8 +56,8 @@ public class TestUtils {
 				.marketName("서울 제과점")
 				.phoneNumber("01012345678")
 				.marketAddress(new MarketAddress("서울", "성동구", "응봉동"))
-				.openTime(LocalTime.now())
-				.endTime(LocalTime.now())
+				.openTime(LocalTime.of(9, 0))
+				.endTime(LocalTime.of(18, 0))
 				.description("업장 설명")
 				.build();
 	}
