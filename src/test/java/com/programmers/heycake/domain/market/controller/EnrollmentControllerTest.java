@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,16 +92,20 @@ class EnrollmentControllerTest {
 	@Transactional
 	class CreateEnrollment {
 
-		@Test
-		@DisplayName("Success - 업체 신청에 성공하여 201 응답으로 성공한다")
-		void createEnrollmentSuccess() throws Exception {
-			// given
-			Member member = TestUtils.getMember();
+		private Member member;
+
+		@BeforeEach
+		void setUp() {
+			member = TestUtils.getMember();
 			memberRepository.save(member);
 
 			TestUtils.setContext(member.getId(), USER);
+		}
 
-			// when
+		@Test
+		@DisplayName("Success - 업체 신청에 성공하여 201 응답으로 성공한다")
+		void createEnrollmentSuccess() throws Exception {
+			// given & when
 			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
 							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 							.file("marketImage", userRequest.marketImage().getBytes())
@@ -168,14 +174,8 @@ class EnrollmentControllerTest {
 		@Test
 		@DisplayName("Fail - 입력 요청 값이 잘못되면 400 응답으로 실패한다")
 		void createEnrollmentFailByBadRequest() throws Exception {
-			// given
-			Member member = TestUtils.getMember();
-			memberRepository.save(member);
-
-			TestUtils.setContext(member.getId(), USER);
-
-			// when & then
-			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
+			// given & when & then
+			mockMvc.perform(multipart("/api/v1/enrollments")
 							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 							.file("marketImage", userRequest.marketImage().getBytes())
 							.header("access_token", ACCESS_TOKEN)
@@ -221,8 +221,7 @@ class EnrollmentControllerTest {
 									fieldWithPath("inputErrors[].field").type(JsonFieldType.STRING).description("검증 실패한 필드"),
 									fieldWithPath("inputErrors[].rejectedValue").type(JsonFieldType.STRING).description("실패한 요청 값"),
 									fieldWithPath("inputErrors[].message").type(JsonFieldType.STRING).description("검증 실패 예외 메세지")
-							)))
-					.andReturn();
+							)));
 		}
 
 		@Test
@@ -230,13 +229,9 @@ class EnrollmentControllerTest {
 		void createEnrollmentFailByOpenDateAfterNow() throws Exception {
 			// given
 			LocalDate openDateAfterNow = LocalDate.now().plusDays(1);
-			Member member = TestUtils.getMember();
-			memberRepository.save(member);
-
-			TestUtils.setContext(member.getId(), USER);
 
 			// when & then
-			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
+			mockMvc.perform(multipart("/api/v1/enrollments")
 							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 							.file("marketImage", userRequest.marketImage().getBytes())
 							.header("access_token", ACCESS_TOKEN)
@@ -279,14 +274,17 @@ class EnrollmentControllerTest {
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
 									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)))
-					.andReturn();
+							)));
 		}
 
 		@Test
 		@DisplayName("Fail - 회원 인증에 실패하여 401 응답으로 실패한다")
 		void createEnrollmentFailByUnAuthorized() throws Exception {
-			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
+			// given
+			SecurityContextHolder.clearContext();
+
+			// when & then
+			mockMvc.perform(multipart("/api/v1/enrollments")
 							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 							.file("marketImage", userRequest.marketImage().getBytes())
 							.header("access_token", ACCESS_TOKEN)
@@ -329,21 +327,21 @@ class EnrollmentControllerTest {
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
 									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)))
-					.andReturn();
+							)));
 		}
 
 		@Test
 		@DisplayName("Fail - 이미 업체인 유저가 업체 신청을 하면 403 응답으로 실패한다")
 		void createEnrollmentFailByAlreadyMarket() throws Exception {
 			// given
-			Member marketMember = new Member("heycake@heycake.com", MARKET, "1010", "kwon");
+			Member marketMember = new Member("market@heycake.com", MARKET, "1010", "kwon");
 			memberRepository.save(marketMember);
 
+			SecurityContextHolder.clearContext();
 			TestUtils.setContext(marketMember.getId(), MARKET);
 
 			// when & then
-			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
+			mockMvc.perform(multipart("/api/v1/enrollments")
 							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 							.file("marketImage", userRequest.marketImage().getBytes())
 							.header("access_token", ACCESS_TOKEN)
@@ -386,14 +384,7 @@ class EnrollmentControllerTest {
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
 									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							),
-							responseFields(
-									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
-									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
-									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)))
-					.andReturn();
+							)));
 		}
 	}
 
@@ -521,7 +512,7 @@ class EnrollmentControllerTest {
 			TestUtils.setContext(adminMember.getId(), ADMIN);
 
 			// when & then
-			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", 0L)
+			mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", 0L)
 							.header("access_token", ACCESS_TOKEN))
 					.andExpect(status().isNotFound())
 					.andDo(print())
@@ -534,8 +525,7 @@ class EnrollmentControllerTest {
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
 									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)))
-					.andReturn();
+							)));
 
 			assertThatThrownBy(() -> enrollmentController.getMarketEnrollment(0L))
 					.isExactlyInstanceOf(BusinessException.class)
