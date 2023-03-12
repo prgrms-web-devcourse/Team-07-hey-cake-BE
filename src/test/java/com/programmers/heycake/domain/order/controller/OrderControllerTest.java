@@ -1,5 +1,7 @@
 package com.programmers.heycake.domain.order.controller;
 
+import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
+import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.MARKET;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
 import static com.programmers.heycake.util.TestUtils.*;
 import static org.assertj.core.api.Assertions.*;
@@ -44,11 +46,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
+import com.programmers.heycake.domain.offer.model.entity.Offer;
+import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.BreadFlavor;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
@@ -73,6 +76,9 @@ class OrderControllerTest {
 
 	@Autowired
 	MemberRepository memberRepository;
+
+	@Autowired
+	OfferRepository offerRepository;
 
 	@Autowired
 	private ImageService imageService;
@@ -241,13 +247,45 @@ class OrderControllerTest {
 	@Transactional
 	class GetOrderTest {
 		@Test
-		@DisplayName("Success - Order 상세 조회 성공")
+		@DisplayName("Success - 주문 상세 조회 성공")
 		@Transactional
 		void getOrderSuccess() throws Exception {
 			Order order = orderRepository.save(getOrder(1L));
 
+			Offer offer1 = getOffer(2L, 30000, "제안1");
+			Offer offer2 = getOffer(2L, 50000, "제안2");
+			offer1.setOrder(order);
+			offer2.setOrder(order);
+
+			offerRepository.saveAll(
+					List.of(
+							offer1,
+							offer2
+					));
+
+			String imageUrl1 = "testUrl1";
+			String imageUrl2 = "testUrl2";
+			imageService.createImage(order.getId(), ORDER, imageUrl1);
+			imageService.createImage(order.getId(), ORDER, imageUrl2);
+
 			mockMvc.perform(get("/api/v1/orders/{orderId}", order.getId()))
 					.andExpect(status().isOk())
+					.andExpect(jsonPath("memberId").value(1))
+					.andExpect(jsonPath("title").value(order.getTitle()))
+					.andExpect(jsonPath("region").value(order.getRegion()))
+					.andExpect(jsonPath("orderStatus").value(order.getOrderStatus().toString()))
+					.andExpect(jsonPath("hopePrice").value(order.getHopePrice()))
+					.andExpect(jsonPath("visitDate").value(
+							order.getVisitDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))))
+					.andExpect(jsonPath("cakeInfo.cakeCategory").value(order.getCakeInfo().getCakeCategory().toString()))
+					.andExpect(jsonPath("cakeInfo.cakeSize").value(order.getCakeInfo().getCakeSize().toString()))
+					.andExpect(jsonPath("cakeInfo.cakeHeight").value(order.getCakeInfo().getCakeHeight().toString()))
+					.andExpect(jsonPath("cakeInfo.breadFlavor").value(order.getCakeInfo().getBreadFlavor().toString()))
+					.andExpect(jsonPath("cakeInfo.creamFlavor").value(order.getCakeInfo().getCreamFlavor().toString()))
+					.andExpect(jsonPath("cakeInfo.requirements").value(order.getCakeInfo().getRequirements()))
+					.andExpect(jsonPath("offerCount").value(order.getOffers().size()))
+					.andExpect(jsonPath("images[0]").value(imageUrl1))
+					.andExpect(jsonPath("images[1]").value(imageUrl2))
 					.andDo(print())
 					.andDo(document("orders/주문 조회 성공",
 							responseFields(
@@ -274,12 +312,17 @@ class OrderControllerTest {
 		}
 
 		@Test
-		@DisplayName("Fail - Order 상세 조회 실패.(NotFound)")
+		@DisplayName("Fail - 주문 상세 조회 실패.(NotFound)")
 		@Transactional
 		void getOrderFailByNotFound() throws Exception {
-			mockMvc.perform(get("/api/v1/orders/{orderId}", -1))
+			int orderId = -1;
+			mockMvc.perform(get("/api/v1/orders/{orderId}", orderId))
 					.andExpect(status().isNotFound())
 					.andDo(print())
+					.andExpect(jsonPath("message").value("존재하지 않는 데이터입니다."))
+					.andExpect(jsonPath("path").value("/api/v1/orders/" + orderId))
+					.andExpect(jsonPath("time").exists())
+					.andExpect(jsonPath("inputErrors").isEmpty())
 					.andDo(document("orders/주문 조회 실패",
 							responseFields(
 									fieldWithPath("message").type(JsonFieldType.STRING).description("오류 메시지"),
@@ -355,7 +398,7 @@ class OrderControllerTest {
 			String orderId = mvcResult.getResponse()
 					.getHeader("Location")
 					.substring(15);
-			ImageResponses imageResponses = imageService.getImages(Long.parseLong(orderId), ImageType.ORDER);
+			ImageResponses imageResponses = imageService.getImages(Long.parseLong(orderId), ORDER);
 			List<ImageResponse> images = imageResponses.images();
 
 			assertThat(images.size()).isEqualTo(2);
