@@ -30,6 +30,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindException;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.image.model.entity.Image;
@@ -175,7 +176,7 @@ class EnrollmentControllerTest {
 		@DisplayName("Fail - 입력 요청 값이 잘못되면 400 응답으로 실패한다")
 		void createEnrollmentFailByBadRequest() throws Exception {
 			// given & when & then
-			mockMvc.perform(multipart("/api/v1/enrollments")
+			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
 							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 							.file("marketImage", userRequest.marketImage().getBytes())
 							.header("access_token", ACCESS_TOKEN)
@@ -221,7 +222,13 @@ class EnrollmentControllerTest {
 									fieldWithPath("inputErrors[].field").type(JsonFieldType.STRING).description("검증 실패한 필드"),
 									fieldWithPath("inputErrors[].rejectedValue").type(JsonFieldType.STRING).description("실패한 요청 값"),
 									fieldWithPath("inputErrors[].message").type(JsonFieldType.STRING).description("검증 실패 예외 메세지")
-							)));
+							)))
+					.andReturn();
+
+			int size = marketEnrollmentRepository.findAll().size();
+			assertThat(size).isZero();
+			assertThat(mvcResult.getResolvedException())
+					.isExactlyInstanceOf(BindException.class);
 		}
 
 		@Test
@@ -231,7 +238,7 @@ class EnrollmentControllerTest {
 			LocalDate openDateAfterNow = LocalDate.now().plusDays(1);
 
 			// when & then
-			mockMvc.perform(multipart("/api/v1/enrollments")
+			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
 							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 							.file("marketImage", userRequest.marketImage().getBytes())
 							.header("access_token", ACCESS_TOKEN)
@@ -274,7 +281,14 @@ class EnrollmentControllerTest {
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
 									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)));
+							)))
+					.andReturn();
+
+			int size = marketEnrollmentRepository.findAll().size();
+			assertThat(size).isZero();
+			assertThat(mvcResult.getResolvedException())
+					.isExactlyInstanceOf(BusinessException.class)
+					.hasMessage(BAD_REQUEST.getMessage());
 		}
 
 		@Test
@@ -284,7 +298,7 @@ class EnrollmentControllerTest {
 			SecurityContextHolder.clearContext();
 
 			// when & then
-			mockMvc.perform(multipart("/api/v1/enrollments")
+			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
 							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 							.file("marketImage", userRequest.marketImage().getBytes())
 							.header("access_token", ACCESS_TOKEN)
@@ -327,7 +341,11 @@ class EnrollmentControllerTest {
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
 									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)));
+							)))
+					.andReturn();
+
+			int size = marketEnrollmentRepository.findAll().size();
+			assertThat(size).isZero();
 		}
 
 		@Test
@@ -341,7 +359,7 @@ class EnrollmentControllerTest {
 			TestUtils.setContext(marketMember.getId(), MARKET);
 
 			// when & then
-			mockMvc.perform(multipart("/api/v1/enrollments")
+			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
 							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 							.file("marketImage", userRequest.marketImage().getBytes())
 							.header("access_token", ACCESS_TOKEN)
@@ -384,7 +402,11 @@ class EnrollmentControllerTest {
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
 									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)));
+							)))
+					.andReturn();
+
+			int size = marketEnrollmentRepository.findAll().size();
+			assertThat(size).isZero();
 		}
 	}
 
@@ -512,7 +534,7 @@ class EnrollmentControllerTest {
 			TestUtils.setContext(adminMember.getId(), ADMIN);
 
 			// when & then
-			mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", 0L)
+			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", 0L)
 							.header("access_token", ACCESS_TOKEN))
 					.andExpect(status().isNotFound())
 					.andDo(print())
@@ -525,9 +547,12 @@ class EnrollmentControllerTest {
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
 									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)));
+							)))
+					.andReturn();
 
-			assertThatThrownBy(() -> enrollmentController.getMarketEnrollment(0L))
+			int size = marketEnrollmentRepository.findAll().size();
+			assertThat(size).isZero();
+			assertThat(mvcResult.getResolvedException())
 					.isExactlyInstanceOf(BusinessException.class)
 					.hasMessage(ENTITY_NOT_FOUND.getMessage());
 		}
