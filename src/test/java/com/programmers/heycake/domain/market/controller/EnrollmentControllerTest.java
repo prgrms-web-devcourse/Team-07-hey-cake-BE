@@ -454,106 +454,104 @@ class EnrollmentControllerTest {
 			}
 		}
 
-		@Test
-		@DisplayName("Fail - 회원 인증 실패로 업체 신청 목록 조회에 실패하여 401 응답한다")
-		void getMarketEnrollmentsFailByUnauthorized() throws Exception {
-			// given
-			// todo 업체 신청 조회 권한 permitAll -> Admin 으로 변경 시 활성화
-			// EnrollmentCreateRequest request1 = TestUtils.getEnrollmentRequest("1234567891");
-			// EnrollmentCreateRequest request2 = TestUtils.getEnrollmentRequest("1234567892");
-			// EnrollmentCreateRequest request3 = TestUtils.getEnrollmentRequest("1234567893");
-			// Long cursorId = enrollmentFacade.createEnrollment(request1);
-			// enrollmentFacade.createEnrollment(request2);
-			// enrollmentFacade.createEnrollment(request3);
-			//
-			// SecurityContextHolder.clearContext();
-			//
-			// // when & then
-			// mockMvc.perform(get("/api/v1/enrollments")
-			// 				.header("access_token", ACCESS_TOKEN)
-			// 				.queryParam("cursorId", cursorId.toString())
-			// 				.queryParam("pageSize", "10")
-			// 				.queryParam("status", WAITING.toString()))
-			// 		.andExpect(status().isUnauthorized())
-			// 		.andDo(print())
-			// 		.andDo(document("MarketEnrollment/업체 신청 목록 조회 실패 - 회원 인증 실패",
-			// 				requestHeaders(
-			// 						headerWithName("access_token").description("Access token 정보")
-			// 				),
-			// 				requestParameters(
-			// 						parameterWithName("cursorId").optional().description("목록의 시작이 되는 업체 신청 id"),
-			// 						parameterWithName("pageSize").description("한번에 조회할 데이터 수"),
-			// 						parameterWithName("status").optional().description("조회하고자 하는 업체 신청의 상태")
-			// 				),
-			// 				responseFields(
-			// 						fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
-			// 						fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
-			// 						fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-			// 						fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-			// 				)))
-			// 		.andReturn();
+		// todo 업체 신청 조회 권한 permitAll -> Admin 으로 변경 시 활성화
+		// @Test
+		// @DisplayName("Fail - 회원 인증 실패로 업체 신청 목록 조회에 실패하여 401 응답한다")
+		// void getMarketEnrollmentsFailByUnauthorized() throws Exception {
+		// 	// given
+		// 	EnrollmentCreateRequest request1 = TestUtils.getEnrollmentRequest("1234567891");
+		// 	EnrollmentCreateRequest request2 = TestUtils.getEnrollmentRequest("1234567892");
+		// 	EnrollmentCreateRequest request3 = TestUtils.getEnrollmentRequest("1234567893");
+		// 	Long cursorId = enrollmentFacade.createEnrollment(request1);
+		// 	enrollmentFacade.createEnrollment(request2);
+		// 	enrollmentFacade.createEnrollment(request3);
+		//
+		// 	SecurityContextHolder.clearContext();
+		//
+		// 	// when & then
+		// 	mockMvc.perform(get("/api/v1/enrollments")
+		// 					.header("access_token", ACCESS_TOKEN)
+		// 					.queryParam("cursorId", cursorId.toString())
+		// 					.queryParam("pageSize", "10")
+		// 					.queryParam("status", WAITING.toString()))
+		// 			.andExpect(status().isUnauthorized())
+		// 			.andDo(print())
+		// 			.andDo(document("MarketEnrollment/업체 신청 목록 조회 실패 - 회원 인증 실패",
+		// 					requestHeaders(
+		// 							headerWithName("access_token").description("Access token 정보")
+		// 					),
+		// 					requestParameters(
+		// 							parameterWithName("cursorId").optional().description("목록의 시작이 되는 업체 신청 id"),
+		// 							parameterWithName("pageSize").description("한번에 조회할 데이터 수"),
+		// 							parameterWithName("status").optional().description("조회하고자 하는 업체 신청의 상태")
+		// 					),
+		// 					responseFields(
+		// 							fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+		// 							fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+		// 							fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+		// 							fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
+		// 					)))
+		// 			.andReturn();
+		// }
+
+		// todo 업체 신청 조회 권한 permitAll -> Admin 으로 변경 시 활성화
+		// @Test
+		// @DisplayName("Fail - 관리자가 아닌 회원이 업체 신청 목록을 조회하면 실패하며 403 응답한다")
+		// void getMarketEnrollmentsFailByForbidden() throws Exception {
+		// 	// given
+		// 	EnrollmentCreateRequest request1 = TestUtils.getEnrollmentRequest("1234567891");
+		// 	EnrollmentCreateRequest request2 = TestUtils.getEnrollmentRequest("1234567892");
+		// 	EnrollmentCreateRequest request3 = TestUtils.getEnrollmentRequest("1234567893");
+		// 	Long cursorId = enrollmentFacade.createEnrollment(request1);
+		// 	enrollmentFacade.createEnrollment(request2);
+		// 	enrollmentFacade.createEnrollment(request3);
+		//
+		// 	member = TestUtils.getMember();
+		// 	memberRepository.save(member);
+		//
+		// 	SecurityContextHolder.clearContext();
+		// 	TestUtils.setContext(member.getId(), USER);
+		//
+		// 	// when & then
+		// 	mockMvc.perform(get("/api/v1/enrollments")
+		// 					.header("access_token", ACCESS_TOKEN)
+		// 					.queryParam("cursorId", cursorId.toString())
+		// 					.queryParam("pageSize", "10")
+		// 					.queryParam("status", WAITING.toString()))
+		// 			.andExpect(status().isUnauthorized())
+		// 			.andDo(print())
+		// 			.andDo(document("MarketEnrollment/업체 신청 목록 조회 실패 - 회원 인증 실패",
+		// 					requestHeaders(
+		// 							headerWithName("access_token").description("Access token 정보")
+		// 					),
+		// 					requestParameters(
+		// 							parameterWithName("cursorId").optional().description("목록의 시작이 되는 업체 신청 id"),
+		// 							parameterWithName("pageSize").description("한번에 조회할 데이터 수"),
+		// 							parameterWithName("status").optional().description("조회하고자 하는 업체 신청의 상태")
+		// 					),
+		// 					responseFields(
+		// 							fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+		// 							fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+		// 							fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+		// 							fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
+		// 					)))
+		// 			.andReturn();
+		// }
+
+		private EnrollmentListSummaryWithImageResponse getEnrollmentResponse(
+				MarketEnrollment enrollment, Image image
+		) {
+			return EnrollmentListSummaryWithImageResponse.builder()
+					.enrollmentId(enrollment.getId())
+					.imageUrl(image.getImageUrl())
+					.businessNumber(enrollment.getBusinessNumber())
+					.address(enrollment.getMarketAddress())
+					.marketName(enrollment.getMarketName())
+					.phoneNumber(enrollment.getPhoneNumber())
+					.ownerName(enrollment.getOwnerName())
+					.status(enrollment.getEnrollmentStatus())
+					.createdAt(enrollment.getCreatedAt())
+					.build();
 		}
-
-		@Test
-		@DisplayName("Fail - 관리자가 아닌 회원이 업체 신청 목록을 조회하면 실패하며 403 응답한다")
-		void getMarketEnrollmentsFailByForbidden() throws Exception {
-			// given
-			// todo 업체 신청 조회 권한 permitAll -> Admin 으로 변경 시 활성화
-			// EnrollmentCreateRequest request1 = TestUtils.getEnrollmentRequest("1234567891");
-			// EnrollmentCreateRequest request2 = TestUtils.getEnrollmentRequest("1234567892");
-			// EnrollmentCreateRequest request3 = TestUtils.getEnrollmentRequest("1234567893");
-			// Long cursorId = enrollmentFacade.createEnrollment(request1);
-			// enrollmentFacade.createEnrollment(request2);
-			// enrollmentFacade.createEnrollment(request3);
-			//
-			// member = TestUtils.getMember();
-			// memberRepository.save(member);
-			//
-			// SecurityContextHolder.clearContext();
-			// TestUtils.setContext(member.getId(), USER);
-			//
-			// // when & then
-			// mockMvc.perform(get("/api/v1/enrollments")
-			// 				.header("access_token", ACCESS_TOKEN)
-			// 				.queryParam("cursorId", cursorId.toString())
-			// 				.queryParam("pageSize", "10")
-			// 				.queryParam("status", WAITING.toString()))
-			// 		.andExpect(status().isUnauthorized())
-			// 		.andDo(print())
-			// 		.andDo(document("MarketEnrollment/업체 신청 목록 조회 실패 - 회원 인증 실패",
-			// 				requestHeaders(
-			// 						headerWithName("access_token").description("Access token 정보")
-			// 				),
-			// 				requestParameters(
-			// 						parameterWithName("cursorId").optional().description("목록의 시작이 되는 업체 신청 id"),
-			// 						parameterWithName("pageSize").description("한번에 조회할 데이터 수"),
-			// 						parameterWithName("status").optional().description("조회하고자 하는 업체 신청의 상태")
-			// 				),
-			// 				responseFields(
-			// 						fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
-			// 						fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
-			// 						fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-			// 						fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-			// 				)))
-			// 		.andReturn();
-		}
-
 	}
-
-	private EnrollmentListSummaryWithImageResponse getEnrollmentResponse(
-			MarketEnrollment enrollment, Image image
-	) {
-		return EnrollmentListSummaryWithImageResponse.builder()
-				.enrollmentId(enrollment.getId())
-				.imageUrl(image.getImageUrl())
-				.businessNumber(enrollment.getBusinessNumber())
-				.address(enrollment.getMarketAddress())
-				.marketName(enrollment.getMarketName())
-				.phoneNumber(enrollment.getPhoneNumber())
-				.ownerName(enrollment.getOwnerName())
-				.status(enrollment.getEnrollmentStatus())
-				.createdAt(enrollment.getCreatedAt())
-				.build();
-	}
-
 }
