@@ -901,7 +901,9 @@ class EnrollmentControllerTest {
 			enrollment1.setMember(member);
 			enrollment2.setMember(member);
 			enrollment3.setMember(member);
-			marketEnrollmentRepository.saveAll(List.of(enrollment1, enrollment2, enrollment3));
+			marketEnrollmentRepository.save(enrollment1);
+			marketEnrollmentRepository.save(enrollment2);
+			marketEnrollmentRepository.save(enrollment3);
 
 			Image image1 = new Image(enrollment1.getId(), ENROLLMENT_MARKET, "imageUrl");
 			Image image2 = new Image(enrollment2.getId(), ENROLLMENT_MARKET, "imageUrl");
@@ -915,12 +917,11 @@ class EnrollmentControllerTest {
 			);
 
 			// when & then
-			MvcResult mvcResult = mockMvc.perform(
-							get("/api/v1/enrollments")
-									.header("access_token", ACCESS_TOKEN)
-									.queryParam("cursorId", enrollment1.getId().toString())
-									.queryParam("pageSize", "2")
-									.queryParam("status", WAITING.toString()))
+			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments")
+							.header("access_token", ACCESS_TOKEN)
+							.queryParam("cursorId", enrollment1.getId().toString())
+							.queryParam("pageSize", "2")
+							.queryParam("status", WAITING.toString()))
 					.andExpect(status().isOk())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 목록 조회 성공",
@@ -936,7 +937,7 @@ class EnrollmentControllerTest {
 									fieldWithPath("enrollments").type(JsonFieldType.ARRAY).description("업체 신청 정보의 배열"),
 									fieldWithPath("enrollments[].enrollmentId").type(JsonFieldType.NUMBER).description("업체 신청 id"),
 									fieldWithPath("enrollments[].imageUrl").type(JsonFieldType.STRING).description("업체 이미지 URL"),
-									fieldWithPath("enrollments[].enrollmentId").type(JsonFieldType.STRING).description("사업자 등록 번호"),
+									fieldWithPath("enrollments[].businessNumber").type(JsonFieldType.STRING).description("사업자 등록 번호"),
 									fieldWithPath("enrollments[].address").type(JsonFieldType.OBJECT).description("주소"),
 									fieldWithPath("enrollments[].address.city")
 											.type(JsonFieldType.STRING).description("주소 - 시"),
@@ -953,10 +954,25 @@ class EnrollmentControllerTest {
 							)))
 					.andReturn();
 
-			JSONArray enrollments = new JSONArray(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8));
+			JSONObject response = new JSONObject(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8));
+			JSONArray enrollments = response.getJSONArray("enrollments");
+
 			for (int idx = 0; idx < enrollmentResponses.size(); idx++) {
 				JSONObject enrollment = enrollments.getJSONObject(idx);
-				assertThat(enrollment).usingRecursiveComparison().isEqualTo(enrollmentResponses.get(idx));
+				assertThat(enrollment.getString("enrollmentId")).isEqualTo(enrollmentResponses.get(idx).enrollmentId());
+				assertThat(enrollment.getString("imageUrl")).isEqualTo(enrollmentResponses.get(idx).imageUrl());
+				assertThat(enrollment.getString("businessNumber")).isEqualTo(enrollmentResponses.get(idx).businessNumber());
+				assertThat(enrollment.getJSONObject("address").getString("city"))
+						.isEqualTo(enrollmentResponses.get(idx).address().getCity());
+				assertThat(enrollment.getJSONObject("address").getString("district"))
+						.isEqualTo(enrollmentResponses.get(idx).address().getDistrict());
+				assertThat(enrollment.getJSONObject("address").getString("detailAddress"))
+						.isEqualTo(enrollmentResponses.get(idx).address().getDetailAddress());
+				assertThat(enrollment.getString("marketName")).isEqualTo(enrollmentResponses.get(idx).marketName());
+				assertThat(enrollment.getString("phoneNumber")).isEqualTo(enrollmentResponses.get(idx).phoneNumber());
+				assertThat(enrollment.getString("ownerName")).isEqualTo(enrollmentResponses.get(idx).ownerName());
+				assertThat(enrollment.getString("status")).isEqualTo(enrollmentResponses.get(idx).status());
+				assertThat(enrollment.getString("createdAt")).isEqualTo(enrollmentResponses.get(idx).createdAt());
 			}
 		}
 
