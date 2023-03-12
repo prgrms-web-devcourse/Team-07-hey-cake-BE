@@ -40,7 +40,12 @@ public class CommentMapper {
 				.findAny()
 				.orElse(null);
 
-		return new CommentSummaryResponse(commentResponse.commentId(), commentResponse.content(), imageUrl,
-				commentResponse.memberId(), memberResponse.nickname());
+		return CommentSummaryResponse.builder()
+				.commentId(commentResponse.commentId())
+				.comment(commentResponse.comment())
+				.image(imageUrl)
+				.memberId(commentResponse.memberId())
+				.nickname(memberResponse.nickname())
+				.build();
 	}
 }
