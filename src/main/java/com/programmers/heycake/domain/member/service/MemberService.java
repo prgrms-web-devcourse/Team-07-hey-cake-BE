@@ -154,7 +154,7 @@ public class MemberService {
 				.getString("email");
 
 		boolean hasBirthday = responseBody.getJSONObject("kakao_account")
-				.has("birth");
+				.has("birthday");
 
 		String birthday = null;
 		if (hasBirthday) {
