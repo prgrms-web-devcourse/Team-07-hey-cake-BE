@@ -20,7 +20,7 @@ public class CommentMapper {
 	}
 
 	public static CommentResponse toCommentResponse(Comment comment) {
-		return new CommentResponse(comment.getId(), comment.getMemberId(), comment.getContent());
+		return new CommentResponse(comment.getId(), comment.getMemberId(), comment.getContent(), comment.getCreatedAt());
 	}
 
 	public static List<CommentResponse> toCommentResponseList(List<Comment> commentList) {
@@ -46,6 +46,7 @@ public class CommentMapper {
 				.image(imageUrl)
 				.memberId(commentResponse.memberId())
 				.nickname(memberResponse.nickname())
+				.createdAt(commentResponse.createdAt())
 				.build();
 	}
 }
