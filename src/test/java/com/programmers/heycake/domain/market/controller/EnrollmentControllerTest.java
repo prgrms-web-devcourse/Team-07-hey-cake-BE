@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -106,47 +107,37 @@ class EnrollmentControllerTest {
 		@DisplayName("Success - 업체 신청에 성공하여 201 응답으로 성공한다")
 		void createEnrollmentSuccess() throws Exception {
 			// given & when
-			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
-							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
-							.file("marketImage", userRequest.marketImage().getBytes())
-							.header("access_token", ACCESS_TOKEN)
-							.param("businessNumber", userRequest.businessNumber())
-							.param("ownerName", userRequest.ownerName())
-							.param("openDate", userRequest.openDate().toString())
-							.param("marketName", userRequest.marketName())
-							.param("phoneNumber", userRequest.phoneNumber())
-							.param("city", userRequest.city())
-							.param("district", userRequest.district())
-							.param("detailAddress", userRequest.detailAddress())
-							.param("openTime", userRequest.openTime().toString())
-							.param("endTime", userRequest.endTime().toString())
-							.param("description", userRequest.description()))
+			MvcResult mvcResult = mockMvc.perform(
+							multipart("/api/v1/enrollments").file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
+									.file("marketImage", userRequest.marketImage().getBytes())
+									.header("access_token", ACCESS_TOKEN)
+									.param("businessNumber", userRequest.businessNumber())
+									.param("ownerName", userRequest.ownerName())
+									.param("openDate", userRequest.openDate().toString())
+									.param("marketName", userRequest.marketName())
+									.param("phoneNumber", userRequest.phoneNumber())
+									.param("city", userRequest.city())
+									.param("district", userRequest.district())
+									.param("detailAddress", userRequest.detailAddress())
+									.param("openTime", userRequest.openTime().toString())
+									.param("endTime", userRequest.endTime().toString())
+									.param("description", userRequest.description()))
 					.andExpect(status().isCreated())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 성공",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestParts(
-									partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
-									partWithName("marketImage").description("업체 대표 이미지")
-							),
-							requestParameters(
-									parameterWithName("businessNumber").description("사업자 등록 번호"),
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestParts(partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
+									partWithName("marketImage").description("업체 대표 이미지")),
+							requestParameters(parameterWithName("businessNumber").description("사업자 등록 번호"),
 									parameterWithName("ownerName").description("대표자 이름"),
 									parameterWithName("openDate").description("개업 일자"),
 									parameterWithName("marketName").description("상호명"),
 									parameterWithName("phoneNumber").description("업체 전화번호"),
-									parameterWithName("city").description("주소 시"),
-									parameterWithName("district").description("주소 구"),
+									parameterWithName("city").description("주소 시"), parameterWithName("district").description("주소 구"),
 									parameterWithName("detailAddress").description("상세 주소"),
-									parameterWithName("openTime").description("오픈 시간"),
-									parameterWithName("endTime").description("마감 시간"),
-									parameterWithName("description").description("업체 설명")
-							),
-							responseHeaders(
-									headerWithName("Location").description("생성된 데이터 URI")
-							)))
+									parameterWithName("openTime").description("오픈 시간"), parameterWithName("endTime").description("마감 시간"),
+									parameterWithName("description").description("업체 설명")),
+							responseHeaders(headerWithName("Location").description("생성된 데이터 URI"))))
 					.andReturn();
 
 			// then
@@ -156,14 +147,10 @@ class EnrollmentControllerTest {
 			String location = mvcResult.getResponse().getHeader("Location");
 
 			assertThat(enrollments.size()).isEqualTo(1);
-			assertThat(savedEnrollment)
-					.usingRecursiveComparison()
-					.ignoringFields(
-							"id", "marketAddress", "enrollmentStatus", "member", "createdAt", "updatedAt", "deletedAt"
-					)
+			assertThat(savedEnrollment).usingRecursiveComparison()
+					.ignoringFields("id", "marketAddress", "enrollmentStatus", "member", "createdAt", "updatedAt", "deletedAt")
 					.isEqualTo(userRequest);
-			assertThat(savedEnrollment)
-					.hasFieldOrPropertyWithValue("marketAddress.city", userRequest.city())
+			assertThat(savedEnrollment).hasFieldOrPropertyWithValue("marketAddress.city", userRequest.city())
 					.hasFieldOrPropertyWithValue("marketAddress.district", userRequest.district())
 					.hasFieldOrPropertyWithValue("marketAddress.detailAddress", userRequest.detailAddress())
 					.hasFieldOrPropertyWithValue("enrollmentStatus", WAITING);
@@ -175,59 +162,48 @@ class EnrollmentControllerTest {
 		@DisplayName("Fail - 입력 요청 값이 잘못되면 400 응답으로 실패한다")
 		void createEnrollmentFailByBadRequest() throws Exception {
 			// given & when & then
-			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
-							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
-							.file("marketImage", userRequest.marketImage().getBytes())
-							.header("access_token", ACCESS_TOKEN)
-							.param("businessNumber", " ")
-							.param("ownerName", " ")
-							.param("openDate", userRequest.openDate().toString())
-							.param("marketName", " ")
-							.param("phoneNumber", " ")
-							.param("city", " ")
-							.param("district", " ")
-							.param("detailAddress", " ")
-							.param("openTime", userRequest.openTime().toString())
-							.param("endTime", userRequest.endTime().toString())
-							.param("description", " "))
+			MvcResult mvcResult = mockMvc.perform(
+							multipart("/api/v1/enrollments").file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
+									.file("marketImage", userRequest.marketImage().getBytes())
+									.header("access_token", ACCESS_TOKEN)
+									.param("businessNumber", " ")
+									.param("ownerName", " ")
+									.param("openDate", userRequest.openDate().toString())
+									.param("marketName", " ")
+									.param("phoneNumber", " ")
+									.param("city", " ")
+									.param("district", " ")
+									.param("detailAddress", " ")
+									.param("openTime", userRequest.openTime().toString())
+									.param("endTime", userRequest.endTime().toString())
+									.param("description", " "))
 					.andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 실패 - 입력 요청 값이 잘못된 경우",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestParts(
-									partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
-									partWithName("marketImage").description("업체 대표 이미지")
-							),
-							requestParameters(
-									parameterWithName("businessNumber").description("사업자 등록 번호"),
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestParts(partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
+									partWithName("marketImage").description("업체 대표 이미지")),
+							requestParameters(parameterWithName("businessNumber").description("사업자 등록 번호"),
 									parameterWithName("ownerName").description("대표자 이름"),
 									parameterWithName("openDate").description("개업 일자"),
 									parameterWithName("marketName").description("상호명"),
 									parameterWithName("phoneNumber").description("업체 전화번호"),
-									parameterWithName("city").description("주소 시"),
-									parameterWithName("district").description("주소 구"),
+									parameterWithName("city").description("주소 시"), parameterWithName("district").description("주소 구"),
 									parameterWithName("detailAddress").description("상세 주소"),
-									parameterWithName("openTime").description("오픈 시간"),
-									parameterWithName("endTime").description("마감 시간"),
-									parameterWithName("description").description("업체 설명")
-							),
-							responseFields(
-									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+									parameterWithName("openTime").description("오픈 시간"), parameterWithName("endTime").description("마감 시간"),
+									parameterWithName("description").description("업체 설명")),
+							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
 									fieldWithPath("inputErrors").type(JsonFieldType.ARRAY).description("검증 실패 에러 정보"),
 									fieldWithPath("inputErrors[].field").type(JsonFieldType.STRING).description("검증 실패한 필드"),
 									fieldWithPath("inputErrors[].rejectedValue").type(JsonFieldType.STRING).description("실패한 요청 값"),
-									fieldWithPath("inputErrors[].message").type(JsonFieldType.STRING).description("검증 실패 예외 메세지")
-							)))
+									fieldWithPath("inputErrors[].message").type(JsonFieldType.STRING).description("검증 실패 예외 메세지"))))
 					.andReturn();
 
 			int size = marketEnrollmentRepository.findAll().size();
 			assertThat(size).isZero();
-			assertThat(mvcResult.getResolvedException())
-					.isExactlyInstanceOf(BindException.class);
+			assertThat(mvcResult.getResolvedException()).isExactlyInstanceOf(BindException.class);
 		}
 
 		@Test
@@ -237,56 +213,45 @@ class EnrollmentControllerTest {
 			LocalDate openDateAfterNow = LocalDate.now().plusDays(1);
 
 			// when & then
-			MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/enrollments")
-							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
-							.file("marketImage", userRequest.marketImage().getBytes())
-							.header("access_token", ACCESS_TOKEN)
-							.param("businessNumber", userRequest.businessNumber())
-							.param("ownerName", userRequest.ownerName())
-							.param("openDate", openDateAfterNow.toString())
-							.param("marketName", userRequest.marketName())
-							.param("phoneNumber", userRequest.phoneNumber())
-							.param("city", userRequest.city())
-							.param("district", userRequest.district())
-							.param("detailAddress", userRequest.detailAddress())
-							.param("openTime", userRequest.openTime().toString())
-							.param("endTime", userRequest.endTime().toString())
-							.param("description", userRequest.description()))
+			MvcResult mvcResult = mockMvc.perform(
+							multipart("/api/v1/enrollments").file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
+									.file("marketImage", userRequest.marketImage().getBytes())
+									.header("access_token", ACCESS_TOKEN)
+									.param("businessNumber", userRequest.businessNumber())
+									.param("ownerName", userRequest.ownerName())
+									.param("openDate", openDateAfterNow.toString())
+									.param("marketName", userRequest.marketName())
+									.param("phoneNumber", userRequest.phoneNumber())
+									.param("city", userRequest.city())
+									.param("district", userRequest.district())
+									.param("detailAddress", userRequest.detailAddress())
+									.param("openTime", userRequest.openTime().toString())
+									.param("endTime", userRequest.endTime().toString())
+									.param("description", userRequest.description()))
 					.andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 실패 - 개업일이 현재 시각보다 늦은 경우",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestParts(
-									partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
-									partWithName("marketImage").description("업체 대표 이미지")
-							),
-							requestParameters(
-									parameterWithName("businessNumber").description("사업자 등록 번호"),
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestParts(partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
+									partWithName("marketImage").description("업체 대표 이미지")),
+							requestParameters(parameterWithName("businessNumber").description("사업자 등록 번호"),
 									parameterWithName("ownerName").description("대표자 이름"),
 									parameterWithName("openDate").description("개업 일자"),
 									parameterWithName("marketName").description("상호명"),
 									parameterWithName("phoneNumber").description("업체 전화번호"),
-									parameterWithName("city").description("주소 시"),
-									parameterWithName("district").description("주소 구"),
+									parameterWithName("city").description("주소 시"), parameterWithName("district").description("주소 구"),
 									parameterWithName("detailAddress").description("상세 주소"),
-									parameterWithName("openTime").description("오픈 시간"),
-									parameterWithName("endTime").description("마감 시간"),
-									parameterWithName("description").description("업체 설명")
-							),
-							responseFields(
-									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+									parameterWithName("openTime").description("오픈 시간"), parameterWithName("endTime").description("마감 시간"),
+									parameterWithName("description").description("업체 설명")),
+							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)))
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보"))))
 					.andReturn();
 
 			int size = marketEnrollmentRepository.findAll().size();
 			assertThat(size).isZero();
-			assertThat(mvcResult.getResolvedException())
-					.isExactlyInstanceOf(BusinessException.class)
+			assertThat(mvcResult.getResolvedException()).isExactlyInstanceOf(BusinessException.class)
 					.hasMessage(BAD_REQUEST.getMessage());
 		}
 
@@ -297,50 +262,40 @@ class EnrollmentControllerTest {
 			SecurityContextHolder.clearContext();
 
 			// when & then
-			mockMvc.perform(multipart("/api/v1/enrollments")
-							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
-							.file("marketImage", userRequest.marketImage().getBytes())
-							.header("access_token", ACCESS_TOKEN)
-							.param("businessNumber", userRequest.businessNumber())
-							.param("ownerName", userRequest.ownerName())
-							.param("openDate", userRequest.openDate().toString())
-							.param("marketName", userRequest.marketName())
-							.param("phoneNumber", userRequest.phoneNumber())
-							.param("city", userRequest.city())
-							.param("district", userRequest.district())
-							.param("detailAddress", userRequest.detailAddress())
-							.param("openTime", userRequest.openTime().toString())
-							.param("endTime", userRequest.endTime().toString())
-							.param("description", userRequest.description()))
+			mockMvc.perform(
+							multipart("/api/v1/enrollments").file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
+									.file("marketImage", userRequest.marketImage().getBytes())
+									.header("access_token", ACCESS_TOKEN)
+									.param("businessNumber", userRequest.businessNumber())
+									.param("ownerName", userRequest.ownerName())
+									.param("openDate", userRequest.openDate().toString())
+									.param("marketName", userRequest.marketName())
+									.param("phoneNumber", userRequest.phoneNumber())
+									.param("city", userRequest.city())
+									.param("district", userRequest.district())
+									.param("detailAddress", userRequest.detailAddress())
+									.param("openTime", userRequest.openTime().toString())
+									.param("endTime", userRequest.endTime().toString())
+									.param("description", userRequest.description()))
 					.andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 실패 - 회원 인증 실패",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestParts(
-									partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
-									partWithName("marketImage").description("업체 대표 이미지")
-							),
-							requestParameters(
-									parameterWithName("businessNumber").description("사업자 등록 번호"),
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestParts(partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
+									partWithName("marketImage").description("업체 대표 이미지")),
+							requestParameters(parameterWithName("businessNumber").description("사업자 등록 번호"),
 									parameterWithName("ownerName").description("대표자 이름"),
 									parameterWithName("openDate").description("개업 일자"),
 									parameterWithName("marketName").description("상호명"),
 									parameterWithName("phoneNumber").description("업체 전화번호"),
-									parameterWithName("city").description("주소 시"),
-									parameterWithName("district").description("주소 구"),
+									parameterWithName("city").description("주소 시"), parameterWithName("district").description("주소 구"),
 									parameterWithName("detailAddress").description("상세 주소"),
-									parameterWithName("openTime").description("오픈 시간"),
-									parameterWithName("endTime").description("마감 시간"),
-									parameterWithName("description").description("업체 설명")
-							),
-							responseFields(
-									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+									parameterWithName("openTime").description("오픈 시간"), parameterWithName("endTime").description("마감 시간"),
+									parameterWithName("description").description("업체 설명")),
+							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)));
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보"))));
 
 			int size = marketEnrollmentRepository.findAll().size();
 			assertThat(size).isZero();
@@ -357,50 +312,40 @@ class EnrollmentControllerTest {
 			TestUtils.setContext(marketMember.getId(), MARKET);
 
 			// when & then
-			mockMvc.perform(multipart("/api/v1/enrollments")
-							.file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
-							.file("marketImage", userRequest.marketImage().getBytes())
-							.header("access_token", ACCESS_TOKEN)
-							.param("businessNumber", userRequest.businessNumber())
-							.param("ownerName", userRequest.ownerName())
-							.param("openDate", userRequest.openDate().toString())
-							.param("marketName", userRequest.marketName())
-							.param("phoneNumber", userRequest.phoneNumber())
-							.param("city", userRequest.city())
-							.param("district", userRequest.district())
-							.param("detailAddress", userRequest.detailAddress())
-							.param("openTime", userRequest.openTime().toString())
-							.param("endTime", userRequest.endTime().toString())
-							.param("description", userRequest.description()))
+			mockMvc.perform(
+							multipart("/api/v1/enrollments").file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
+									.file("marketImage", userRequest.marketImage().getBytes())
+									.header("access_token", ACCESS_TOKEN)
+									.param("businessNumber", userRequest.businessNumber())
+									.param("ownerName", userRequest.ownerName())
+									.param("openDate", userRequest.openDate().toString())
+									.param("marketName", userRequest.marketName())
+									.param("phoneNumber", userRequest.phoneNumber())
+									.param("city", userRequest.city())
+									.param("district", userRequest.district())
+									.param("detailAddress", userRequest.detailAddress())
+									.param("openTime", userRequest.openTime().toString())
+									.param("endTime", userRequest.endTime().toString())
+									.param("description", userRequest.description()))
 					.andExpect(status().isForbidden())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 실패 - 이미 업체인 경우",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestParts(
-									partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
-									partWithName("marketImage").description("업체 대표 이미지")
-							),
-							requestParameters(
-									parameterWithName("businessNumber").description("사업자 등록 번호"),
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestParts(partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
+									partWithName("marketImage").description("업체 대표 이미지")),
+							requestParameters(parameterWithName("businessNumber").description("사업자 등록 번호"),
 									parameterWithName("ownerName").description("대표자 이름"),
 									parameterWithName("openDate").description("개업 일자"),
 									parameterWithName("marketName").description("상호명"),
 									parameterWithName("phoneNumber").description("업체 전화번호"),
-									parameterWithName("city").description("주소 시"),
-									parameterWithName("district").description("주소 구"),
+									parameterWithName("city").description("주소 시"), parameterWithName("district").description("주소 구"),
 									parameterWithName("detailAddress").description("상세 주소"),
-									parameterWithName("openTime").description("오픈 시간"),
-									parameterWithName("endTime").description("마감 시간"),
-									parameterWithName("description").description("업체 설명")
-							),
-							responseFields(
-									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+									parameterWithName("openTime").description("오픈 시간"), parameterWithName("endTime").description("마감 시간"),
+									parameterWithName("description").description("업체 설명")),
+							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)));
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보"))));
 
 			int size = marketEnrollmentRepository.findAll().size();
 			assertThat(size).isZero();
@@ -439,39 +384,33 @@ class EnrollmentControllerTest {
 			EnrollmentDetailWithImageResponse enrollmentResponse = getEnrollmentResponse(enrollment, image);
 
 			// when & then
-			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", enrollment.getId())
-							.header("access_token", ACCESS_TOKEN))
+			MvcResult mvcResult = mockMvc.perform(
+							get("/api/v1/enrollments/{enrollmentId}", enrollment.getId()).header("access_token", ACCESS_TOKEN))
 					.andExpect(status().isOk())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 상세 조회 성공",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							responseFields(
-									fieldWithPath("phoneNumber").description("업체 전화번호"),
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							responseFields(fieldWithPath("phoneNumber").description("업체 전화번호"),
 									fieldWithPath("marketAddress").description("업체 주소"),
 									fieldWithPath("marketAddress.city").description("업체 주소 - 시"),
 									fieldWithPath("marketAddress.district").description("업체 주소 -  구"),
 									fieldWithPath("marketAddress.detailAddress").description("업체 주소 - 상세 주소"),
-									fieldWithPath("openTime").description("오픈 시간"),
-									fieldWithPath("endTime").description("마감 시간"),
-									fieldWithPath("description").description("업체 설명"),
-									fieldWithPath("marketName").description("상호명"),
+									fieldWithPath("openTime").description("오픈 시간"), fieldWithPath("endTime").description("마감 시간"),
+									fieldWithPath("description").description("업체 설명"), fieldWithPath("marketName").description("상호명"),
 									fieldWithPath("businessNumber").description("사업자 등록 번호"),
 									fieldWithPath("ownerName").description("대표자 이름"),
-									fieldWithPath("marketImage").description("업체 이미지 URL")
-							)))
+									fieldWithPath("marketImage").description("업체 이미지 URL"))))
 					.andReturn();
 
 			JSONObject response = new JSONObject(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8));
 
 			assertThat(response.getString("phoneNumber")).isEqualTo(enrollmentResponse.phoneNumber());
-			assertThat(response.getJSONObject("marketAddress").getString("city"))
-					.isEqualTo(enrollmentResponse.marketAddress().getCity());
-			assertThat(response.getJSONObject("marketAddress").getString("district"))
-					.isEqualTo(enrollmentResponse.marketAddress().getDistrict());
-			assertThat(response.getJSONObject("marketAddress").getString("detailAddress"))
-					.isEqualTo(enrollmentResponse.marketAddress().getDetailAddress());
+			assertThat(response.getJSONObject("marketAddress").getString("city")).isEqualTo(
+					enrollmentResponse.marketAddress().getCity());
+			assertThat(response.getJSONObject("marketAddress").getString("district")).isEqualTo(
+					enrollmentResponse.marketAddress().getDistrict());
+			assertThat(response.getJSONObject("marketAddress").getString("detailAddress")).isEqualTo(
+					enrollmentResponse.marketAddress().getDetailAddress());
 			assertThat(response.getString("openTime")).isEqualTo(enrollmentResponse.openTime().toString());
 			assertThat(response.getString("endTime")).isEqualTo(enrollmentResponse.endTime().toString());
 			assertThat(response.getString("description")).isEqualTo(enrollmentResponse.description());
@@ -547,32 +486,25 @@ class EnrollmentControllerTest {
 		@DisplayName("Fail - 존재하지 않는 업체 신청 id 를 조회하면 404 응답으로 실패한다")
 		void getMarketEnrollmentFailByNotFound() throws Exception {
 			// given & when & then
-			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments/{enrollmentId}", 0L)
-							.header("access_token", ACCESS_TOKEN))
+			MvcResult mvcResult = mockMvc.perform(
+							get("/api/v1/enrollments/{enrollmentId}", 0L).header("access_token", ACCESS_TOKEN))
 					.andExpect(status().isNotFound())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 존재하지 않는 id 인 경우",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							responseFields(
-									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)))
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보"))))
 					.andReturn();
 
 			int size = marketEnrollmentRepository.findAll().size();
 			assertThat(size).isZero();
-			assertThat(mvcResult.getResolvedException())
-					.isExactlyInstanceOf(BusinessException.class)
+			assertThat(mvcResult.getResolvedException()).isExactlyInstanceOf(BusinessException.class)
 					.hasMessage(ENTITY_NOT_FOUND.getMessage());
 		}
 
-		private EnrollmentDetailWithImageResponse getEnrollmentResponse(
-				MarketEnrollment enrollment, Image image
-		) {
+		private EnrollmentDetailWithImageResponse getEnrollmentResponse(MarketEnrollment enrollment, Image image) {
 			return EnrollmentDetailWithImageResponse.builder()
 					.phoneNumber(enrollment.getPhoneNumber())
 					.marketAddress(enrollment.getMarketAddress())
@@ -618,22 +550,15 @@ class EnrollmentControllerTest {
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 
 			// when
-			mockMvc.perform(patch(
-							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
-					)
-							.header("access_token", ACCESS_TOKEN)
-							.contentType(MediaType.APPLICATION_JSON)
-							.content(objectMapper.writeValueAsString(approvedRequest)))
+			mockMvc.perform(
+							patch("/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()).header("access_token", ACCESS_TOKEN)
+									.contentType(MediaType.APPLICATION_JSON)
+									.content(objectMapper.writeValueAsString(approvedRequest)))
 					.andExpect(status().isNoContent())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 승인 성공",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestFields(
-									fieldWithPath("status").type(JsonFieldType.STRING).description("변경 후 상태")
-							)
-					));
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("변경 후 상태"))));
 
 			// then
 			MarketEnrollment findEnrollment = marketEnrollmentRepository.findById(savedEnrollment.getId()).get();
@@ -650,22 +575,15 @@ class EnrollmentControllerTest {
 			EnrollmentUpdateStatusRequest deletedRequest = new EnrollmentUpdateStatusRequest(DELETED);
 
 			// when
-			mockMvc.perform(patch(
-							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
-					)
-							.header("access_token", ACCESS_TOKEN)
-							.contentType(MediaType.APPLICATION_JSON)
-							.content(objectMapper.writeValueAsString(deletedRequest)))
+			mockMvc.perform(
+							patch("/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()).header("access_token", ACCESS_TOKEN)
+									.contentType(MediaType.APPLICATION_JSON)
+									.content(objectMapper.writeValueAsString(deletedRequest)))
 					.andExpect(status().isNoContent())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 거절 성공",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestFields(
-									fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")
-							)
-					));
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태"))));
 
 			// then
 			MarketEnrollment findEnrollment = marketEnrollmentRepository.findById(savedEnrollment.getId()).get();
@@ -681,22 +599,15 @@ class EnrollmentControllerTest {
 			EnrollmentUpdateStatusRequest waitingRequest = new EnrollmentUpdateStatusRequest(WAITING);
 
 			// when
-			mockMvc.perform(patch(
-							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
-					)
-							.header("access_token", ACCESS_TOKEN)
-							.contentType(MediaType.APPLICATION_JSON)
-							.content(objectMapper.writeValueAsString(waitingRequest)))
+			mockMvc.perform(
+							patch("/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()).header("access_token", ACCESS_TOKEN)
+									.contentType(MediaType.APPLICATION_JSON)
+									.content(objectMapper.writeValueAsString(waitingRequest)))
 					.andExpect(status().isNoContent())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/거절된 업체 신청 승인 대기로 변경 성공",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestFields(
-									fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")
-							)
-					));
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태"))));
 
 			// then
 			MarketEnrollment findEnrollment = marketEnrollmentRepository.findById(savedEnrollment.getId()).get();
@@ -711,27 +622,19 @@ class EnrollmentControllerTest {
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 
 			// when & then
-			mockMvc.perform(patch(
-							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
-					)
-							.header("access_token", ACCESS_TOKEN)
-							.contentType(MediaType.APPLICATION_JSON)
-							.content(objectMapper.writeValueAsString(approvedRequest)))
+			mockMvc.perform(
+							patch("/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()).header("access_token", ACCESS_TOKEN)
+									.contentType(MediaType.APPLICATION_JSON)
+									.content(objectMapper.writeValueAsString(approvedRequest)))
 					.andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 상태 변경 실패 - 회원 인증 실패",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestFields(
-									fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")
-							),
-							responseFields(
-									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")),
+							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)));
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보"))));
 
 			assertThat(savedEnrollment.getEnrollmentStatus()).isEqualTo(WAITING);
 		}
@@ -745,27 +648,19 @@ class EnrollmentControllerTest {
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 
 			// when & then
-			mockMvc.perform(patch(
-							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
-					)
-							.header("access_token", ACCESS_TOKEN)
-							.contentType(MediaType.APPLICATION_JSON)
-							.content(objectMapper.writeValueAsString(approvedRequest)))
+			mockMvc.perform(
+							patch("/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()).header("access_token", ACCESS_TOKEN)
+									.contentType(MediaType.APPLICATION_JSON)
+									.content(objectMapper.writeValueAsString(approvedRequest)))
 					.andExpect(status().isForbidden())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 상태 변경 실패 - 관리자가 아닌 회원의 요청",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestFields(
-									fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")
-							),
-							responseFields(
-									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")),
+							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)));
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보"))));
 
 			assertThat(savedEnrollment.getEnrollmentStatus()).isEqualTo(WAITING);
 		}
@@ -777,29 +672,22 @@ class EnrollmentControllerTest {
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 
 			// when & then
-			MvcResult mvcResult = mockMvc.perform(patch("/api/v1/enrollments/{enrollmentId}", 0L)
-							.header("access_token", ACCESS_TOKEN)
-							.contentType(MediaType.APPLICATION_JSON)
-							.content(objectMapper.writeValueAsString(approvedRequest)))
+			MvcResult mvcResult = mockMvc.perform(
+							patch("/api/v1/enrollments/{enrollmentId}", 0L).header("access_token", ACCESS_TOKEN)
+									.contentType(MediaType.APPLICATION_JSON)
+									.content(objectMapper.writeValueAsString(approvedRequest)))
 					.andExpect(status().isNotFound())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 상태 변경 실패 - 존재하지 않는 업체 신청인 경우",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestFields(
-									fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")
-							),
-							responseFields(
-									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")),
+							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)))
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보"))))
 					.andReturn();
 
-			assertThat(mvcResult.getResolvedException())
-					.isExactlyInstanceOf(BusinessException.class)
+			assertThat(mvcResult.getResolvedException()).isExactlyInstanceOf(BusinessException.class)
 					.hasMessage(ENTITY_NOT_FOUND.getMessage());
 		}
 
@@ -810,32 +698,23 @@ class EnrollmentControllerTest {
 			EnrollmentUpdateStatusRequest waitingRequest = new EnrollmentUpdateStatusRequest(WAITING);
 
 			// when & then
-			MvcResult mvcResult = mockMvc.perform(patch(
-							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
-					)
-							.header("access_token", ACCESS_TOKEN)
-							.contentType(MediaType.APPLICATION_JSON)
-							.content(objectMapper.writeValueAsString(waitingRequest)))
+			MvcResult mvcResult = mockMvc.perform(
+							patch("/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()).header("access_token", ACCESS_TOKEN)
+									.contentType(MediaType.APPLICATION_JSON)
+									.content(objectMapper.writeValueAsString(waitingRequest)))
 					.andExpect(status().isConflict())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 상태 변경 실패 - 현재와 같은 상태로의 변경 요청인 경우",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestFields(
-									fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")
-							),
-							responseFields(
-									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")),
+							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)))
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보"))))
 					.andReturn();
 
 			assertThat(savedEnrollment.getEnrollmentStatus()).isEqualTo(WAITING);
-			assertThat(mvcResult.getResolvedException())
-					.isExactlyInstanceOf(BusinessException.class)
+			assertThat(mvcResult.getResolvedException()).isExactlyInstanceOf(BusinessException.class)
 					.hasMessage(DUPLICATED.getMessage());
 		}
 
@@ -847,31 +726,22 @@ class EnrollmentControllerTest {
 			enrollmentController.changeEnrollmentStatus(savedEnrollment.getId(), approvedRequest);
 
 			// when & then
-			MvcResult mvcResult = mockMvc.perform(patch(
-							"/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()
-					)
-							.header("access_token", ACCESS_TOKEN)
-							.contentType(MediaType.APPLICATION_JSON)
-							.content(objectMapper.writeValueAsString(approvedRequest)))
+			MvcResult mvcResult = mockMvc.perform(
+							patch("/api/v1/enrollments/{enrollmentId}", savedEnrollment.getId()).header("access_token", ACCESS_TOKEN)
+									.contentType(MediaType.APPLICATION_JSON)
+									.content(objectMapper.writeValueAsString(approvedRequest)))
 					.andExpect(status().isConflict())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 상태 변경 실패 - 이미 업체인 회원의 승인 요청인 경우",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestFields(
-									fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")
-							),
-							responseFields(
-									fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")),
+							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
 									fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-							)))
+									fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보"))))
 					.andReturn();
 
-			assertThat(mvcResult.getResolvedException())
-					.isExactlyInstanceOf(BusinessException.class)
+			assertThat(mvcResult.getResolvedException()).isExactlyInstanceOf(BusinessException.class)
 					.hasMessage(DUPLICATED.getMessage());
 		}
 	}
@@ -895,15 +765,16 @@ class EnrollmentControllerTest {
 		@DisplayName("Success - 업체 신청 목록 조회에 성공하여 200 응답한다")
 		void getMarketEnrollmentsSuccess() throws Exception {
 			// given
+			Member user = TestUtils.getMember();
+			memberRepository.save(user);
+
 			MarketEnrollment enrollment1 = TestUtils.getMarketEnrollment("1234567891");
 			MarketEnrollment enrollment2 = TestUtils.getMarketEnrollment("1234567892");
 			MarketEnrollment enrollment3 = TestUtils.getMarketEnrollment("1234567893");
-			enrollment1.setMember(member);
-			enrollment2.setMember(member);
-			enrollment3.setMember(member);
-			marketEnrollmentRepository.save(enrollment1);
-			marketEnrollmentRepository.save(enrollment2);
-			marketEnrollmentRepository.save(enrollment3);
+			enrollment1.setMember(user);
+			enrollment2.setMember(user);
+			enrollment3.setMember(user);
+			marketEnrollmentRepository.saveAll(List.of(enrollment1, enrollment2, enrollment3));
 
 			Image image1 = new Image(enrollment1.getId(), ENROLLMENT_MARKET, "imageUrl");
 			Image image2 = new Image(enrollment2.getId(), ENROLLMENT_MARKET, "imageUrl");
@@ -911,47 +782,39 @@ class EnrollmentControllerTest {
 			imageRepository.saveAll(List.of(image1, image2, image3));
 
 			List<EnrollmentListSummaryWithImageResponse> enrollmentResponses = List.of(
-					getEnrollmentResponse(enrollment1, image1),
 					getEnrollmentResponse(enrollment2, image2),
-					getEnrollmentResponse(enrollment3, image3)
+					getEnrollmentResponse(enrollment1, image1)
 			);
 
+			int pageSize = 2;
+
 			// when & then
-			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments")
-							.header("access_token", ACCESS_TOKEN)
-							.queryParam("cursorId", enrollment1.getId().toString())
-							.queryParam("pageSize", "2")
+			MvcResult mvcResult = mockMvc.perform(get("/api/v1/enrollments").header("access_token", ACCESS_TOKEN)
+							.queryParam("cursorId", enrollment3.getId().toString())
+							.queryParam("pageSize", String.valueOf(pageSize))
 							.queryParam("status", WAITING.toString()))
 					.andExpect(status().isOk())
 					.andDo(print())
 					.andDo(document("MarketEnrollment/업체 신청 목록 조회 성공",
-							requestHeaders(
-									headerWithName("access_token").description("Access token 정보")
-							),
-							requestParameters(
-									parameterWithName("cursorId").optional().description("목록의 시작이 되는 업체 신청 id"),
+							requestHeaders(headerWithName("access_token").description("Access token 정보")),
+							requestParameters(parameterWithName("cursorId").optional().description("목록의 시작이 되는 업체 신청 id"),
 									parameterWithName("pageSize").description("한번에 조회할 데이터 수"),
-									parameterWithName("status").optional().description("조회하고자 하는 업체 신청의 상태")
-							),
-							responseFields(
-									fieldWithPath("enrollments").type(JsonFieldType.ARRAY).description("업체 신청 정보의 배열"),
+									parameterWithName("status").optional().description("조회하고자 하는 업체 신청의 상태")),
+							responseFields(fieldWithPath("enrollments").type(JsonFieldType.ARRAY).description("업체 신청 정보의 배열"),
 									fieldWithPath("enrollments[].enrollmentId").type(JsonFieldType.NUMBER).description("업체 신청 id"),
 									fieldWithPath("enrollments[].imageUrl").type(JsonFieldType.STRING).description("업체 이미지 URL"),
 									fieldWithPath("enrollments[].businessNumber").type(JsonFieldType.STRING).description("사업자 등록 번호"),
 									fieldWithPath("enrollments[].address").type(JsonFieldType.OBJECT).description("주소"),
-									fieldWithPath("enrollments[].address.city")
-											.type(JsonFieldType.STRING).description("주소 - 시"),
-									fieldWithPath("enrollments[].address.district")
-											.type(JsonFieldType.STRING).description("주소 - 구"),
-									fieldWithPath("enrollments[].address.detailAddress")
-											.type(JsonFieldType.STRING).description("주소 - 상세 주소"),
+									fieldWithPath("enrollments[].address.city").type(JsonFieldType.STRING).description("주소 - 시"),
+									fieldWithPath("enrollments[].address.district").type(JsonFieldType.STRING).description("주소 - 구"),
+									fieldWithPath("enrollments[].address.detailAddress").type(JsonFieldType.STRING)
+											.description("주소 - 상세 주소"),
 									fieldWithPath("enrollments[].marketName").type(JsonFieldType.STRING).description("업체명"),
 									fieldWithPath("enrollments[].phoneNumber").type(JsonFieldType.STRING).description("업체 전화번호"),
 									fieldWithPath("enrollments[].ownerName").type(JsonFieldType.STRING).description("업체 사장님 이름"),
 									fieldWithPath("enrollments[].status").type(JsonFieldType.STRING).description("업체 신청 진행 상태"),
 									fieldWithPath("enrollments[].createdAt").type(JsonFieldType.STRING).description("신청 시간"),
-									fieldWithPath("nextCursor").type(JsonFieldType.NUMBER).description("다음 목록의 시작이 되는 업체 신청 id")
-							)))
+									fieldWithPath("nextCursor").type(JsonFieldType.NUMBER).description("다음 목록의 시작이 되는 업체 신청 id"))))
 					.andReturn();
 
 			JSONObject response = new JSONObject(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8));
@@ -959,20 +822,22 @@ class EnrollmentControllerTest {
 
 			for (int idx = 0; idx < enrollmentResponses.size(); idx++) {
 				JSONObject enrollment = enrollments.getJSONObject(idx);
-				assertThat(enrollment.getString("enrollmentId")).isEqualTo(enrollmentResponses.get(idx).enrollmentId());
+				assertThat(enrollment.getLong("enrollmentId")).isEqualTo(enrollmentResponses.get(idx).enrollmentId());
 				assertThat(enrollment.getString("imageUrl")).isEqualTo(enrollmentResponses.get(idx).imageUrl());
 				assertThat(enrollment.getString("businessNumber")).isEqualTo(enrollmentResponses.get(idx).businessNumber());
-				assertThat(enrollment.getJSONObject("address").getString("city"))
-						.isEqualTo(enrollmentResponses.get(idx).address().getCity());
-				assertThat(enrollment.getJSONObject("address").getString("district"))
-						.isEqualTo(enrollmentResponses.get(idx).address().getDistrict());
-				assertThat(enrollment.getJSONObject("address").getString("detailAddress"))
-						.isEqualTo(enrollmentResponses.get(idx).address().getDetailAddress());
+				assertThat(enrollment.getJSONObject("address").getString("city")).isEqualTo(
+						enrollmentResponses.get(idx).address().getCity());
+				assertThat(enrollment.getJSONObject("address").getString("district")).isEqualTo(
+						enrollmentResponses.get(idx).address().getDistrict());
+				assertThat(enrollment.getJSONObject("address").getString("detailAddress")).isEqualTo(
+						enrollmentResponses.get(idx).address().getDetailAddress());
 				assertThat(enrollment.getString("marketName")).isEqualTo(enrollmentResponses.get(idx).marketName());
 				assertThat(enrollment.getString("phoneNumber")).isEqualTo(enrollmentResponses.get(idx).phoneNumber());
 				assertThat(enrollment.getString("ownerName")).isEqualTo(enrollmentResponses.get(idx).ownerName());
-				assertThat(enrollment.getString("status")).isEqualTo(enrollmentResponses.get(idx).status());
-				assertThat(enrollment.getString("createdAt")).isEqualTo(enrollmentResponses.get(idx).createdAt());
+				assertThat(enrollment.getString("status")).isEqualTo(enrollmentResponses.get(idx).status().toString());
+				assertThat(enrollment.getString("createdAt"))
+						.isEqualTo(enrollmentResponses.get(idx).createdAt()
+								.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 			}
 		}
 
@@ -1060,9 +925,7 @@ class EnrollmentControllerTest {
 		// 			.andReturn();
 		// }
 
-		private EnrollmentListSummaryWithImageResponse getEnrollmentResponse(
-				MarketEnrollment enrollment, Image image
-		) {
+		private EnrollmentListSummaryWithImageResponse getEnrollmentResponse(MarketEnrollment enrollment, Image image) {
 			return EnrollmentListSummaryWithImageResponse.builder()
 					.enrollmentId(enrollment.getId())
 					.imageUrl(image.getImageUrl())
