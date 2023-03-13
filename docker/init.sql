@@ -8,13 +8,14 @@ create table if not exists image
 
 create table if not exists member
 (
-    id          bigint auto_increment primary key,
-    created_at  datetime(6)  not null,
-    deleted_at  datetime(6)  null,
-    updated_at  datetime(6)  not null,
-    birth       varchar(255) null,
-    email       varchar(254) not null,
+    id               bigint auto_increment primary key,
+    created_at       datetime(6)  not null,
+    deleted_at       datetime(6)  null,
+    updated_at       datetime(6)  not null,
+    birth            varchar(255) null,
+    email            varchar(254) not null,
     member_authority varchar(255) not null,
+    nickname         varchar(30)  not null,
     constraint member_email_uk unique (email)
     );
 

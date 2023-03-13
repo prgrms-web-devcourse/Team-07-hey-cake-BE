@@ -22,7 +22,9 @@ import org.springframework.web.client.RestTemplate;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.jwt.Jwt;
+import com.programmers.heycake.common.mapper.MemberMapper;
 import com.programmers.heycake.domain.member.model.dto.MemberInfo;
+import com.programmers.heycake.domain.member.model.dto.response.MemberResponse;
 import com.programmers.heycake.domain.member.model.dto.response.TokenResponse;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.entity.Token;
@@ -55,7 +57,7 @@ public class MemberService {
 
 		if (!memberRepository.existsByEmail(memberInfo.email())) {
 			memberRepository.save(
-					new Member(memberInfo.email(), USER, memberInfo.birthday())
+					new Member(memberInfo.email(), USER, memberInfo.birthday(), memberInfo.nickname())
 			);
 		}
 
@@ -151,14 +153,24 @@ public class MemberService {
 		String email = responseBody.getJSONObject("kakao_account")
 				.getString("email");
 
-		String birthday = responseBody.getJSONObject("kakao_account")
-				.getString("birthday");
+		boolean hasBirthday = responseBody.getJSONObject("kakao_account")
+				.has("birthday");
+
+		String birthday = null;
+		if (hasBirthday) {
+			birthday = responseBody.getJSONObject("kakao_account")
+					.getString("birthday");
+		}
 
 		String profileUrl = responseBody.getJSONObject("kakao_account")
 				.getJSONObject("profile")
 				.getString("profile_image_url");
 
-		return new MemberInfo(email, birthday, profileUrl);
+		String nickname = responseBody.getJSONObject("kakao_account")
+				.getJSONObject("profile")
+				.getString("nickname");
+
+		return new MemberInfo(email, birthday, profileUrl, nickname);
 	}
 
 	@Transactional
@@ -210,5 +222,12 @@ public class MemberService {
 	@Transactional(readOnly = true)
 	public boolean isMarketById(Long memberId) {
 		return getMemberById(memberId).isMarket();
+	}
+
+	public MemberResponse getMemberResponseByMemberId(Long memberId) {
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+
+		return MemberMapper.toMemberResponse(member);
 	}
 }

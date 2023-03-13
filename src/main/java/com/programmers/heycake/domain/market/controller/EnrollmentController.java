@@ -61,7 +61,7 @@ public class EnrollmentController {
 	@GetMapping
 	public ResponseEntity<EnrollmentGetListResponse> getMarketEnrollments(
 			@RequestParam(required = false) Long cursorId,
-			@RequestParam Integer pageSize,
+			@RequestParam(defaultValue = "10") Integer pageSize,
 			@RequestParam(required = false) EnrollmentStatus status
 	) {
 		EnrollmentGetListRequest request = new EnrollmentGetListRequest(

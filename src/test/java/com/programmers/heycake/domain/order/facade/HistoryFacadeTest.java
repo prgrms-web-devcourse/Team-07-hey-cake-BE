@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.programmers.heycake.common.util.AuthenticationUtil;
+import com.programmers.heycake.common.util.WithMockCustomUser;
 import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.service.OfferService;
 import com.programmers.heycake.domain.order.model.dto.OrderDto;
@@ -23,7 +24,6 @@ import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.service.HistoryService;
 import com.programmers.heycake.domain.order.service.OrderService;
-import com.programmers.heycake.util.WithMockCustomUser;
 
 @ExtendWith(MockitoExtension.class)
 public class HistoryFacadeTest {
@@ -47,7 +47,7 @@ public class HistoryFacadeTest {
 		@WithMockCustomUser(memberId = 1L)
 		void createHistorySuccess() {
 			//given
-			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(1L, 1L);
+			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(1L, 1L, true);
 			OrderDto orderDto = OrderDto.builder().id(1L).build();
 			OfferDto offerDto = OfferDto.builder().orderDto(orderDto).build();
 

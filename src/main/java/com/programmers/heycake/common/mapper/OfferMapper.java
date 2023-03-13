@@ -38,12 +38,13 @@ public class OfferMapper {
 				.marketId(offer.getMarketId())
 				.expectedPrice(offer.getExpectedPrice())
 				.content(offer.getContent())
+				.createdAt(offer.getCreatedAt())
 				.commentResponses(commentResponses)
 				.build();
 	}
 
 	public static OfferSummaryResponse toOfferSummaryResponse(OfferResponse offerResponse, ImageResponses imageResponses,
-			MarketDetailNoImageResponse marketResponse) {
+			MarketDetailNoImageResponse marketResponse, boolean isPaid) {
 
 		String imageUrl = imageResponses.images()
 				.stream()
@@ -60,6 +61,8 @@ public class OfferMapper {
 				.imageUrl(imageUrl)
 				.content(offerResponse.content())
 				.commentCount(offerResponse.commentResponses().size())
+				.isPaid(isPaid)
+				.createdDate(offerResponse.createdAt().toLocalDate())
 				.build();
 	}
 

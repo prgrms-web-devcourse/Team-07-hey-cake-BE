@@ -13,8 +13,8 @@ import javax.validation.Path;
 
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -143,7 +143,6 @@ public class GlobalExceptionHandler {
 		throw new AccessDeniedException(e.getMessage());
 	}
 
-
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<ErrorResponse> handleRuntimeException(HttpServletRequest request, RuntimeException e) {
 		logWarn(e, request.getRequestURI());
@@ -154,7 +153,7 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> handleRuntimeException(HttpServletRequest request, Exception e) {
+	public ResponseEntity<ErrorResponse> handleException(HttpServletRequest request, Exception e) {
 		logError(e, request.getRequestURI());
 
 		return ResponseEntity

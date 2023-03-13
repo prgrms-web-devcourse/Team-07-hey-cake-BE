@@ -120,6 +120,10 @@ dependencies {
     //querydsl
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
+
+    //sentry
+    implementation 'io.sentry:sentry-spring-boot-starter:6.15.0'
+    compile 'io.sentry:sentry-logback:1.7.23'
 }
 
 asciidoctor {

@@ -31,7 +31,7 @@ public class MarketService {
 		Member member = enrollment.getMember();
 
 		if (member.isMarket()) {
-			throw new BusinessException(FORBIDDEN);
+			throw new BusinessException(DUPLICATED);
 		}
 		member.changeAuthority(MARKET);
 
