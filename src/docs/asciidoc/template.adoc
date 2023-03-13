@@ -3,6 +3,29 @@
 operation::MarketEnrollment/업체 신청 성공[snippets='http-request,request-parameters,request-parts,response-headers']
 
 = 오퍼
+== 오퍼 생성
+=== 오퍼 생성 성공
+operation::offer/오퍼 생성 성공[snippets='http-request,request-parameters,request-parts,http-response,response-headers']
+=== 오퍼 생성 실패 - 주문이 존재하지 않는 경우
+
+operation::offer/오퍼 생성 실패 - 주문이 존재하지 않는 경우[snippets='http-response']
+
+=== 오파 생성 실패 - 글 작성 회원이 업주가 아닌 경우
+
+operation::offer/오퍼 생성 실패 - 글 작성 회원이 업주가 아닌 경우[snippets='http-response']
+
+=== 오퍼 생성 실패 - 이미 완료된 주문인 경우
+
+operation::offer/오퍼 생성 실패 - 이미 완료된 주문인 경우[snippets='http-response']
+
+=== 오퍼 생성 실패 - 이미 해당 글에 오퍼 글을 작성한 적이 있는 경우
+
+operation::offer/오퍼 생성 실패 - 이미 해당 글에 오퍼 글을 작성한 적 있는 경우[snippets='http-response']
+
+=== 오퍼 생성 실패 - 픽업 날짜가 지난 주문인 경우
+
+operation::offer/오퍼 생성 실패 - 픽업 날짜가 지난 주문인 경우[snippets='http-response']
+
 == 오퍼 조회
 === 오퍼 조회 성공
 operation::offer/오퍼 조회 성공[snippets='http-request,path-parameters,http-response,response-fields']
