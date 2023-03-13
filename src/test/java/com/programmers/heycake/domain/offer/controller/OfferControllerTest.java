@@ -277,14 +277,9 @@ class OfferControllerTest {
 			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
 			setContext(marketOwnerMember.getId(), MemberAuthority.MARKET);
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
-			marketEnrollment.setMember(marketOwnerMember);
-			marketEnrollmentRepository.save(marketEnrollment);
+			MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketOwnerMember);
 
-			Market market = getMarket();
-			market.setMarketEnrollment(marketEnrollment);
-			market.setMember(marketOwnerMember);
-			marketRepository.save(market);
+			Market market = setTestMarket(marketOwnerMember, marketEnrollment);
 
 			Order order = getOrder(writeOrderMember.getId(), OrderStatus.NEW);
 			orderRepository.save(order);
@@ -543,14 +538,9 @@ class OfferControllerTest {
 			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
 			setContext(marketOwnerMember.getId(), MemberAuthority.MARKET);
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
-			marketEnrollment.setMember(marketOwnerMember);
-			marketEnrollmentRepository.save(marketEnrollment);
+			MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketOwnerMember);
 
-			Market market = getMarket();
-			market.setMarketEnrollment(marketEnrollment);
-			market.setMember(marketOwnerMember);
-			marketRepository.save(market);
+			Market market = setTestMarket(marketOwnerMember, marketEnrollment);
 
 			Order order = getOrder(writeOrderMember.getId(), OrderStatus.NEW);
 			orderRepository.save(order);
@@ -614,14 +604,9 @@ class OfferControllerTest {
 			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
 			setContext(marketOwnerMember.getId(), MemberAuthority.MARKET);
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
-			marketEnrollment.setMember(marketOwnerMember);
-			marketEnrollmentRepository.save(marketEnrollment);
+			MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketOwnerMember);
 
-			Market market = getMarket();
-			market.setMarketEnrollment(marketEnrollment);
-			market.setMember(marketOwnerMember);
-			marketRepository.save(market);
+			Market market = setTestMarket(marketOwnerMember, marketEnrollment);
 
 			Order order = getOrder(writeOrderMember.getId(), OrderStatus.NEW, LocalDateTime.now().minusDays(1));
 			orderRepository.save(order);
@@ -684,14 +669,9 @@ class OfferControllerTest {
 			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
 			setContext(marketOwnerMember.getId(), MemberAuthority.MARKET);
 
-			MarketEnrollment marketEnrollment = getMarketEnrollment();
-			marketEnrollment.setMember(marketOwnerMember);
-			marketEnrollmentRepository.save(marketEnrollment);
+			MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketOwnerMember);
 
-			Market market = getMarket();
-			market.setMarketEnrollment(marketEnrollment);
-			market.setMember(marketOwnerMember);
-			marketRepository.save(market);
+			Market market = setTestMarket(marketOwnerMember, marketEnrollment);
 
 			Order order = getOrder(writeOrderMember.getId(), orderStatus);
 			orderRepository.save(order);
