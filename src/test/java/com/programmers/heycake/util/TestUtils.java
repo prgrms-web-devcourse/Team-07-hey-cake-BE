@@ -11,8 +11,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
+import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.MarketAddress;
@@ -21,6 +23,7 @@ import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
+import com.programmers.heycake.domain.order.model.entity.OrderHistory;
 import com.programmers.heycake.domain.order.model.vo.BreadFlavor;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 import com.programmers.heycake.domain.order.model.vo.CakeHeight;
@@ -48,6 +51,20 @@ public class TestUtils {
 				.build();
 	}
 
+	public static Market getMarket(String phoneNumber, Member member, MarketEnrollment marketEnrollment) {
+		Market market = Market.builder()
+				.phoneNumber("01012345678")
+				.marketAddress(new MarketAddress("서울", "성동구", "응봉동"))
+				.openTime(LocalTime.now())
+				.endTime(LocalTime.now())
+				.description("업장 설명")
+				.build();
+		market.setMember(member);
+		market.setMarketEnrollment(marketEnrollment);
+
+		return market;
+	}
+
 	public static MarketEnrollment getMarketEnrollment() {
 		return MarketEnrollment.builder()
 				.businessNumber("1234567890")
@@ -70,10 +87,27 @@ public class TestUtils {
 				.marketName("서울 제과점")
 				.phoneNumber("01012345678")
 				.marketAddress(new MarketAddress("서울", "성동구", "응봉동"))
+				.openTime(LocalTime.of(9, 0))
+				.endTime(LocalTime.of(18, 0))
+				.description("업장 설명")
+				.build();
+	}
+
+	public static MarketEnrollment getMarketEnrollment(String businessNumber, Member member) {
+		MarketEnrollment marketEnrollment = MarketEnrollment.builder()
+				.businessNumber(businessNumber)
+				.ownerName("Owner.Kong")
+				.openDate(LocalDate.now())
+				.marketName("서울 제과점")
+				.phoneNumber("01012345678")
+				.marketAddress(new MarketAddress("서울", "성동구", "응봉동"))
 				.openTime(LocalTime.now())
 				.endTime(LocalTime.now())
 				.description("업장 설명")
 				.build();
+		marketEnrollment.setMember(member);
+
+		return marketEnrollment;
 	}
 
 	public static Order getOrder(Long memberId) {
@@ -143,6 +177,27 @@ public class TestUtils {
 		return new Offer(marketId, expectedPrice, content);
 	}
 
+	public static Offer getOffer(Long marketId, int expectedPrice, String content, Order order) {
+		Offer offer = new Offer(marketId, expectedPrice, content);
+		offer.setOrder(order);
+
+		return offer;
+	}
+
+	public static Comment getComment(Long memberId, Offer offer) {
+		Comment comment = new Comment(memberId, "comment");
+		comment.setOffer(offer);
+
+		return comment;
+	}
+
+	public static OrderHistory getOrderHistory(Long memberId, Long marketId, Order order) {
+		OrderHistory orderHistory = new OrderHistory(memberId, marketId);
+		orderHistory.setOrder(order);
+
+		return orderHistory;
+	}
+
 	public static Image getImage(Long referenceId, ImageType imageType, String imageUrl) {
 		return new Image(referenceId, imageType, imageUrl);
 	}
@@ -161,6 +216,24 @@ public class TestUtils {
 		context.setAuthentication(
 				new UsernamePasswordAuthenticationToken(memberId, null,
 						List.of(new SimpleGrantedAuthority(memberAuthority.getRole()))));
+	}
+
+	public static EnrollmentCreateRequest getEnrollmentRequest(String businessNumber) {
+		return EnrollmentCreateRequest.builder()
+				.businessNumber(businessNumber)
+				.ownerName("권성준")
+				.openDate(LocalDate.of(1997, 10, 10))
+				.marketName("성준이네")
+				.phoneNumber("01012345678")
+				.city("서울특별시")
+				.district("강남구")
+				.detailAddress("테헤란로")
+				.openTime(LocalTime.of(9, 0))
+				.endTime(LocalTime.of(18, 0))
+				.description("성준's 가게")
+				.businessLicenseImage(getMockFile())
+				.marketImage(getMockFile())
+				.build();
 	}
 
 }

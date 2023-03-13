@@ -25,3 +25,10 @@ operation::offer/오퍼 생성 실패 - 이미 해당 글에 오퍼 글을 작�
 === 오퍼 생성 실패 - 픽업 날짜가 지난 주문인 경우
 
 operation::offer/오퍼 생성 실패 - 픽업 날짜가 지난 주문인 경우[snippets='http-response']
+
+== 오퍼 조회
+=== 오퍼 조회 성공
+operation::offer/오퍼 조회 성공[snippets='http-request,path-parameters,http-response,response-fields']
+=== 오퍼 조회 실패
+
+operation::offer/오퍼 조회 실패 - 존재하지 않는 오퍼인 경우[snippets='http-request,path-parameters,http-response,response-fields']

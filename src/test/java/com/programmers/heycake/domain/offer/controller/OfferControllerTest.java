@@ -2,11 +2,12 @@ package com.programmers.heycake.domain.offer.controller;
 
 import static com.programmers.heycake.util.TestUtils.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -15,30 +16,35 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.mockito.NotExtensible;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.ErrorCode;
+import com.programmers.heycake.domain.comment.model.entity.Comment;
+import com.programmers.heycake.domain.comment.repository.CommentRepository;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
@@ -51,10 +57,13 @@ import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferSaveRequest;
+import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
+import com.programmers.heycake.domain.order.model.entity.OrderHistory;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
+import com.programmers.heycake.domain.order.repository.HistoryRepository;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -89,6 +98,12 @@ class OfferControllerTest {
 
 	@MockBean
 	private ImageUploadService imageUploadService;
+
+	@Autowired
+	CommentRepository commentRepository;
+
+	@Autowired
+	HistoryRepository historyRepository;
 
 	private Offer setTestOffer(Order order, Market market) {
 		Offer offer = getOffer(market.getId(), 1000, "content");
@@ -261,6 +276,12 @@ class OfferControllerTest {
 							)
 					));
 		}
+	}
+
+	@Nested
+	@DisplayName("getOffers")
+	@Transactional
+	class GetOffers {
 	}
 
 	@Nested
@@ -530,199 +551,346 @@ class OfferControllerTest {
 		}
 
 		@Test
-		@DisplayName("Fail - 이미 오퍼 글을 작성하적 있는 업주인 경우 실패한다.")
-		void saveOfferAlreadyWriteOfferFail() throws Exception {
+		@DisplayName("Success - Offer 목록 조회에 성공한다.")
+		void getOffersSuccess() throws Exception {
+
 			// given
-			Member writeOrderMember = getMember("writer@naver.com");
-			Member marketOwnerMember = getMember("owner@naver.com");
-			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
-			setContext(marketOwnerMember.getId(), MemberAuthority.MARKET);
+			Member member1 = getMember("member1@email.com");
+			Member member2 = getMember("member2@email.com");
+			memberRepository.saveAll(List.of(member1, member2));
 
-			MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketOwnerMember);
+			MarketEnrollment marketEnrollment1 = getMarketEnrollment("0000000000", member1);
+			MarketEnrollment marketEnrollment2 = getMarketEnrollment("0000000001", member2);
+			marketEnrollmentRepository.saveAll(List.of(marketEnrollment1, marketEnrollment2));
 
-			Market market = setTestMarket(marketOwnerMember, marketEnrollment);
+			Market market1 = getMarket("01011111111", member1, marketEnrollment1);
+			Market market2 = getMarket("01022222222", member2, marketEnrollment2);
+			marketRepository.saveAll(List.of(market1, market2));
 
-			Order order = getOrder(writeOrderMember.getId(), OrderStatus.NEW);
+			Order order = getOrder(0L);
 			orderRepository.save(order);
 
-			Offer alreadyExistsOffer = getOffer(market.getId(), 10000, "내용");
-			alreadyExistsOffer.setOrder(order);
-			offerRepository.saveAndFlush(alreadyExistsOffer);
+			Offer offer1 = getOffer(market1.getId(), 10000, "content1", order);
+			Offer offer2 = getOffer(market2.getId(), 20000, "content2", order);
+			offerRepository.saveAll(List.of(offer1, offer2));
 
-			OfferSaveRequest request = new OfferSaveRequest(order.getId(), 50000, "내용", getMockFile());
-			String imageUrl = "imageURL";
+			Comment comment1OnOffer1 = getComment(member1.getId(), offer1);
+			Comment comment2ByOffer1 = getComment(member1.getId(), offer1);
+			Comment comment1ByOffer2 = getComment(member2.getId(), offer2);
+			commentRepository.saveAll(List.of(comment1OnOffer1, comment2ByOffer1, comment2ByOffer1));
 
-			when(imageUploadService.upload(any(), any()))
-					.thenReturn(imageUrl);
+			Image image1 = getImage(offer1.getId(), ImageType.OFFER, "offerImageUrl1");
+			Image image2 = getImage(offer2.getId(), ImageType.OFFER, "offerImageUrl2");
+			imageRepository.saveAll(List.of(image1, image2));
 
-			Offer offerResult = getOffer(market.getId(), request.expectedPrice(), request.content());
-			offerResult.setOrder(order);
+			OrderHistory orderHistory = getOrderHistory(order.getMemberId(), market1.getId(), order);
+			historyRepository.save(orderHistory);
+
+			List<OfferSummaryResponse> offersSuccessResponses = List.of(
+					getOffersSuccessResponses(offer1, market1, marketEnrollment1, image1, true, 2),
+					getOffersSuccessResponses(offer2, market2, marketEnrollment2, image2, false, 1)
+			);
 
 			// when
-			mockMvc.perform(
-							multipart("/api/v1/offers")
-									.file("offerImage", request.offerImage().getBytes())
-									.param("orderId", request.orderId().toString())
-									.param("expectedPrice", String.valueOf(request.expectedPrice()))
-									.param("content", request.content())
-									.param("memberId", marketOwnerMember.getId().toString())
-									.header("access_token", ACCESS_TOKEN)
-									.contentType(MediaType.MULTIPART_FORM_DATA)
-					)
+			MvcResult mvcResult = mockMvc.perform(
+							get("/api/v1/orders/{orderId}/offers", order.getId()))
 					.andDo(print())
-					.andExpect(status().isConflict())
-					.andExpect(jsonPath("message").value(ErrorCode.DUPLICATED_OFFER.getMessage()))
-					.andExpect(jsonPath("path").value("/api/v1/offers"))
-					.andExpect(jsonPath("time").exists())
-					.andExpect(jsonPath("inputErrors").isEmpty())
-					.andDo(document("offer/오퍼 생성 실패 - 이미 해당 글에 오퍼 글을 작성한 적 있는 경우",
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$").isArray())
+					.andDo(document("offer/오퍼 조회 성공",
 									preprocessRequest(prettyPrint()),
 									preprocessResponse(prettyPrint()),
-									requestHeaders(
-											headerWithName("access_token").description("Access token 정보")
+									pathParameters(
+											parameterWithName("orderId").description("주문 id")
 									),
-									requestParts(
-											partWithName("offerImage").description("케이크 이미지")
-									),
-									requestParameters(
-											parameterWithName("orderId").description("주문 id"),
-											parameterWithName("expectedPrice").description("예상 가격"),
-											parameterWithName("content").description("내용"),
-											parameterWithName("memberId").description("글 작성자 id")
+									responseFields(
+											fieldWithPath("[]").description("오퍼 목록"),
+											fieldWithPath("[].offerId").description("오퍼 id"),
+											fieldWithPath("[].marketId").description("오퍼를 작성한 마켓 id"),
+											fieldWithPath("[].enrollmentId").description("마켓 등록 id"),
+											fieldWithPath("[].marketName").description("마켓 이름"),
+											fieldWithPath("[].expectedPrice").description("희망 가격"),
+											fieldWithPath("[].createdDate").description("오퍼 작성 날짜"),
+											fieldWithPath("[].isPaid").description("오퍼 결제 여부"),
+											fieldWithPath("[].imageUrl").description("오퍼 이미지 URL"),
+											fieldWithPath("[].content").description("오퍼 내용"),
+											fieldWithPath("[].commentCount").description("오퍼에 달린 댓글 개수")
 									)
 							)
-					);
+					).andReturn();
+
+			// then
+			JSONArray responseBody = new JSONArray(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8));
+			for (int responseBodyIdx = 0; responseBodyIdx < offersSuccessResponses.size(); responseBodyIdx++) {
+				JSONObject responseResult = responseBody.getJSONObject(responseBodyIdx);
+
+				assertThat(responseResult.getLong("offerId"))
+						.isEqualTo(offersSuccessResponses.get(responseBodyIdx).offerId());
+				assertThat(responseResult.getLong("marketId"))
+						.isEqualTo(offersSuccessResponses.get(responseBodyIdx).marketId());
+				assertThat(responseResult.getLong("enrollmentId"))
+						.isEqualTo(offersSuccessResponses.get(responseBodyIdx).enrollmentId());
+				assertThat(responseResult.getString("marketName"))
+						.isEqualTo(offersSuccessResponses.get(responseBodyIdx).marketName());
+				assertThat(responseResult.getInt("expectedPrice"))
+						.isEqualTo(offersSuccessResponses.get(responseBodyIdx).expectedPrice());
+				assertThat(responseResult.getString("createdDate"))
+						.isEqualTo(offersSuccessResponses.get(responseBodyIdx)
+								.createdDate()
+								.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
+				assertThat(responseResult.getBoolean("isPaid"))
+						.isEqualTo(offersSuccessResponses.get(responseBodyIdx).isPaid());
+				assertThat(responseResult.getString("imageUrl"))
+						.isEqualTo(offersSuccessResponses.get(responseBodyIdx).imageUrl());
+				assertThat(responseResult.getString("content"))
+						.isEqualTo(offersSuccessResponses.get(responseBodyIdx).content());
+				assertThat(responseResult.getInt("commentCount"))
+						.isEqualTo(offersSuccessResponses.get(responseBodyIdx).commentCount());
+			}
+		}
+
+		private OfferSummaryResponse getOffersSuccessResponses(Offer offer, Market market,
+				MarketEnrollment marketEnrollment,
+				Image image, boolean isPaid, int commentCount) {
+
+			return OfferSummaryResponse.builder()
+					.offerId(offer.getId())
+					.marketId(market.getId())
+					.enrollmentId(marketEnrollment.getId())
+					.marketName(marketEnrollment.getMarketName())
+					.expectedPrice(offer.getExpectedPrice())
+					.createdDate(offer.getCreatedAt().toLocalDate())
+					.isPaid(isPaid)
+					.imageUrl(image.getImageUrl())
+					.content(offer.getContent())
+					.commentCount(commentCount)
+					.build();
 		}
 
 		@Test
-		@WithMockUser
-		@DisplayName("Fail - 픽업 날짜가 지난 주문인 경우 실패한다.")
-		void saveOfferPassedByVisitDateFail() throws Exception {
+		@DisplayName("Fail - 존재하지 않는 주문인 경우 실패한다.")
+		void getOffersNotExistsOrderFail() throws Exception {
 			// given
-			Member writeOrderMember = getMember("writer@naver.com");
-			Member marketOwnerMember = getMember("owner@naver.com");
-			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
-			setContext(marketOwnerMember.getId(), MemberAuthority.MARKET);
-
-			MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketOwnerMember);
-
-			Market market = setTestMarket(marketOwnerMember, marketEnrollment);
-
-			Order order = getOrder(writeOrderMember.getId(), OrderStatus.NEW, LocalDateTime.now().minusDays(1));
-			orderRepository.save(order);
-
-			OfferSaveRequest request = new OfferSaveRequest(order.getId(), 50000, "내용", getMockFile());
-			String imageUrl = "imageURL";
-
-			when(imageUploadService.upload(any(), any()))
-					.thenReturn(imageUrl);
-
-			Offer offerResult = getOffer(market.getId(), request.expectedPrice(), request.content());
-			offerResult.setOrder(order);
+			Long notExistsOrderId = 0L;
 
 			// when, then
 			mockMvc.perform(
-							multipart("/api/v1/offers")
-									.file("offerImage", request.offerImage().getBytes())
-									.param("orderId", request.orderId().toString())
-									.param("expectedPrice", String.valueOf(request.expectedPrice()))
-									.param("content", request.content())
-									.param("memberId", marketOwnerMember.getId().toString())
-									.header("access_token", ACCESS_TOKEN)
-									.contentType(MediaType.MULTIPART_FORM_DATA)
-					)
+							get("/api/v1/orders/{orderId}/offers", notExistsOrderId))
 					.andDo(print())
-					.andExpect(status().isConflict())
-					.andExpect(jsonPath("message").value(ErrorCode.VISIT_DATE_PASSED.getMessage()))
-					.andExpect(jsonPath("path").value("/api/v1/offers"))
+					.andExpect(status().isNotFound())
+					.andExpect(jsonPath("message").value(ErrorCode.ENTITY_NOT_FOUND.getMessage()))
+					.andExpect(jsonPath("path").value("/api/v1/orders/" + notExistsOrderId + "/offers"))
 					.andExpect(jsonPath("time").exists())
 					.andExpect(jsonPath("inputErrors").isEmpty())
-					.andDo(document("offer/오퍼 생성 실패 - 픽업 날짜가 지난 주문인 경우",
-									preprocessRequest(prettyPrint()),
-									preprocessResponse(prettyPrint()),
-									requestHeaders(
-											headerWithName("access_token").description("Access token 정보")
+					.andDo(
+							document("offer/오퍼 조회 실패 - 존재하지 않는 오퍼인 경우",
+									pathParameters(
+											parameterWithName("orderId").description("주문 id")
 									),
-									requestParts(
-											partWithName("offerImage").description("케이크 이미지")
-									),
-									requestParameters(
-											parameterWithName("orderId").description("주문 id"),
-											parameterWithName("expectedPrice").description("예상 가격"),
-											parameterWithName("content").description("내용"),
-											parameterWithName("memberId").description("글 작성자 id")
+									responseFields(
+											fieldWithPath("message").description("실패 메세지"),
+											fieldWithPath("path").description("실패 URL"),
+											fieldWithPath("time").description("실패 시각"),
+											fieldWithPath("inputErrors").description("입력값 검증 실패 리스트")
 									)
 							)
 					);
-
-			assertThat(offerRepository.findAll()).isEmpty();
-			assertThat(imageRepository.findAll()).isEmpty();
 		}
+	}
 
-		@EnumSource(value = OrderStatus.class, names = {"RESERVED", "PAID"})
-		@DisplayName("Fail - 이미 완료된 주문인 경우 실패한다.")
-		@ParameterizedTest
-		void saveOfferAlreadyDoneOrderFail(OrderStatus orderStatus) throws Exception {
-			// given
-			Member writeOrderMember = getMember("writer@naver.com");
-			Member marketOwnerMember = getMember("owner@naver.com");
-			memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
-			setContext(marketOwnerMember.getId(), MemberAuthority.MARKET);
+	@Test
+	@DisplayName("Fail - 이미 오퍼 글을 작성하적 있는 업주인 경우 실패한다.")
+	void saveOfferAlreadyWriteOfferFail() throws Exception {
+		// given
+		Member writeOrderMember = getMember("writer@naver.com");
+		Member marketOwnerMember = getMember("owner@naver.com");
+		memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
+		setContext(marketOwnerMember.getId(), MemberAuthority.MARKET);
 
-			MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketOwnerMember);
+		MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketOwnerMember);
 
-			Market market = setTestMarket(marketOwnerMember, marketEnrollment);
+		Market market = setTestMarket(marketOwnerMember, marketEnrollment);
 
-			Order order = getOrder(writeOrderMember.getId(), orderStatus);
-			orderRepository.save(order);
+		Order order = getOrder(writeOrderMember.getId(), OrderStatus.NEW);
+		orderRepository.save(order);
 
-			OfferSaveRequest request = new OfferSaveRequest(order.getId(), 50000, "내용", getMockFile());
-			String imageUrl = "imageURL";
+		Offer alreadyExistsOffer = getOffer(market.getId(), 10000, "내용");
+		alreadyExistsOffer.setOrder(order);
+		offerRepository.saveAndFlush(alreadyExistsOffer);
 
-			when(imageUploadService.upload(any(), any()))
-					.thenReturn(imageUrl);
+		OfferSaveRequest request = new OfferSaveRequest(order.getId(), 50000, "내용", getMockFile());
+		String imageUrl = "imageURL";
 
-			Offer offerResult = getOffer(market.getId(), request.expectedPrice(), request.content());
-			offerResult.setOrder(order);
+		when(imageUploadService.upload(any(), any()))
+				.thenReturn(imageUrl);
 
-			// when
-			mockMvc.perform(
-							multipart("/api/v1/offers")
-									.file("offerImage", request.offerImage().getBytes())
-									.param("orderId", request.orderId().toString())
-									.param("expectedPrice", String.valueOf(request.expectedPrice()))
-									.param("content", request.content())
-									.param("memberId", marketOwnerMember.getId().toString())
-									.header("access_token", ACCESS_TOKEN)
-									.contentType(MediaType.MULTIPART_FORM_DATA)
-					)
-					.andDo(print())
-					.andExpect(status().isConflict())
-					.andExpect(jsonPath("message").value(ErrorCode.ORDER_CLOSED.getMessage()))
-					.andExpect(jsonPath("path").value("/api/v1/offers"))
-					.andExpect(jsonPath("time").exists())
-					.andExpect(jsonPath("inputErrors").isEmpty())
-					.andDo(document("offer/오퍼 생성 실패 - 이미 완료된 주문인 경우",
-									preprocessRequest(prettyPrint()),
-									preprocessResponse(prettyPrint()),
-									requestHeaders(
-											headerWithName("access_token").description("Access token 정보")
-									),
-									requestParts(
-											partWithName("offerImage").description("케이크 이미지")
-									),
-									requestParameters(
-											parameterWithName("orderId").description("주문 id"),
-											parameterWithName("expectedPrice").description("예상 가격"),
-											parameterWithName("content").description("내용"),
-											parameterWithName("memberId").description("글 작성자 id")
-									)
-							)
-					);
+		Offer offerResult = getOffer(market.getId(), request.expectedPrice(), request.content());
+		offerResult.setOrder(order);
 
-			// then
-			assertThat(offerRepository.findAll()).isEmpty();
-			assertThat(imageRepository.findAll()).isEmpty();
-		}
+		// when
+		mockMvc.perform(
+						multipart("/api/v1/offers")
+								.file("offerImage", request.offerImage().getBytes())
+								.param("orderId", request.orderId().toString())
+								.param("expectedPrice", String.valueOf(request.expectedPrice()))
+								.param("content", request.content())
+								.param("memberId", marketOwnerMember.getId().toString())
+								.header("access_token", ACCESS_TOKEN)
+								.contentType(MediaType.MULTIPART_FORM_DATA)
+				)
+				.andDo(print())
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("message").value(ErrorCode.DUPLICATED_OFFER.getMessage()))
+				.andExpect(jsonPath("path").value("/api/v1/offers"))
+				.andExpect(jsonPath("time").exists())
+				.andExpect(jsonPath("inputErrors").isEmpty())
+				.andDo(document("offer/오퍼 생성 실패 - 이미 해당 글에 오퍼 글을 작성한 적 있는 경우",
+								preprocessRequest(prettyPrint()),
+								preprocessResponse(prettyPrint()),
+								requestHeaders(
+										headerWithName("access_token").description("Access token 정보")
+								),
+								requestParts(
+										partWithName("offerImage").description("케이크 이미지")
+								),
+								requestParameters(
+										parameterWithName("orderId").description("주문 id"),
+										parameterWithName("expectedPrice").description("예상 가격"),
+										parameterWithName("content").description("내용"),
+										parameterWithName("memberId").description("글 작성자 id")
+								)
+						)
+				);
+	}
+
+	@Test
+	@WithMockUser
+	@DisplayName("Fail - 픽업 날짜가 지난 주문인 경우 실패한다.")
+	void saveOfferPassedByVisitDateFail() throws Exception {
+		// given
+		Member writeOrderMember = getMember("writer@naver.com");
+		Member marketOwnerMember = getMember("owner@naver.com");
+		memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
+		setContext(marketOwnerMember.getId(), MemberAuthority.MARKET);
+
+		MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketOwnerMember);
+
+		Market market = setTestMarket(marketOwnerMember, marketEnrollment);
+
+		Order order = getOrder(writeOrderMember.getId(), OrderStatus.NEW, LocalDateTime.now().minusDays(1));
+		orderRepository.save(order);
+
+		OfferSaveRequest request = new OfferSaveRequest(order.getId(), 50000, "내용", getMockFile());
+		String imageUrl = "imageURL";
+
+		when(imageUploadService.upload(any(), any()))
+				.thenReturn(imageUrl);
+
+		Offer offerResult = getOffer(market.getId(), request.expectedPrice(), request.content());
+		offerResult.setOrder(order);
+
+		// when, then
+		mockMvc.perform(
+						multipart("/api/v1/offers")
+								.file("offerImage", request.offerImage().getBytes())
+								.param("orderId", request.orderId().toString())
+								.param("expectedPrice", String.valueOf(request.expectedPrice()))
+								.param("content", request.content())
+								.param("memberId", marketOwnerMember.getId().toString())
+								.header("access_token", ACCESS_TOKEN)
+								.contentType(MediaType.MULTIPART_FORM_DATA)
+				)
+				.andDo(print())
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("message").value(ErrorCode.VISIT_DATE_PASSED.getMessage()))
+				.andExpect(jsonPath("path").value("/api/v1/offers"))
+				.andExpect(jsonPath("time").exists())
+				.andExpect(jsonPath("inputErrors").isEmpty())
+				.andDo(document("offer/오퍼 생성 실패 - 픽업 날짜가 지난 주문인 경우",
+								preprocessRequest(prettyPrint()),
+								preprocessResponse(prettyPrint()),
+								requestHeaders(
+										headerWithName("access_token").description("Access token 정보")
+								),
+								requestParts(
+										partWithName("offerImage").description("케이크 이미지")
+								),
+								requestParameters(
+										parameterWithName("orderId").description("주문 id"),
+										parameterWithName("expectedPrice").description("예상 가격"),
+										parameterWithName("content").description("내용"),
+										parameterWithName("memberId").description("글 작성자 id")
+								)
+						)
+				);
+
+		assertThat(offerRepository.findAll()).isEmpty();
+		assertThat(imageRepository.findAll()).isEmpty();
+	}
+
+	@EnumSource(value = OrderStatus.class, names = {"RESERVED", "PAID"})
+	@DisplayName("Fail - 이미 완료된 주문인 경우 실패한다.")
+	@ParameterizedTest
+	void saveOfferAlreadyDoneOrderFail(OrderStatus orderStatus) throws Exception {
+		// given
+		Member writeOrderMember = getMember("writer@naver.com");
+		Member marketOwnerMember = getMember("owner@naver.com");
+		memberRepository.saveAll(List.of(writeOrderMember, marketOwnerMember));
+		setContext(marketOwnerMember.getId(), MemberAuthority.MARKET);
+
+		MarketEnrollment marketEnrollment = setTestMarketEnrollment(marketOwnerMember);
+
+		Market market = setTestMarket(marketOwnerMember, marketEnrollment);
+
+		Order order = getOrder(writeOrderMember.getId(), orderStatus);
+		orderRepository.save(order);
+
+		OfferSaveRequest request = new OfferSaveRequest(order.getId(), 50000, "내용", getMockFile());
+		String imageUrl = "imageURL";
+
+		when(imageUploadService.upload(any(), any()))
+				.thenReturn(imageUrl);
+
+		Offer offerResult = getOffer(market.getId(), request.expectedPrice(), request.content());
+		offerResult.setOrder(order);
+
+		// when
+		mockMvc.perform(
+						multipart("/api/v1/offers")
+								.file("offerImage", request.offerImage().getBytes())
+								.param("orderId", request.orderId().toString())
+								.param("expectedPrice", String.valueOf(request.expectedPrice()))
+								.param("content", request.content())
+								.param("memberId", marketOwnerMember.getId().toString())
+								.header("access_token", ACCESS_TOKEN)
+								.contentType(MediaType.MULTIPART_FORM_DATA)
+				)
+				.andDo(print())
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("message").value(ErrorCode.ORDER_CLOSED.getMessage()))
+				.andExpect(jsonPath("path").value("/api/v1/offers"))
+				.andExpect(jsonPath("time").exists())
+				.andExpect(jsonPath("inputErrors").isEmpty())
+				.andDo(document("offer/오퍼 생성 실패 - 이미 완료된 주문인 경우",
+								preprocessRequest(prettyPrint()),
+								preprocessResponse(prettyPrint()),
+								requestHeaders(
+										headerWithName("access_token").description("Access token 정보")
+								),
+								requestParts(
+										partWithName("offerImage").description("케이크 이미지")
+								),
+								requestParameters(
+										parameterWithName("orderId").description("주문 id"),
+										parameterWithName("expectedPrice").description("예상 가격"),
+										parameterWithName("content").description("내용"),
+										parameterWithName("memberId").description("글 작성자 id")
+								)
+						)
+				);
+
+		// then
+		assertThat(offerRepository.findAll()).isEmpty();
+		assertThat(imageRepository.findAll()).isEmpty();
 	}
 }
