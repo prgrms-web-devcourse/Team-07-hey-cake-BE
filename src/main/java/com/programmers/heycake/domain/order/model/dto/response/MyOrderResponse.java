@@ -20,6 +20,7 @@ public record MyOrderResponse(
 		LocalDateTime createdAt,
 		CakeInfo cakeInfo,
 		int hopePrice,
-		String imageUrl
+		String imageUrl,
+		int offerCount
 ) {
 }
