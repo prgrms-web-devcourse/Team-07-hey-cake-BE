@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -84,11 +83,6 @@ class OrderControllerTest {
 	private ImageService imageService;
 
 	private static final String ACCESS_TOKEN = "access_token";
-
-	@AfterEach
-	void tearDown() {
-		orderRepository.deleteAll();
-	}
 
 	void setOrders(Member member, int amount) {
 		for (int i = 0; i < amount; i++) {
@@ -304,7 +298,7 @@ class OrderControllerTest {
 									fieldWithPath("cakeInfo.creamFlavor").type(JsonFieldType.STRING).description("크림 맛"),
 									fieldWithPath("cakeInfo.requirements").type(JsonFieldType.STRING).description("추가 내용"),
 									fieldWithPath("offerCount").type(JsonFieldType.NUMBER).description("업체가 제안한 건수"),
-									fieldWithPath("images").type(JsonFieldType.ARRAY).description("이미지 "),
+									fieldWithPath("images").type(JsonFieldType.ARRAY).description("이미지"),
 									fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간"),
 									fieldWithPath("updatedAt").type(JsonFieldType.STRING).description("수정 시간")
 							)
