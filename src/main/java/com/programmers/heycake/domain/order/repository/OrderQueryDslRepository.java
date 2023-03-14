@@ -101,7 +101,8 @@ public class OrderQueryDslRepository {
 						ltOrderId(cursorId),
 						eqRegion(region),
 						eqCakeCategory(cakeCategory),
-						eqOrderStatus(orderStatus)
+						eqOrderStatus(orderStatus),
+						gtVisitDate(LocalDateTime.now())
 				)
 				.limit(pageSize)
 				.orderBy(qOrder.createdAt.desc())

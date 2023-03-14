@@ -42,7 +42,7 @@ public class OrderMapper {
 				.hopePrice(orderCreateRequest.hopePrice())
 				.memberId(getMemberId())
 				.orderStatus(NEW)
-				.visitDate(orderCreateRequest.visitTime())
+				.visitDate(orderCreateRequest.visitDate())
 				.title(orderCreateRequest.title())
 				.region(orderCreateRequest.region())
 				.build();
@@ -92,7 +92,7 @@ public class OrderMapper {
 						.toList()
 				)
 				.region(orderSimpleGetServiceResponse.region())
-				.visitTime(orderSimpleGetServiceResponse.visitDate())
+				.visitDate(orderSimpleGetServiceResponse.visitDate())
 				.createdAt(orderSimpleGetServiceResponse.createdAt())
 				.build();
 	}

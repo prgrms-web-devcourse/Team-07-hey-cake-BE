@@ -20,7 +20,7 @@ public record OrderGetSimpleResponse(
 		int hopePrice,
 		int offerCount,
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-		LocalDateTime visitTime,
+		LocalDateTime visitDate,
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 		LocalDateTime createdAt
 ) {
