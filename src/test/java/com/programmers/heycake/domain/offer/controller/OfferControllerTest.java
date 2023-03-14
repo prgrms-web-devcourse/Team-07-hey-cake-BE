@@ -1,6 +1,7 @@
 package com.programmers.heycake.domain.offer.controller;
 
-import static com.programmers.heycake.util.TestUtils.*;
+import static com.programmers.heycake.common.util.ApiDocumentUtils.*;
+import static com.programmers.heycake.common.util.TestUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -8,7 +9,6 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
@@ -35,7 +35,6 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -154,7 +153,9 @@ class OfferControllerTest {
 					).andExpect(status().isNoContent())
 					.andDo(print())
 					.andDo(document(
-							"offers/오퍼 삭제 성공",
+							"offer/오퍼 삭제 성공",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -178,7 +179,9 @@ class OfferControllerTest {
 					).andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(document(
-							"offers/오퍼 삭제 실패(BadRequest)",
+							"offer/오퍼 삭제 실패(BadRequest)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -200,7 +203,9 @@ class OfferControllerTest {
 					).andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document(
-							"offers/오퍼 삭제 실패(Unauthorized)",
+							"offer/오퍼 삭제 실패(Unauthorized)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -234,7 +239,9 @@ class OfferControllerTest {
 					).andExpect(status().isForbidden())
 					.andDo(print())
 					.andDo(document(
-							"offers/오퍼 삭제 실패(Forbidden)",
+							"offer/오퍼 삭제 실패(Forbidden)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -267,7 +274,9 @@ class OfferControllerTest {
 					).andExpect(status().isConflict())
 					.andDo(print())
 					.andDo(document(
-							"offers/오퍼 삭제 실패(Conflict)",
+							"offer/오퍼 삭제 실패(Conflict)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -328,8 +337,8 @@ class OfferControllerTest {
 					.andDo(print())
 					.andExpect(status().isCreated())
 					.andDo(document("offer/오퍼 생성 성공",
-									preprocessRequest(prettyPrint()),
-									preprocessResponse(prettyPrint()),
+									getDocumentRequest(),
+									getDocumentResponse(),
 									requestHeaders(
 											headerWithName("access_token").description("Access token 정보")
 									),
@@ -394,8 +403,8 @@ class OfferControllerTest {
 					.andExpect(jsonPath("time").exists())
 					.andExpect(jsonPath("inputErrors").isEmpty())
 					.andDo(document("offer/오퍼 생성 실패 - 사용자 인증 실패",
-									preprocessRequest(prettyPrint()),
-									preprocessResponse(prettyPrint()),
+									getDocumentRequest(),
+									getDocumentResponse(),
 									requestHeaders(
 											headerWithName("access_token").description("Access token 정보")
 									),
@@ -459,8 +468,8 @@ class OfferControllerTest {
 					.andExpect(jsonPath("inputErrors").isEmpty())
 
 					.andDo(document("offer/오퍼 생성 실패 - 주문이 존재하지 않는 경우",
-									preprocessRequest(prettyPrint()),
-									preprocessResponse(prettyPrint()),
+									getDocumentRequest(),
+									getDocumentResponse(),
 									requestHeaders(
 											headerWithName("access_token").description("Access token 정보")
 									),
@@ -522,8 +531,8 @@ class OfferControllerTest {
 					.andExpect(jsonPath("time").exists())
 					.andExpect(jsonPath("inputErrors").isEmpty())
 					.andDo(document("offer/오퍼 생성 실패 - 글 작성 회원이 업주가 아닌 경우",
-									preprocessRequest(prettyPrint()),
-									preprocessResponse(prettyPrint()),
+									getDocumentRequest(),
+									getDocumentResponse(),
 									requestHeaders(
 											headerWithName("access_token").description("Access token 정보")
 									),
@@ -598,8 +607,8 @@ class OfferControllerTest {
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$").isArray())
 					.andDo(document("offer/오퍼 조회 성공",
-									preprocessRequest(prettyPrint()),
-									preprocessResponse(prettyPrint()),
+									getDocumentRequest(),
+									getDocumentResponse(),
 									pathParameters(
 											parameterWithName("orderId").description("주문 id")
 									),
@@ -684,6 +693,8 @@ class OfferControllerTest {
 					.andExpect(jsonPath("inputErrors").isEmpty())
 					.andDo(
 							document("offer/오퍼 조회 실패 - 존재하지 않는 오퍼인 경우",
+									getDocumentRequest(),
+									getDocumentResponse(),
 									pathParameters(
 											parameterWithName("orderId").description("주문 id")
 									),
@@ -745,8 +756,8 @@ class OfferControllerTest {
 				.andExpect(jsonPath("time").exists())
 				.andExpect(jsonPath("inputErrors").isEmpty())
 				.andDo(document("offer/오퍼 생성 실패 - 이미 해당 글에 오퍼 글을 작성한 적 있는 경우",
-								preprocessRequest(prettyPrint()),
-								preprocessResponse(prettyPrint()),
+								getDocumentRequest(),
+								getDocumentResponse(),
 								requestHeaders(
 										headerWithName("access_token").description("Access token 정보")
 								),
@@ -807,8 +818,8 @@ class OfferControllerTest {
 				.andExpect(jsonPath("time").exists())
 				.andExpect(jsonPath("inputErrors").isEmpty())
 				.andDo(document("offer/오퍼 생성 실패 - 픽업 날짜가 지난 주문인 경우",
-								preprocessRequest(prettyPrint()),
-								preprocessResponse(prettyPrint()),
+								getDocumentRequest(),
+								getDocumentResponse(),
 								requestHeaders(
 										headerWithName("access_token").description("Access token 정보")
 								),
@@ -872,8 +883,8 @@ class OfferControllerTest {
 				.andExpect(jsonPath("time").exists())
 				.andExpect(jsonPath("inputErrors").isEmpty())
 				.andDo(document("offer/오퍼 생성 실패 - 이미 완료된 주문인 경우",
-								preprocessRequest(prettyPrint()),
-								preprocessResponse(prettyPrint()),
+								getDocumentRequest(),
+								getDocumentResponse(),
 								requestHeaders(
 										headerWithName("access_token").description("Access token 정보")
 								),

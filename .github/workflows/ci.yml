@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
     branches:
-      - develop
+      - main
 
 jobs:
   build:
@@ -29,7 +29,6 @@ jobs:
           echo "${{secrets.JWT_ENV}}" >> env/jwt.env
           echo "${{secrets.OAUTH2_ENV}}" >> env/oauth2.env
           echo "${{secrets.TEST_DB_ENV}}" >> env/test-db.env
-
       - name: Run docker-compose
         uses: isbang/compose-action@v1.4.1
         with:

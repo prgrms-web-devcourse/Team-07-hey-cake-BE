@@ -1,6 +1,7 @@
 package com.programmers.heycake.domain.order.controller;
 
-import static com.programmers.heycake.util.TestUtils.*;
+import static com.programmers.heycake.common.util.ApiDocumentUtils.*;
+import static com.programmers.heycake.common.util.TestUtils.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -116,7 +117,9 @@ class HistoryControllerTest {
 					.andExpect(status().isCreated())
 					.andDo(print())
 					.andDo(
-							document("histories/주문 확정 생성 성공",
+							document("history/결제 내역 생성 성공",
+									getDocumentRequest(),
+									getDocumentResponse(),
 									requestHeaders(
 											headerWithName("access_token").description("인가 토큰")
 									),
@@ -165,7 +168,9 @@ class HistoryControllerTest {
 					.andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(
-							document("histories/주문 확정 생성 실패(BadRequest)",
+							document("history/결제 내역 생성 실패(BadRequest)",
+									getDocumentRequest(),
+									getDocumentResponse(),
 									requestHeaders(
 											headerWithName("access_token").description("인가 토큰")
 									),
@@ -198,7 +203,9 @@ class HistoryControllerTest {
 					.andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(
-							document("histories/주문 확정 생성 실패(Unauthorized)",
+							document("history/결제 내역 생성 실패(Unauthorized)",
+									getDocumentRequest(),
+									getDocumentResponse(),
 									requestHeaders(
 											headerWithName("access_token").description("인가 토큰")
 									),
@@ -244,7 +251,9 @@ class HistoryControllerTest {
 					.andExpect(status().isForbidden())
 					.andDo(print())
 					.andDo(
-							document("histories/주문 확정 생성 실패(Forbidden)",
+							document("history/결제 내역 생성 실패(Forbidden)",
+									getDocumentRequest(),
+									getDocumentResponse(),
 									requestHeaders(
 											headerWithName("access_token").description("인가 토큰")
 									),
@@ -275,7 +284,9 @@ class HistoryControllerTest {
 					.andExpect(status().isNotFound())
 					.andDo(print())
 					.andDo(
-							document("histories/주문 확정 생성 실패(NotFound)",
+							document("history/결제 내역 생성 실패(NotFound)",
+									getDocumentRequest(),
+									getDocumentResponse(),
 									requestHeaders(
 											headerWithName("access_token").description("인가 토큰")
 									),

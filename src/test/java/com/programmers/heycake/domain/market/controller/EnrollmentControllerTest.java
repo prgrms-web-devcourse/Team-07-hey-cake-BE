@@ -1,6 +1,7 @@
 package com.programmers.heycake.domain.market.controller;
 
 import static com.programmers.heycake.common.exception.ErrorCode.*;
+import static com.programmers.heycake.common.util.ApiDocumentUtils.*;
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 import static com.programmers.heycake.domain.market.model.vo.EnrollmentStatus.*;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.MARKET;
@@ -39,6 +40,7 @@ import org.springframework.validation.BindException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.programmers.heycake.common.exception.BusinessException;
+import com.programmers.heycake.common.util.TestUtils;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
 import com.programmers.heycake.domain.market.facade.EnrollmentFacade;
@@ -52,7 +54,6 @@ import com.programmers.heycake.domain.market.repository.MarketEnrollmentReposito
 import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
-import com.programmers.heycake.util.TestUtils;
 
 @Transactional
 @SpringBootTest(properties = {"spring.config.location=classpath:application-test.yml"})
@@ -124,7 +125,9 @@ class EnrollmentControllerTest {
 									.param("description", userRequest.description()))
 					.andExpect(status().isCreated())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 성공",
+					.andDo(document("marketEnrollment/업체 신청 생성 성공",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestParts(partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
 									partWithName("marketImage").description("업체 대표 이미지")),
@@ -179,7 +182,9 @@ class EnrollmentControllerTest {
 									.param("description", " "))
 					.andExpect(status().isBadRequest())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 실패 - 입력 요청 값이 잘못된 경우",
+					.andDo(document("marketEnrollment/업체 신청 생성 실패 - 입력 요청 값이 잘못된 경우",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestParts(partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
 									partWithName("marketImage").description("업체 대표 이미지")),
@@ -230,7 +235,9 @@ class EnrollmentControllerTest {
 									.param("description", userRequest.description()))
 					.andExpect(status().isBadRequest())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 실패 - 개업일이 현재 시각보다 늦은 경우",
+					.andDo(document("marketEnrollment/업체 신청 생성 실패 - 개업일이 현재 시각보다 늦은 경우",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestParts(partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
 									partWithName("marketImage").description("업체 대표 이미지")),
@@ -279,7 +286,9 @@ class EnrollmentControllerTest {
 									.param("description", userRequest.description()))
 					.andExpect(status().isUnauthorized())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 실패 - 회원 인증 실패",
+					.andDo(document("marketEnrollment/업체 신청 생성 실패 - 회원 인증 실패",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestParts(partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
 									partWithName("marketImage").description("업체 대표 이미지")),
@@ -329,7 +338,9 @@ class EnrollmentControllerTest {
 									.param("description", userRequest.description()))
 					.andExpect(status().isForbidden())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 실패 - 이미 업체인 경우",
+					.andDo(document("marketEnrollment/업체 신청 생성 실패 - 이미 업체인 경우",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestParts(partWithName("businessLicenseImage").description("사업자 등록증 이미지"),
 									partWithName("marketImage").description("업체 대표 이미지")),
@@ -388,7 +399,9 @@ class EnrollmentControllerTest {
 							get("/api/v1/enrollments/{enrollmentId}", enrollment.getId()).header("access_token", ACCESS_TOKEN))
 					.andExpect(status().isOk())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 상세 조회 성공",
+					.andDo(document("marketEnrollment/업체 신청 상세 조회 성공",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							responseFields(fieldWithPath("phoneNumber").description("업체 전화번호"),
 									fieldWithPath("marketAddress").description("업체 주소"),
@@ -439,7 +452,7 @@ class EnrollmentControllerTest {
 		// 					.header("access_token", ACCESS_TOKEN))
 		// 			.andExpect(status().isUnauthorized())
 		// 			.andDo(print())
-		// 			.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 회원 인증 실패",
+		// 			.andDo(document("marketEnrollment/업체 신청 상세 조회 실패 - 회원 인증 실패",
 		// 					requestHeaders(
 		// 							headerWithName("access_token").description("Access token 정보")
 		// 					),
@@ -469,7 +482,7 @@ class EnrollmentControllerTest {
 		// 					.header("access_token", ACCESS_TOKEN))
 		// 			.andExpect(status().isForbidden())
 		// 			.andDo(print())
-		// 			.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 관리자가 아닌 회원이 요청한 경우",
+		// 			.andDo(document("marketEnrollment/업체 신청 상세 조회 실패 - 관리자가 아닌 회원이 요청한 경우",
 		// 					requestHeaders(
 		// 							headerWithName("access_token").description("Access token 정보")
 		// 					),
@@ -490,7 +503,9 @@ class EnrollmentControllerTest {
 							get("/api/v1/enrollments/{enrollmentId}", 0L).header("access_token", ACCESS_TOKEN))
 					.andExpect(status().isNotFound())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 상세 조회 실패 - 존재하지 않는 id 인 경우",
+					.andDo(document("marketEnrollment/업체 신청 상세 조회 실패 - 존재하지 않는 id 인 경우",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
 									fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
@@ -556,7 +571,9 @@ class EnrollmentControllerTest {
 									.content(objectMapper.writeValueAsString(approvedRequest)))
 					.andExpect(status().isNoContent())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 승인 성공",
+					.andDo(document("marketEnrollment/업체 신청 상태 변경 성공 - 승인",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("변경 후 상태"))));
 
@@ -581,7 +598,9 @@ class EnrollmentControllerTest {
 									.content(objectMapper.writeValueAsString(deletedRequest)))
 					.andExpect(status().isNoContent())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 거절 성공",
+					.andDo(document("marketEnrollment/업체 신청 상태 변경 성공 - 거절",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태"))));
 
@@ -605,7 +624,9 @@ class EnrollmentControllerTest {
 									.content(objectMapper.writeValueAsString(waitingRequest)))
 					.andExpect(status().isNoContent())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/거절된 업체 신청 승인 대기로 변경 성공",
+					.andDo(document("marketEnrollment/업체 신청 상태 변경 성공 - 거절된 것을 승인 대기로 변경",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태"))));
 
@@ -628,7 +649,9 @@ class EnrollmentControllerTest {
 									.content(objectMapper.writeValueAsString(approvedRequest)))
 					.andExpect(status().isUnauthorized())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 상태 변경 실패 - 회원 인증 실패",
+					.andDo(document("marketEnrollment/업체 신청 상태 변경 실패 - 회원 인증 실패",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")),
 							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
@@ -654,7 +677,9 @@ class EnrollmentControllerTest {
 									.content(objectMapper.writeValueAsString(approvedRequest)))
 					.andExpect(status().isForbidden())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 상태 변경 실패 - 관리자가 아닌 회원의 요청",
+					.andDo(document("marketEnrollment/업체 신청 상태 변경 실패 - 관리자가 아닌 회원의 요청",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")),
 							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
@@ -678,7 +703,9 @@ class EnrollmentControllerTest {
 									.content(objectMapper.writeValueAsString(approvedRequest)))
 					.andExpect(status().isNotFound())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 상태 변경 실패 - 존재하지 않는 업체 신청인 경우",
+					.andDo(document("marketEnrollment/업체 신청 상태 변경 실패 - 존재하지 않는 업체 신청인 경우",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")),
 							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
@@ -704,7 +731,9 @@ class EnrollmentControllerTest {
 									.content(objectMapper.writeValueAsString(waitingRequest)))
 					.andExpect(status().isConflict())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 상태 변경 실패 - 현재와 같은 상태로의 변경 요청인 경우",
+					.andDo(document("marketEnrollment/업체 신청 상태 변경 실패 - 현재와 같은 상태로의 변경 요청인 경우",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")),
 							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
@@ -732,7 +761,9 @@ class EnrollmentControllerTest {
 									.content(objectMapper.writeValueAsString(approvedRequest)))
 					.andExpect(status().isConflict())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 상태 변경 실패 - 이미 업체인 회원의 승인 요청인 경우",
+					.andDo(document("marketEnrollment/업체 신청 상태 변경 실패 - 이미 업체인 회원의 승인 요청인 경우",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestFields(fieldWithPath("status").type(JsonFieldType.STRING).description("요청 처리 후 상태")),
 							responseFields(fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
@@ -795,7 +826,9 @@ class EnrollmentControllerTest {
 							.queryParam("status", WAITING.toString()))
 					.andExpect(status().isOk())
 					.andDo(print())
-					.andDo(document("MarketEnrollment/업체 신청 목록 조회 성공",
+					.andDo(document("marketEnrollment/업체 신청 목록 조회 성공",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(headerWithName("access_token").description("Access token 정보")),
 							requestParameters(parameterWithName("cursorId").optional().description("목록의 시작이 되는 업체 신청 id"),
 									parameterWithName("pageSize").description("한번에 조회할 데이터 수"),
@@ -863,7 +896,7 @@ class EnrollmentControllerTest {
 		// 					.queryParam("status", WAITING.toString()))
 		// 			.andExpect(status().isUnauthorized())
 		// 			.andDo(print())
-		// 			.andDo(document("MarketEnrollment/업체 신청 목록 조회 실패 - 회원 인증 실패",
+		// 			.andDo(document("marketEnrollment/업체 신청 목록 조회 실패 - 회원 인증 실패",
 		// 					requestHeaders(
 		// 							headerWithName("access_token").description("Access token 정보")
 		// 					),
@@ -907,7 +940,7 @@ class EnrollmentControllerTest {
 		// 					.queryParam("status", WAITING.toString()))
 		// 			.andExpect(status().isUnauthorized())
 		// 			.andDo(print())
-		// 			.andDo(document("MarketEnrollment/업체 신청 목록 조회 실패 - 회원 인증 실패",
+		// 			.andDo(document("marketEnrollment/업체 신청 목록 조회 실패 - 회원 인증 실패",
 		// 					requestHeaders(
 		// 							headerWithName("access_token").description("Access token 정보")
 		// 					),
