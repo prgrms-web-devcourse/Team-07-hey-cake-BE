@@ -173,6 +173,31 @@ public class TestUtils {
 				.build();
 	}
 
+	public static Order getOrder(
+			Long memberId, CakeCategory cakeCategory,
+			OrderStatus orderStatus, String region,
+			LocalDateTime visitDate
+	) {
+		CakeInfo cakeInfo = CakeInfo.builder()
+				.cakeCategory(cakeCategory)
+				.cakeSize(CakeSize.NO_1)
+				.cakeHeight(CakeHeight.ETC)
+				.breadFlavor(BreadFlavor.CHOCO)
+				.creamFlavor(CreamFlavor.CHOCO)
+				.requirements("맛있게 해주세요")
+				.build();
+
+		return Order.builder()
+				.memberId(memberId)
+				.title("초코 케이크 만들어주세요")
+				.orderStatus(orderStatus)
+				.hopePrice(10000)
+				.region(region)
+				.visitDate(visitDate)
+				.cakeInfo(cakeInfo)
+				.build();
+	}
+
 	public static Offer getOffer(Long marketId, int expectedPrice, String content) {
 		return new Offer(marketId, expectedPrice, content);
 	}
