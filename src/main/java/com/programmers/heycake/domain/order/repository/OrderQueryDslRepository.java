@@ -47,7 +47,8 @@ public class OrderQueryDslRepository {
 						qOrder.createdAt,
 						qOrder.cakeInfo,
 						qOrder.hopePrice,
-						qImage.imageUrl
+						qImage.imageUrl,
+						qOrder.offers
 				)
 				.from(qOrder)
 				.leftJoin(qImage)
@@ -74,7 +75,8 @@ public class OrderQueryDslRepository {
 												qOrder.createdAt,
 												qOrder.cakeInfo,
 												qOrder.hopePrice,
-												qImage.imageUrl
+												qImage.imageUrl,
+												qOrder.offers.size()
 										)
 								)
 				);

@@ -118,6 +118,11 @@ public class OrderService {
 		}
 	}
 
+	@Transactional(readOnly = true)
+	public int offerCount(Long orderId) {
+		return getOrder(orderId).getOffers().size();
+	}
+
 	public Order getOrder(Long orderId) {
 		return orderRepository.findById(orderId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
