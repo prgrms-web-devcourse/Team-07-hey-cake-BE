@@ -5,6 +5,11 @@ spring:
       - application-aws.yml
       - application-security.yml
 
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
 sentry:
   dsn: https://7d8643441c5c41a6bdbbcecebb5d51e7@o4504786657345536.ingest.sentry.io/4504786658918400
   traces-sample-rate: 1.0
