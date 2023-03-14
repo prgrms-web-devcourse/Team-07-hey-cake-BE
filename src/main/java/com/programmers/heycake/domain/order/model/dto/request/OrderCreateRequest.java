@@ -24,7 +24,7 @@ public record OrderCreateRequest(
 		@NotNull @Positive Integer hopePrice,
 		@NotBlank String region,
 		@Length(max = 20) @NotBlank String title,
-		@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime visitDate,
+		@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime visitTime,
 		@NotNull CakeCategory cakeCategory,
 		@NotNull CakeSize cakeSize,
 		@NotNull CakeHeight cakeHeight,
