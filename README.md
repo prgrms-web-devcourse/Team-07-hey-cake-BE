@@ -113,4 +113,9 @@
 <br>
 
 #### CI/CD
-![image](https://user-images.githubusercontent.com/68289543/225083928-b9a745c3-5551-4d88-9cab-e54d799863e5.png)
+![image](https://user-images.githubusercontent.com/68289543/225115856-ea04979b-7a9a-41a1-8019-c782eb5d3ad6.png)
+
+<br>
+
+## 🥞 프로젝트 노션
+[노션 링크](https://backend-devcourse.notion.site/07-7-a97b6a0ba9894edd8e401bd4f19ffc23)
