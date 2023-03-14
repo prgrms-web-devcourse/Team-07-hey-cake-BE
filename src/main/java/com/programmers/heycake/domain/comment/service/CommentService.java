@@ -37,7 +37,8 @@ public class CommentService {
 		Order order = offer.getOrder();
 
 		verifyCommentWriteAuthority(order, offer, memberId);
-
+		verifyOrderClosed(order);
+		
 		Comment comment = toEntity(memberId, content);
 		comment.setOffer(offer);
 
@@ -52,6 +53,12 @@ public class CommentService {
 
 		if ((order.isNotWrittenBy(memberId)) && member.isDifferentMember(market.getMember())) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
+	}
+
+	private void verifyOrderClosed(Order order) {
+		if (order.isClosed()) {
+			throw new BusinessException(ErrorCode.ORDER_CLOSED);
 		}
 	}
 
