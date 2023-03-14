@@ -12,11 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
+import com.programmers.heycake.domain.market.service.MarketService;
 import com.programmers.heycake.domain.member.model.dto.response.OrderGetDetailResponse;
 import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.offer.facade.OfferFacade;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSimpleResponse;
@@ -39,6 +41,7 @@ public class OrderFacade {
 	private final ImageService imageService;
 	private final OfferFacade offerFacade;
 	private final ImageIntegrationService imageIntegrationService;
+	private final MarketService marketService;
 
 	private static final String ORDER_IMAGE_SUB_PATH = "images/orders";
 
@@ -93,7 +96,26 @@ public class OrderFacade {
 	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest) {
 		Long memberId = getMemberId();
 		if (memberService.isMarketById(memberId)) {
-			return historyService.getMyOrderList(getOrderRequest, memberId);
+			Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(memberId));
+			MyOrderResponseList myOrderList =
+					historyService.getMyOrderList(getOrderRequest, marketId);
+
+			return new MyOrderResponseList(
+					myOrderList.myOrderResponseList()
+							.stream()
+							.map(myOrder -> new MyOrderResponse(
+									myOrder.id(),
+									myOrder.title(),
+									myOrder.orderStatus(),
+									myOrder.region(),
+									myOrder.visitTime(),
+									myOrder.createdAt(),
+									myOrder.cakeInfo(),
+									myOrder.hopePrice(),
+									myOrder.imageUrl(),
+									orderService.offerCount(myOrder.id()))
+							).toList(),
+					myOrderList.cursorId());
 		} else {
 			return orderService.getMyOrderList(getOrderRequest, memberId);
 		}

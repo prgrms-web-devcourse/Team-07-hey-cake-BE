@@ -23,4 +23,8 @@ public record MyOrderResponse(
 		String imageUrl,
 		int offerCount
 ) {
+	public MyOrderResponse(Long id, String title, OrderStatus orderStatus, String region, LocalDateTime visitTime,
+			LocalDateTime createdAt, CakeInfo cakeInfo, int hopePrice, String imageUrl) {
+		this(id, title, orderStatus, region, visitTime, createdAt, cakeInfo, hopePrice, imageUrl, 0);
+	}
 }
