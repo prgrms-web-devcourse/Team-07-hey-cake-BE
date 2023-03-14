@@ -338,7 +338,7 @@ class OrderControllerTest {
 		@ParameterizedTest
 		void createOrderSuccess(
 				Integer hopePrice, String region, String title,
-				LocalDateTime visitDate, CakeCategory cakeCategory, CakeSize cakeSize,
+				LocalDateTime visitTime, CakeCategory cakeCategory, CakeSize cakeSize,
 				CakeHeight cakeHeight, BreadFlavor breadFlavor, CreamFlavor creamFlavor,
 				String requirements, List<MultipartFile> cakeImages
 		) throws Exception {
@@ -361,7 +361,7 @@ class OrderControllerTest {
 									.param("requirements", requirements)
 									.param("hopePrice", hopePrice.toString())
 									.param("region", region)
-									.param("visitDate", visitDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+									.param("visitTime", visitTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
 							)
 							.andExpect(status().isCreated())
 							.andDo(print())
@@ -382,7 +382,7 @@ class OrderControllerTest {
 											parameterWithName("requirements").description("추가 요구사항"),
 											parameterWithName("hopePrice").description("희망 가격"),
 											parameterWithName("region").description("지역"),
-											parameterWithName("visitDate").description("방문 시간")
+											parameterWithName("visitTime").description("방문 시간")
 									),
 									responseHeaders(
 											headerWithName("Location").description("생성된 데이터 URI")
@@ -421,7 +421,7 @@ class OrderControllerTest {
 							.param("requirements", "좋게 해주세요")
 							.param("hopePrice", "1000000")
 							.param("region", "강남구")
-							.param("visitDate", "2023-02-04 11:11:11")
+							.param("visitTime", "2023-02-04 11:11:11")
 					)
 					.andExpect(status().isUnauthorized())
 					.andDo(print())
@@ -442,7 +442,7 @@ class OrderControllerTest {
 									parameterWithName("requirements").description("추가 요구사항"),
 									parameterWithName("hopePrice").description("희망 가격"),
 									parameterWithName("region").description("지역"),
-									parameterWithName("visitDate").description("방문 시간")
+									parameterWithName("visitTime").description("방문 시간")
 							),
 							responseFields(
 									fieldWithPath("message").type(JsonFieldType.STRING).description("오류 메시지"),
@@ -478,7 +478,7 @@ class OrderControllerTest {
 							.param("requirements", "좋게 해주세요")
 							.param("hopePrice", "1000000")
 							.param("region", "강남구")
-							.param("visitDate", "2023-02-04 11:11:11")
+							.param("visitTime", "2023-02-04 11:11:11")
 					)
 					.andExpect(status().isForbidden())
 					.andDo(print())
@@ -499,7 +499,7 @@ class OrderControllerTest {
 									parameterWithName("requirements").description("추가 요구사항"),
 									parameterWithName("hopePrice").description("희망 가격"),
 									parameterWithName("region").description("지역"),
-									parameterWithName("visitDate").description("방문 시간")
+									parameterWithName("visitTime").description("방문 시간")
 							),
 							responseFields(
 									fieldWithPath("message").type(JsonFieldType.STRING).description("오류 메시지"),
@@ -542,7 +542,7 @@ class OrderControllerTest {
 							.param("requirements", requirements)
 							.param("hopePrice", hopePrice != null ? hopePrice.toString() : null)
 							.param("region", region)
-							.param("visitDate", visitTime != null ?
+							.param("visitTime", visitTime != null ?
 									visitTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")) : null
 							)
 					)
@@ -565,7 +565,7 @@ class OrderControllerTest {
 									parameterWithName("requirements").description("추가 요구사항"),
 									parameterWithName("hopePrice").description("희망 가격"),
 									parameterWithName("region").description("지역"),
-									parameterWithName("visitDate").description("방문 시간")
+									parameterWithName("visitTime").description("방문 시간")
 							),
 							responseFields(
 									fieldWithPath("message").type(JsonFieldType.STRING).description("오류 메시지"),
