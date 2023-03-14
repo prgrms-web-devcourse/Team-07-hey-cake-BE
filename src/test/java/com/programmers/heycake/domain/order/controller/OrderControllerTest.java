@@ -134,6 +134,7 @@ class OrderControllerTest {
 									fieldWithPath("myOrderResponseList[].cakeInfo.requirements").description("요청 사항"),
 									fieldWithPath("myOrderResponseList[].hopePrice").description("희망 가격"),
 									fieldWithPath("myOrderResponseList[].imageUrl").description("이미지 주소"),
+									fieldWithPath("myOrderResponseList[].offerCount").description("오퍼 갯수"),
 									fieldWithPath("cursorId").description("커서 식별자")
 							)));
 		}
