@@ -1,4 +1,4 @@
-package com.programmers.heycake.util;
+package com.programmers.heycake.common.util;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -1,9 +1,10 @@
 package com.programmers.heycake.domain.order.controller;
 
+import static com.programmers.heycake.common.util.ApiDocumentUtils.*;
+import static com.programmers.heycake.common.util.TestUtils.*;
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.MARKET;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
-import static com.programmers.heycake.util.TestUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
@@ -43,6 +44,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.programmers.heycake.common.util.TestUtils;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageService;
@@ -59,7 +61,6 @@ import com.programmers.heycake.domain.order.model.vo.CakeSize;
 import com.programmers.heycake.domain.order.model.vo.CreamFlavor;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
-import com.programmers.heycake.util.TestUtils;
 
 @SpringBootTest(properties = {"spring.config.location=classpath:application-test.yml"})
 @ActiveProfiles("test")
@@ -108,7 +109,9 @@ class OrderControllerTest {
 					).andExpect(status().isOk())
 					.andDo(print())
 					.andDo(document(
-							"orders/주문 목록 조회 성공",
+							"order/주문 목록 조회 성공",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -154,7 +157,9 @@ class OrderControllerTest {
 					).andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(document(
-							"orders/주문 목록 조회 실패(BadRequest)",
+							"order/주문 목록 조회 실패(BadRequest)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -186,7 +191,9 @@ class OrderControllerTest {
 					).andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document(
-							"orders/주문 목록 조회 실패(Unauthorized)",
+							"order/주문 목록 조회 실패(Unauthorized)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -218,7 +225,9 @@ class OrderControllerTest {
 					).andExpect(status().isForbidden())
 					.andDo(print())
 					.andDo(document(
-							"orders/주문 목록 조회 실패(Forbidden)",
+							"order/주문 목록 조회 실패(Forbidden)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -282,7 +291,9 @@ class OrderControllerTest {
 					.andExpect(jsonPath("images[0]").value(imageUrl1))
 					.andExpect(jsonPath("images[1]").value(imageUrl2))
 					.andDo(print())
-					.andDo(document("orders/주문 조회 성공",
+					.andDo(document("order/주문 조회 성공",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							responseFields(
 									fieldWithPath("orderId").type(JsonFieldType.NUMBER).description("주문 아이디"),
 									fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("작성자 아이디"),
@@ -318,7 +329,9 @@ class OrderControllerTest {
 					.andExpect(jsonPath("path").value("/api/v1/orders/" + orderId))
 					.andExpect(jsonPath("time").exists())
 					.andExpect(jsonPath("inputErrors").isEmpty())
-					.andDo(document("orders/주문 조회 실패",
+					.andDo(document("order/주문 조회 실패",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							responseFields(
 									fieldWithPath("message").type(JsonFieldType.STRING).description("오류 메시지"),
 									fieldWithPath("path").type(JsonFieldType.STRING).description("오류 경로"),
@@ -365,7 +378,9 @@ class OrderControllerTest {
 							)
 							.andExpect(status().isCreated())
 							.andDo(print())
-							.andDo(document("orders/주문 생성 성공",
+							.andDo(document("order/주문 생성 성공",
+									getDocumentRequest(),
+									getDocumentResponse(),
 									requestParts(
 											partWithName("cakeImages").description("케익 이미지")
 									),
@@ -425,7 +440,9 @@ class OrderControllerTest {
 					)
 					.andExpect(status().isUnauthorized())
 					.andDo(print())
-					.andDo(document("orders/주문 생성 실패(UnAuthorize)",
+					.andDo(document("order/주문 생성 실패(UnAuthorize)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestParts(
 									partWithName("cakeImages").description("케익 이미지")
 							),
@@ -482,7 +499,9 @@ class OrderControllerTest {
 					)
 					.andExpect(status().isForbidden())
 					.andDo(print())
-					.andDo(document("orders/주문 생성 실패(Forbidden)",
+					.andDo(document("order/주문 생성 실패(Forbidden)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestParts(
 									partWithName("cakeImages").description("케익 이미지")
 							),
@@ -548,7 +567,9 @@ class OrderControllerTest {
 					)
 					.andExpect(status().isBadRequest())
 					.andDo(print())
-					.andDo(document("orders/주문 생성 실패(Forbidden)",
+					.andDo(document("order/주문 생성 실패(Forbidden)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestParts(
 									partWithName("cakeImages").description("케익 이미지")
 							),
@@ -600,7 +621,9 @@ class OrderControllerTest {
 					).andExpect(status().isNoContent())
 					.andDo(print())
 					.andDo(document(
-							"orders/주문 삭제 성공",
+							"order/주문 삭제 성공",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -624,7 +647,9 @@ class OrderControllerTest {
 					).andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(document(
-							"orders/주문 삭제 실패(BadRequest)",
+							"order/주문 삭제 실패(BadRequest)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -646,7 +671,9 @@ class OrderControllerTest {
 					).andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document(
-							"orders/주문 삭제 실패(Unauthorized)",
+							"order/주문 삭제 실패(Unauthorized)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -673,7 +700,9 @@ class OrderControllerTest {
 					).andExpect(status().isForbidden())
 					.andDo(print())
 					.andDo(document(
-							"orders/주문 삭제 실패(Forbidden)",
+							"order/주문 삭제 실패(Forbidden)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),
@@ -700,7 +729,9 @@ class OrderControllerTest {
 					).andExpect(status().isConflict())
 					.andDo(print())
 					.andDo(document(
-							"orders/주문 삭제 실패(Conflict)",
+							"order/주문 삭제 실패(Conflict)",
+							getDocumentRequest(),
+							getDocumentResponse(),
 							requestHeaders(
 									headerWithName("access_token").description("인가 토큰")
 							),

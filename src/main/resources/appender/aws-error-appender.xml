@@ -6,7 +6,7 @@
         <layout>
             <pattern>[%thread] [%date] [%level] [%file:%line] - %msg%n</pattern>
         </layout>
-        <logGroupName>hey-cake-dev-error</logGroupName>
+        <logGroupName>hey-cake-error</logGroupName>
         <logStreamUuidPrefix>hey-cake-error-</logStreamUuidPrefix>
         <logRegion>ap-northeast-2</logRegion>
         <maxBatchLogEvents>50</maxBatchLogEvents>
