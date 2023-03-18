@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.offer.facade;
+package com.programmers.heycake.domain.facade;
 
 import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
@@ -14,13 +14,17 @@ import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.model.dto.response.MarketDetailNoImageResponse;
+import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.service.MarketService;
+import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.service.MemberService;
-import com.programmers.heycake.domain.offer.model.dto.request.OfferSaveRequest;
+import com.programmers.heycake.domain.offer.model.dto.request.OfferCreateRequest;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
 import com.programmers.heycake.domain.offer.service.OfferService;
+import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.service.HistoryService;
+import com.programmers.heycake.domain.order.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +35,7 @@ public class OfferFacade {
 	private static final String OFFER_IMAGE_SUB_PATH = "images/offers";
 
 	private final OfferService offerService;
+	private final OrderService orderService;
 	private final MarketService marketService;
 	private final MemberService memberService;
 	private final ImageService imageService;
@@ -39,15 +44,26 @@ public class OfferFacade {
 	private final ImageIntegrationService imageIntegrationService;
 
 	@Transactional
-	public Long saveOffer(OfferSaveRequest offerSaveRequest) {
+	public Long createOffer(OfferCreateRequest offerCreateRequest) {
+		Order order = orderService.getOrderById(offerCreateRequest.orderId());
+		Member member = memberService.getMemberById(getMemberId());
+		Market market = marketService.getMarketByMember(member);
 
-		Long savedOfferId = offerService.saveOffer(offerSaveRequest.orderId(), offerSaveRequest.expectedPrice(),
-				offerSaveRequest.content());
+		Long createdOfferId = offerService.createOffer(
+				order,
+				market,
+				offerCreateRequest.expectedPrice(),
+				offerCreateRequest.content()
+		);
 
-		imageIntegrationService.createAndUploadImage(offerSaveRequest.offerImage(), OFFER_IMAGE_SUB_PATH, savedOfferId,
-				OFFER);
+		imageIntegrationService.createAndUploadImage(
+				offerCreateRequest.offerImage(),
+				OFFER_IMAGE_SUB_PATH,
+				createdOfferId,
+				OFFER
+		);
 
-		return savedOfferId;
+		return createdOfferId;
 	}
 
 	@Transactional

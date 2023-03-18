@@ -55,7 +55,7 @@ import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
-import com.programmers.heycake.domain.offer.model.dto.request.OfferSaveRequest;
+import com.programmers.heycake.domain.offer.model.dto.request.OfferCreateRequest;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
@@ -314,7 +314,7 @@ class OfferControllerTest {
 			Order order = getOrder(writeOrderMember.getId(), OrderStatus.NEW);
 			orderRepository.save(order);
 
-			OfferSaveRequest request = new OfferSaveRequest(order.getId(), 50000, "내용", getMockFile());
+			OfferCreateRequest request = new OfferCreateRequest(order.getId(), 50000, "내용", getMockFile());
 			String imageUrl = "imageURL";
 
 			when(imageUploadService.upload(any(), any()))
@@ -384,7 +384,7 @@ class OfferControllerTest {
 		@DisplayName("Fail - 사용자 인증에 실패한다.")
 		void saveOfferAuthenticationFail() throws Exception {
 			// given
-			OfferSaveRequest request = new OfferSaveRequest(1L, 50000, "내용", getMockFile());
+			OfferCreateRequest request = new OfferCreateRequest(1L, 50000, "내용", getMockFile());
 
 			// when
 			mockMvc.perform(
@@ -443,7 +443,7 @@ class OfferControllerTest {
 			Order order = getOrder(writeOrderMember.getId(), OrderStatus.NEW);
 			orderRepository.save(order);
 
-			OfferSaveRequest request = new OfferSaveRequest(1L, 50000, "내용", getMockFile());
+			OfferCreateRequest request = new OfferCreateRequest(1L, 50000, "내용", getMockFile());
 			String imageUrl = "imageURL";
 
 			when(imageUploadService.upload(any(), any()))
@@ -508,7 +508,7 @@ class OfferControllerTest {
 			Order order = getOrder(writeOrderMember.getId(), OrderStatus.NEW);
 			orderRepository.save(order);
 
-			OfferSaveRequest request = new OfferSaveRequest(order.getId(), 50000, "내용", getMockFile());
+			OfferCreateRequest request = new OfferCreateRequest(order.getId(), 50000, "내용", getMockFile());
 			String imageUrl = "imageURL";
 
 			when(imageUploadService.upload(any(), any()))
@@ -729,7 +729,7 @@ class OfferControllerTest {
 		alreadyExistsOffer.setOrder(order);
 		offerRepository.saveAndFlush(alreadyExistsOffer);
 
-		OfferSaveRequest request = new OfferSaveRequest(order.getId(), 50000, "내용", getMockFile());
+		OfferCreateRequest request = new OfferCreateRequest(order.getId(), 50000, "내용", getMockFile());
 		String imageUrl = "imageURL";
 
 		when(imageUploadService.upload(any(), any()))
@@ -791,7 +791,7 @@ class OfferControllerTest {
 		Order order = getOrder(writeOrderMember.getId(), OrderStatus.NEW, LocalDateTime.now().minusDays(1));
 		orderRepository.save(order);
 
-		OfferSaveRequest request = new OfferSaveRequest(order.getId(), 50000, "내용", getMockFile());
+		OfferCreateRequest request = new OfferCreateRequest(order.getId(), 50000, "내용", getMockFile());
 		String imageUrl = "imageURL";
 
 		when(imageUploadService.upload(any(), any()))
@@ -856,7 +856,7 @@ class OfferControllerTest {
 		Order order = getOrder(writeOrderMember.getId(), orderStatus);
 		orderRepository.save(order);
 
-		OfferSaveRequest request = new OfferSaveRequest(order.getId(), 50000, "내용", getMockFile());
+		OfferCreateRequest request = new OfferCreateRequest(order.getId(), 50000, "내용", getMockFile());
 		String imageUrl = "imageURL";
 
 		when(imageUploadService.upload(any(), any()))

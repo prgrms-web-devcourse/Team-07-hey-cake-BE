@@ -55,7 +55,7 @@ public class HistoryFacadeTest {
 			try (MockedStatic<AuthenticationUtil> authenticationUtil = Mockito.mockStatic(AuthenticationUtil.class)) {
 				given(AuthenticationUtil.getMemberId()).willReturn(1L);
 				doNothing().when(orderService).updateOrderState(anyLong(), any(OrderStatus.class));
-				doReturn(Order.builder().build()).when(orderService).getOrder(anyLong());
+				doReturn(Order.builder().build()).when(orderService).getOrderById(anyLong());
 				doReturn(offerDto).when(offerService).getOfferById(anyLong());
 				doReturn(1L).when(historyService).createHistory(any(HistoryFacadeRequest.class));
 				historyFacade.createHistory(historyControllerRequest);
@@ -64,7 +64,7 @@ public class HistoryFacadeTest {
 			//then
 			verify(orderService).updateOrderState(anyLong(), any(OrderStatus.class));
 			verify(offerService).getOfferById(anyLong());
-			verify(orderService).getOrder(anyLong());
+			verify(orderService).getOrderById(anyLong());
 			verify(historyService).createHistory(any(HistoryFacadeRequest.class));
 		}
 	}

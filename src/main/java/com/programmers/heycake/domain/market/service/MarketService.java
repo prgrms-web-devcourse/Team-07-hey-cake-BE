@@ -67,4 +67,8 @@ public class MarketService {
 		return enrollment;
 	}
 
+	public Market getMarketByMember(Member member) {
+		return marketRepository.findByMember(member)
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
+	}
 }
