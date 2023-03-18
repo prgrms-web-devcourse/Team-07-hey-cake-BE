@@ -99,7 +99,7 @@ class OrderControllerTest {
 	@Nested
 	@DisplayName("getMyOrderList")
 	@Transactional
-	class GetMyOrderList {
+	class GetMyOrder {
 		@Test
 		@DisplayName("Success - getMyOrderList 조회한다.")
 		void getMyOrderListSuccess() throws Exception {
@@ -252,9 +252,9 @@ class OrderControllerTest {
 	}
 
 	@Nested
-	@DisplayName("주문 상세 조회")
+	@DisplayName("getOrder")
 	@Transactional
-	class GetOrderTest {
+	class GetOrder {
 		@Test
 		@DisplayName("Success - 주문 상세 조회 성공")
 		@Transactional
@@ -296,7 +296,7 @@ class OrderControllerTest {
 					.andExpect(jsonPath("images[0]").value(imageUrl1))
 					.andExpect(jsonPath("images[1]").value(imageUrl2))
 					.andDo(print())
-					.andDo(document("order/주문 조회 성공",
+					.andDo(document("order/주문 상세 조회 성공",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							responseFields(
@@ -323,7 +323,7 @@ class OrderControllerTest {
 		}
 
 		@Test
-		@DisplayName("Fail - 주문 상세 조회 실패.(NotFound)")
+		@DisplayName("Fail - 존재하지 않는 주문에 대해 404로 응답한다.")
 		@Transactional
 		void getOrderFailByNotFound() throws Exception {
 			int orderId = -1;
@@ -334,7 +334,7 @@ class OrderControllerTest {
 					.andExpect(jsonPath("path").value("/api/v1/orders/" + orderId))
 					.andExpect(jsonPath("time").exists())
 					.andExpect(jsonPath("inputErrors").isEmpty())
-					.andDo(document("order/주문 조회 실패",
+					.andDo(document("order/주문 조회 실패 - 존재하지 않는 주문인 경우",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							responseFields(
@@ -348,9 +348,10 @@ class OrderControllerTest {
 	}
 
 	@Nested
+	@DisplayName("createOrder")
 	@Transactional
-	class CreateOrderTest {
-		@DisplayName("Success - Order 생성 성공")
+	class CreateOrder {
+		@DisplayName("Success - 주문 생성 성공하여 201으로 응답한다.")
 		@MethodSource("com.programmers.heycake.domain.order.argument.TestArguments#OrderCreateRequestSuccessArguments")
 		@Transactional
 		@ParameterizedTest
@@ -360,8 +361,6 @@ class OrderControllerTest {
 				CakeHeight cakeHeight, BreadFlavor breadFlavor, CreamFlavor creamFlavor,
 				String requirements, List<MultipartFile> cakeImages
 		) throws Exception {
-
-			Long memberId = 1L;
 
 			TestUtils.setContext(1L, USER);
 
@@ -420,7 +419,7 @@ class OrderControllerTest {
 		}
 
 		@Test
-		@DisplayName("Fail - Order 생성 실패.(UnAuthorized)")
+		@DisplayName("Fail - 주문 생성 실패하여 401으로 응답한다.")
 		void createOrderFailByUnAuthorized() throws Exception {
 			MockMultipartFile testImageFile = new MockMultipartFile(
 					"cakeImages",
@@ -445,7 +444,7 @@ class OrderControllerTest {
 					)
 					.andExpect(status().isUnauthorized())
 					.andDo(print())
-					.andDo(document("order/주문 생성 실패(UnAuthorize)",
+					.andDo(document("order/주문 생성 실패 - 사용자 인증 실패",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestParts(
@@ -477,7 +476,7 @@ class OrderControllerTest {
 
 		@Test
 		@Transactional
-		@DisplayName("Fail - Order 생성 실패.(Forbidden)")
+		@DisplayName("Fail - 주문 생성에 권한 인가에 실패하여 403로 응답한다.")
 		void createOrderFailByForbidden() throws Exception {
 			MockMultipartFile testImageFile = new MockMultipartFile(
 					"testImageFile",
@@ -504,7 +503,7 @@ class OrderControllerTest {
 					)
 					.andExpect(status().isForbidden())
 					.andDo(print())
-					.andDo(document("order/주문 생성 실패(Forbidden)",
+					.andDo(document("order/주문 생성 실패 - 권한 인가 실패",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestParts(
@@ -534,7 +533,7 @@ class OrderControllerTest {
 					));
 		}
 
-		@DisplayName("Fail - Order 생성 실패.(invalidArgument)")
+		@DisplayName("Fail - 잘못된 입력값으로 주문 생성에 실패하여 400으로 응답한다.")
 		@MethodSource("com.programmers.heycake.domain.order.argument.TestArguments#OrderCreateRequestFailArguments")
 		@ParameterizedTest
 		void createOrderFailByInvalidArgument(
@@ -572,7 +571,7 @@ class OrderControllerTest {
 					)
 					.andExpect(status().isBadRequest())
 					.andDo(print())
-					.andDo(document("order/주문 생성 실패(Forbidden)",
+					.andDo(document("order/주문 생성 실패 - 잘못된 입력값이 들어온 경우",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestParts(
