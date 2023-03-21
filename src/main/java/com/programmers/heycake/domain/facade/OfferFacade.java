@@ -8,19 +8,21 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.common.exception.BusinessException;
+import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OfferMapper;
 import com.programmers.heycake.domain.comment.facade.CommentFacade;
+import com.programmers.heycake.domain.comment.service.CommentService;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
-import com.programmers.heycake.domain.market.model.dto.response.MarketDetailNoImageResponse;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.service.MarketService;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferCreateRequest;
-import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
-import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
+import com.programmers.heycake.domain.offer.model.dto.response.OfferListResponse;
+import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.service.OfferService;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.service.HistoryService;
@@ -41,6 +43,7 @@ public class OfferFacade {
 	private final ImageService imageService;
 	private final CommentFacade commentFacade;
 	private final HistoryService historyService;
+	private final CommentService commentService;
 	private final ImageIntegrationService imageIntegrationService;
 
 	@Transactional
@@ -88,18 +91,26 @@ public class OfferFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public List<OfferSummaryResponse> getOffers(Long orderId) {
-		List<OfferResponse> offerResponses = offerService.getOffersWithComments(orderId);
+	public List<OfferListResponse> getOffers(Long orderId) {
+		validateOrderExistsByOrderId(orderId);
 
-		return offerResponses.stream()
+		List<Offer> offers = offerService.getOffersByOrderId(orderId);
+		return offers.stream()
 				.map(
-						offerResponse -> {
-							ImageResponses imageResponses = imageService.getImages(offerResponse.offerId(), OFFER);
-							MarketDetailNoImageResponse marketResponse = marketService.getMarket(offerResponse.marketId());
-							boolean isPaid = historyService.isPaidOffer(offerResponse.marketId(), orderId);
-							return OfferMapper.toOfferSummaryResponse(offerResponse, imageResponses, marketResponse, isPaid);
+						offer -> {
+							Market market = marketService.getMarketWithMarketEnrollmentById(offer.getMarketId());
+							ImageResponses imageResponses = imageService.getImages(offer.getId(), OFFER);
+							boolean isPaid = historyService.isPaidOffer(offer.getMarketId(), orderId);
+							int numberOfCommentsInOffer = commentService.countCommentsByOffer(offer);
+							return OfferMapper.toOfferListResponse(offer, market, imageResponses, isPaid, numberOfCommentsInOffer);
 						}
 				)
 				.toList();
+	}
+
+	private void validateOrderExistsByOrderId(Long orderId) {
+		if (!orderService.existsById(orderId)) {
+			throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
+		}
 	}
 }

@@ -44,7 +44,7 @@ public class MarketService {
 
 	@Transactional(readOnly = true)
 	public MarketDetailNoImageResponse getMarket(Long marketId) {
-		Market market = marketRepository.findByIdFetchWithMarketEnrollment(marketId)
+		Market market = marketRepository.findFetchWithMarketEnrollmentById(marketId)
 				.orElseThrow(() -> {
 					throw new BusinessException(ENTITY_NOT_FOUND);
 				});
@@ -69,6 +69,11 @@ public class MarketService {
 
 	public Market getMarketByMember(Member member) {
 		return marketRepository.findByMember(member)
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
+	}
+
+	public Market getMarketWithMarketEnrollmentById(Long marketId) {
+		return marketRepository.findFetchWithMarketEnrollmentById(marketId)
 				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 	}
 }

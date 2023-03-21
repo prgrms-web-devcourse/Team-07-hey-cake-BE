@@ -10,10 +10,10 @@ import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.market.model.dto.response.MarketDetailNoImageResponse;
+import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.offer.model.dto.OfferDto;
+import com.programmers.heycake.domain.offer.model.dto.response.OfferListResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
-import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 
 import lombok.AccessLevel;
@@ -43,26 +43,30 @@ public class OfferMapper {
 				.build();
 	}
 
-	public static OfferSummaryResponse toOfferSummaryResponse(OfferResponse offerResponse, ImageResponses imageResponses,
-			MarketDetailNoImageResponse marketResponse, boolean isPaid) {
-
+	public static OfferListResponse toOfferListResponse(
+			Offer offer,
+			Market market,
+			ImageResponses imageResponses,
+			boolean isPaid,
+			int numberOfCommentsInOffer
+	) {
 		String imageUrl = imageResponses.images()
 				.stream()
 				.findAny()
 				.map(ImageResponse::imageUrl)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 
-		return OfferSummaryResponse.builder()
-				.offerId(offerResponse.offerId())
-				.marketId(offerResponse.marketId())
-				.enrollmentId(marketResponse.enrollmentId())
-				.marketName(marketResponse.marketName())
-				.expectedPrice(offerResponse.expectedPrice())
+		return OfferListResponse.builder()
+				.offerId(offer.getId())
+				.createdDate(offer.getCreatedAt().toLocalDate())
+				.expectedPrice(offer.getExpectedPrice())
+				.marketId(market.getId())
+				.enrollmentId(market.getMarketEnrollment().getId())
+				.marketName(market.getMarketEnrollment().getMarketName())
 				.imageUrl(imageUrl)
-				.content(offerResponse.content())
-				.commentCount(offerResponse.commentResponses().size())
+				.content(offer.getContent())
+				.commentCount(numberOfCommentsInOffer)
 				.isPaid(isPaid)
-				.createdDate(offerResponse.createdAt().toLocalDate())
 				.build();
 	}
 

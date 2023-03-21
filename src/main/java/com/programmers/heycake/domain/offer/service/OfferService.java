@@ -14,11 +14,9 @@ import com.programmers.heycake.common.mapper.OfferMapper;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.offer.model.dto.OfferDto;
-import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
-import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 public class OfferService {
 
 	private final OfferRepository offerRepository;
-	private final OrderRepository orderRepository;
 
 	public Long createOffer(Order order, Market market, int expectedPrice, String content) {
 		validateOrderIsExpired(order);
@@ -104,17 +101,9 @@ public class OfferService {
 		}
 	}
 
-	public List<OfferResponse> getOffersWithComments(Long orderId) {
-		Order order = getOrder(orderId);
-
-		return offerRepository.findAllByOrderFetchComments(order)
+	public List<Offer> getOffersByOrderId(Long orderId) {
+		return offerRepository.findAllByOrderId(orderId)
 				.stream()
-				.map(OfferMapper::toOfferResponse)
 				.toList();
-	}
-
-	private Order getOrder(Long orderId) {
-		return orderRepository.findById(orderId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 }

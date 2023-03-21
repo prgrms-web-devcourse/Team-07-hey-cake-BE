@@ -102,4 +102,7 @@ public class CommentService {
 				.toList();
 	}
 
+	public int countCommentsByOffer(Offer offer) {
+		return commentRepository.countByOffer(offer);
+	}
 }

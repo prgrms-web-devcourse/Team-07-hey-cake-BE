@@ -139,4 +139,8 @@ public class OrderService {
 			throw new BusinessException(ErrorCode.ORDER_CLOSED);
 		}
 	}
+
+	public boolean existsById(Long orderId) {
+		return orderRepository.existsById(orderId);
+	}
 }

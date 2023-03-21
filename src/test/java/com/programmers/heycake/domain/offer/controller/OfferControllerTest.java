@@ -56,7 +56,7 @@ import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferCreateRequest;
-import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
+import com.programmers.heycake.domain.offer.model.dto.response.OfferListResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
@@ -586,7 +586,7 @@ class OfferControllerTest {
 			Comment comment1OnOffer1 = getComment(member1.getId(), offer1);
 			Comment comment2ByOffer1 = getComment(member1.getId(), offer1);
 			Comment comment1ByOffer2 = getComment(member2.getId(), offer2);
-			commentRepository.saveAll(List.of(comment1OnOffer1, comment2ByOffer1, comment2ByOffer1));
+			commentRepository.saveAll(List.of(comment1OnOffer1, comment2ByOffer1, comment1ByOffer2));
 
 			Image image1 = getImage(offer1.getId(), ImageType.OFFER, "offerImageUrl1");
 			Image image2 = getImage(offer2.getId(), ImageType.OFFER, "offerImageUrl2");
@@ -595,7 +595,7 @@ class OfferControllerTest {
 			OrderHistory orderHistory = getOrderHistory(order.getMemberId(), market1.getId(), order);
 			historyRepository.save(orderHistory);
 
-			List<OfferSummaryResponse> offersSuccessResponses = List.of(
+			List<OfferListResponse> offersSuccessResponses = List.of(
 					getOffersSuccessResponses(offer1, market1, marketEnrollment1, image1, true, 2),
 					getOffersSuccessResponses(offer2, market2, marketEnrollment2, image2, false, 1)
 			);
@@ -658,11 +658,11 @@ class OfferControllerTest {
 			}
 		}
 
-		private OfferSummaryResponse getOffersSuccessResponses(Offer offer, Market market,
+		private OfferListResponse getOffersSuccessResponses(Offer offer, Market market,
 				MarketEnrollment marketEnrollment,
 				Image image, boolean isPaid, int commentCount) {
 
-			return OfferSummaryResponse.builder()
+			return OfferListResponse.builder()
 					.offerId(offer.getId())
 					.marketId(market.getId())
 					.enrollmentId(marketEnrollment.getId())
