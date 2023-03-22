@@ -16,6 +16,6 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
 	@Query("SELECT DISTINCT o FROM Offer o LEFT JOIN FETCH o.comments WHERE o.order = :order")
 	List<Offer> findAllByOrderFetchComments(@Param(value = "order") Order order);
 
-	@Query("SELECT o FROM Offer o LEFT JOIN FETCH o.order WHERE o.id = :offerId")
-	Optional<Offer> findByIdFetchOrder(@Param(value = "offerId") Long offerId);
+	@Query("SELECT o FROM Offer o JOIN FETCH o.order WHERE o.id = :offerId")
+	Optional<Offer> findFetchWithOrderById(@Param(value = "offerId") Long offerId);
 }

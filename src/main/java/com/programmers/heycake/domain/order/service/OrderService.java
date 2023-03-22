@@ -135,8 +135,8 @@ public class OrderService {
 	}
 
 	private void isNew(Long orderId) {
-		if (getOrder(orderId).isClosed()) {
-			throw new BusinessException(ErrorCode.ORDER_CLOSED);
+		if (getOrder(orderId).isExpired()) {
+			throw new BusinessException(ErrorCode.ORDER_EXPIRED);
 		}
 	}
 }

@@ -87,8 +87,8 @@ public class OfferService {
 	}
 
 	private void isNew(Long offerId) {
-		if (getOffer(offerId).getOrder().isClosed()) {
-			throw new BusinessException(ErrorCode.ORDER_CLOSED);
+		if (getOffer(offerId).getOrder().isExpired()) {
+			throw new BusinessException(ErrorCode.ORDER_EXPIRED);
 		}
 	}
 
@@ -106,8 +106,8 @@ public class OfferService {
 			throw new BusinessException(ErrorCode.VISIT_DATE_PASSED);
 		}
 
-		if (order.isClosed()) {
-			throw new BusinessException(ErrorCode.ORDER_CLOSED);
+		if (order.isExpired()) {
+			throw new BusinessException(ErrorCode.ORDER_EXPIRED);
 		}
 	}
 
@@ -135,4 +135,8 @@ public class OfferService {
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
+	public Offer getOfferWithOrderById(Long offerId) {
+		return offerRepository.findFetchWithOrderById(offerId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+	}
 }

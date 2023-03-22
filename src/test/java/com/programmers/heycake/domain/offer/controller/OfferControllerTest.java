@@ -878,7 +878,7 @@ class OfferControllerTest {
 				)
 				.andDo(print())
 				.andExpect(status().isConflict())
-				.andExpect(jsonPath("message").value(ErrorCode.ORDER_CLOSED.getMessage()))
+				.andExpect(jsonPath("message").value(ErrorCode.ORDER_EXPIRED.getMessage()))
 				.andExpect(jsonPath("path").value("/api/v1/offers"))
 				.andExpect(jsonPath("time").exists())
 				.andExpect(jsonPath("inputErrors").isEmpty())
