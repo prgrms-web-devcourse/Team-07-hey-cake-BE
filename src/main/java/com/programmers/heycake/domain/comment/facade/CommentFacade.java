@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.mapper.CommentMapper;
 import com.programmers.heycake.common.util.AuthenticationUtil;
 import com.programmers.heycake.domain.comment.model.dto.request.CommentCreateRequest;
-import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
-import com.programmers.heycake.domain.comment.model.dto.response.CommentSummaryResponse;
+import com.programmers.heycake.domain.comment.model.dto.response.CommentListResponse;
+import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.comment.service.CommentService;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
@@ -18,7 +18,6 @@ import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.service.MarketService;
-import com.programmers.heycake.domain.member.model.dto.response.MemberResponse;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
@@ -87,14 +86,14 @@ public class CommentFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public List<CommentSummaryResponse> getComments(Long offerId) {
-		List<CommentResponse> commentResponses = commentService.getComments(offerId);
-		return commentResponses.stream()
+	public List<CommentListResponse> getComments(Long offerId) {
+		List<Comment> comments = commentService.getCommentsByOfferId(offerId);
+		return comments.stream()
 				.map(
-						commentResponse -> {
-							MemberResponse memberResponse = memberService.getMemberResponseByMemberId(commentResponse.memberId());
-							ImageResponses imageResponse = imageService.getImages(commentResponse.commentId(), ImageType.COMMENT);
-							return CommentMapper.toCommentSummaryResponse(commentResponse, imageResponse, memberResponse);
+						comment -> {
+							Member member = memberService.getMemberById(comment.getMemberId());
+							ImageResponses imageResponse = imageService.getImages(comment.getId(), ImageType.COMMENT);
+							return CommentMapper.toCommentListResponse(comment, member, imageResponse);
 						}
 				).toList();
 	}

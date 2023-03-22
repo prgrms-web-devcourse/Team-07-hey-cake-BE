@@ -8,5 +8,5 @@ import com.programmers.heycake.domain.comment.model.entity.Comment;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-	List<Comment> findByOfferId(Long offerId);
+	List<Comment> findAllByOfferId(Long offerId);
 }
