@@ -55,7 +55,7 @@ public class CommentService {
 	public void deleteComment(Long commentId) {
 		Long memberId = AuthenticationUtil.getMemberId();
 
-		Comment comment = getComment(commentId);
+		Comment comment = getCommentById(commentId);
 
 		verifyCommentDeleteAuthority(comment, memberId);
 
@@ -72,7 +72,7 @@ public class CommentService {
 		}
 	}
 
-	private Comment getComment(Long commentId) {
+	public Comment getCommentById(Long commentId) {
 		return commentRepository.findById(commentId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
