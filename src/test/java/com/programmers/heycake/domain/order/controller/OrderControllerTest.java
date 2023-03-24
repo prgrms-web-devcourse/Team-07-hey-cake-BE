@@ -114,7 +114,7 @@ class OrderControllerTest {
 					).andExpect(status().isOk())
 					.andDo(print())
 					.andDo(document(
-							"order/주문 목록 조회 성공",
+							"order/내 주문 목록 조회 성공",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestHeaders(
@@ -162,7 +162,7 @@ class OrderControllerTest {
 					).andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(document(
-							"order/주문 목록 조회 실패(BadRequest)",
+							"order/내 주문 목록 조회 실패(BadRequest)",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestHeaders(
@@ -196,7 +196,7 @@ class OrderControllerTest {
 					).andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document(
-							"order/주문 목록 조회 실패(Unauthorized)",
+							"order/내 주문 목록 조회 실패(Unauthorized)",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestHeaders(
@@ -230,7 +230,7 @@ class OrderControllerTest {
 					).andExpect(status().isForbidden())
 					.andDo(print())
 					.andDo(document(
-							"order/주문 목록 조회 실패(Forbidden)",
+							"order/내 주문 목록 조회 실패(Forbidden)",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestHeaders(
