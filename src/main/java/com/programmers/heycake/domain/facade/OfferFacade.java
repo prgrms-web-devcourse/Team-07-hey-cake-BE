@@ -5,6 +5,8 @@ import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +46,7 @@ public class OfferFacade {
 	private final HistoryService historyService;
 	private final ImageService imageService;
 
+	@CacheEvict(cacheNames = "offers", key = "#offerCreateRequest.orderId")
 	@Transactional
 	public Long createOffer(OfferCreateRequest offerCreateRequest) {
 		Order order = orderService.getOrderById(offerCreateRequest.orderId());
@@ -67,6 +70,7 @@ public class OfferFacade {
 		return createdOfferId;
 	}
 
+	@CacheEvict(cacheNames = "offers", allEntries = true)
 	@Transactional
 	public void deleteOffer(Long offerId) {
 		Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(getMemberId()));
@@ -88,6 +92,7 @@ public class OfferFacade {
 		offerService.deleteOfferWithoutAuth(offerId);
 	}
 
+	@Cacheable(cacheNames = "offers", key = "#orderId")
 	@Transactional(readOnly = true)
 	public List<OffersResponse> getOffers(Long orderId) {
 		validateOrderExistsByOrderId(orderId);
