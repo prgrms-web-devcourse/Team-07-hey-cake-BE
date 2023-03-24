@@ -111,7 +111,8 @@ class OrderControllerTest {
 			//when //then
 			mockMvc.perform(get("/api/v1/orders/my?cursorId=1&pageSize=10&orderStatus=NEW")
 							.header("access_token", ACCESS_TOKEN)
-					).andExpect(status().isOk())
+					)
+					.andExpect(status().isOk())
 					.andDo(print())
 					.andDo(document(
 							"order/내 주문 목록 조회 성공",
@@ -381,6 +382,13 @@ class OrderControllerTest {
 									.param("visitTime", visitTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
 							)
 							.andExpect(status().isCreated())
+							.andExpect(jsonPath("").value(""))
+							.andExpect(jsonPath("").value(""))
+							.andExpect(jsonPath("").value(""))
+							.andExpect(jsonPath("").value(""))
+							.andExpect(jsonPath("").value(""))
+							.andExpect(jsonPath("").value(""))
+							.andExpect(jsonPath("").value(""))
 							.andDo(print())
 							.andDo(document("order/주문 생성 성공",
 									getDocumentRequest(),
