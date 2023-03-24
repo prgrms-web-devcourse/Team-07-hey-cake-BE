@@ -79,4 +79,7 @@ public class CommentService {
 		return commentRepository.findAllByOfferId(offerId);
 	}
 
+	public int countCommentsByOffer(Offer offer) {
+		return commentRepository.countByOffer(offer);
+	}
 }
