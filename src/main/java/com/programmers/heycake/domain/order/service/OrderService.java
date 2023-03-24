@@ -38,7 +38,7 @@ public class OrderService {
 	public void updateOrderState(Long orderId, OrderStatus orderStatus) {
 		identifyAuthor(orderId);
 		isNew(orderId);
-		getOrder(orderId).upDateOrderStatus(orderStatus);
+		getOrderById(orderId).upDateOrderStatus(orderStatus);
 	}
 
 	@Transactional(readOnly = true)
@@ -91,12 +91,12 @@ public class OrderService {
 
 	@Transactional(readOnly = true)
 	public OrderGetDetailServiceResponse getOrderDetail(Long orderId) {
-		return OrderMapper.toOrderGetDetailServiceResponse(getOrder(orderId));
+		return OrderMapper.toOrderGetDetailServiceResponse(getOrderById(orderId));
 	}
 
 	@Transactional(readOnly = true)
 	public List<Long> getOrderOfferIdList(Long orderId) {
-		return getOrder(orderId)
+		return getOrderById(orderId)
 				.getOffers()
 				.stream()
 				.map(Offer::getId)
@@ -112,7 +112,7 @@ public class OrderService {
 
 	@Transactional(readOnly = true)
 	public void hasOffer(Long orderId, Long offerId) {
-		List<Offer> offerList = getOrder(orderId).getOffers();
+		List<Offer> offerList = getOrderById(orderId).getOffers();
 		if (offerList.stream().noneMatch(offer -> offer.isMatch(offerId))) {
 			throw new BusinessException(ErrorCode.BAD_REQUEST);
 		}
@@ -120,23 +120,27 @@ public class OrderService {
 
 	@Transactional(readOnly = true)
 	public int offerCount(Long orderId) {
-		return getOrder(orderId).getOffers().size();
+		return getOrderById(orderId).getOffers().size();
 	}
 
-	public Order getOrder(Long orderId) {
+	public Order getOrderById(Long orderId) {
 		return orderRepository.findById(orderId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
 	private void identifyAuthor(Long orderId) {
-		if (!getOrder(orderId).identifyAuthor(getMemberId())) {
+		if (!getOrderById(orderId).identifyAuthor(getMemberId())) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
 	}
 
 	private void isNew(Long orderId) {
-		if (getOrder(orderId).isClosed()) {
+		if (getOrderById(orderId).isExpired()) {
 			throw new BusinessException(ErrorCode.ORDER_CLOSED);
 		}
+	}
+
+	public boolean existsById(Long orderId) {
+		return orderRepository.existsById(orderId);
 	}
 }

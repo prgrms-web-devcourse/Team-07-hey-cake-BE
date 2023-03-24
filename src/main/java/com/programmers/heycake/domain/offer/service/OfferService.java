@@ -11,19 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.common.mapper.OfferMapper;
-
 import com.programmers.heycake.domain.comment.model.entity.Comment;
-import com.programmers.heycake.common.util.AuthenticationUtil;
 import com.programmers.heycake.domain.market.model.entity.Market;
-import com.programmers.heycake.domain.market.repository.MarketRepository;
-import com.programmers.heycake.domain.member.model.entity.Member;
-import com.programmers.heycake.domain.member.repository.MemberRepository;
 import com.programmers.heycake.domain.offer.model.dto.OfferDto;
-import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
-import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,18 +25,11 @@ import lombok.RequiredArgsConstructor;
 public class OfferService {
 
 	private final OfferRepository offerRepository;
-	private final MemberRepository memberRepository;
-	private final OrderRepository orderRepository;
-	private final MarketRepository marketRepository;
 
-	public Long saveOffer(Long orderId, int expectedPrice, String content) {
-		Long memberId = AuthenticationUtil.getMemberId();
-
-		Order order = getOrder(orderId);
-		Member member = getMember(memberId);
-		Market market = getMarket(member);
-
-		validateSaveOffer(order, market);
+	public Long createOffer(Order order, Market market, int expectedPrice, String content) {
+		validateOrderIsExpired(order);
+		validateVisitDatePassed(order);
+		validateDuplicateOffer(market.getId(), order);
 
 		Offer offer = OfferMapper.toEntity(market.getId(), expectedPrice, content);
 		offer.setOrder(order);
@@ -87,7 +73,7 @@ public class OfferService {
 	}
 
 	private void isNew(Long offerId) {
-		if (getOffer(offerId).getOrder().isClosed()) {
+		if (getOffer(offerId).getOrder().isExpired()) {
 			throw new BusinessException(ErrorCode.ORDER_CLOSED);
 		}
 	}
@@ -97,42 +83,27 @@ public class OfferService {
 		offerRepository.deleteById(offerId);
 	}
 
-	private void validateSaveOffer(Order order, Market market) {
-		if (offerRepository.existsByMarketIdAndOrder(market.getId(), order)) {
+	private void validateDuplicateOffer(Long marketId, Order order) {
+		if (offerRepository.existsByMarketIdAndOrder(marketId, order)) {
 			throw new BusinessException(ErrorCode.DUPLICATED_OFFER);
 		}
+	}
 
+	private void validateVisitDatePassed(Order order) {
 		if (order.isPassedVisitDate(LocalDateTime.now())) {
 			throw new BusinessException(ErrorCode.VISIT_DATE_PASSED);
 		}
+	}
 
-		if (order.isClosed()) {
+	private void validateOrderIsExpired(Order order) {
+		if (order.isExpired()) {
 			throw new BusinessException(ErrorCode.ORDER_CLOSED);
 		}
 	}
 
-	public List<OfferResponse> getOffersWithComments(Long orderId) {
-		Order order = getOrder(orderId);
-
-		return offerRepository.findAllByOrderFetchComments(order)
+	public List<Offer> getOffersByOrderId(Long orderId) {
+		return offerRepository.findAllByOrderId(orderId)
 				.stream()
-				.map(OfferMapper::toOfferResponse)
 				.toList();
 	}
-
-	private Market getMarket(Member member) {
-		return marketRepository.findByMember(member)
-				.orElseThrow(() -> new BusinessException(ErrorCode.FORBIDDEN));
-	}
-
-	private Member getMember(Long memberId) {
-		return memberRepository.findById(memberId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-	}
-
-	private Order getOrder(Long orderId) {
-		return orderRepository.findById(orderId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-	}
-
 }

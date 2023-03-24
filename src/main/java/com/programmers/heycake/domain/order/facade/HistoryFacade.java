@@ -31,7 +31,7 @@ public class HistoryFacade {
 		orderService.updateOrderState(historyControllerRequest.orderId(), orderStatus);
 
 		OfferDto offerDto = offerService.getOfferById(historyControllerRequest.offerId());
-		Order order = orderService.getOrder(offerDto.orderDto().id());
+		Order order = orderService.getOrderById(offerDto.orderDto().id());
 		HistoryFacadeRequest historyFacadeRequest = new HistoryFacadeRequest(getMemberId(), offerDto.marketId(), order);
 
 		return historyService.createHistory(historyFacadeRequest);
