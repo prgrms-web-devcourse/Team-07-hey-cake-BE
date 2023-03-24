@@ -9,20 +9,19 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.programmers.heycake.domain.facade.OfferFacade;
-import com.programmers.heycake.domain.image.model.dto.ImageResponses;
+import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.service.MarketService;
-import com.programmers.heycake.domain.member.model.dto.response.OrderGetDetailResponse;
+import com.programmers.heycake.domain.member.model.dto.response.OrderDetailResponse;
 import com.programmers.heycake.domain.member.service.MemberService;
+import com.programmers.heycake.domain.offer.facade.OfferFacade;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSimpleResponse;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponse;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponses;
+import com.programmers.heycake.domain.order.model.dto.response.OrdersElementResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrdersResponse;
+import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.service.HistoryService;
@@ -37,8 +36,9 @@ public class OrderFacade {
 	private final OrderService orderService;
 	private final MemberService memberService;
 	private final HistoryService historyService;
-	private final OfferFacade offerFacade;
 	private final ImageService imageService;
+	private final OfferFacade offerFacade;
+	private final ImageIntegrationService imageIntegrationService;
 	private final MarketService marketService;
 
 	private static final String ORDER_IMAGE_SUB_PATH = "images/orders";
@@ -50,7 +50,7 @@ public class OrderFacade {
 		orderCreateRequest.cakeImages()
 				.forEach(
 						cakeImage ->
-								imageService.createAndUploadImage(
+								imageIntegrationService.createAndUploadImage(
 										cakeImage,
 										ORDER_IMAGE_SUB_PATH,
 										orderId,
@@ -60,34 +60,30 @@ public class OrderFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public OrderGetSimpleResponses getOrders(
+	public OrdersResponse getOrders(
 			Long cursorId, int pageSize, CakeCategory cakeCategory, OrderStatus orderStatus, String region
 	) {
-		List<OrderGetServiceSimpleResponse> orderGetSimpleServiceResponses =
-				orderService.getOrders(cursorId, pageSize, cakeCategory, orderStatus, region);
 
-		List<OrderGetSimpleResponse> orderGetSimpleResponseList =
-				orderGetSimpleServiceResponses
-						.stream()
-						.map(orderSimpleGetServiceResponse ->
-								toOrderGetSimpleResponse(
-										orderSimpleGetServiceResponse,
-										imageService.getImages(orderSimpleGetServiceResponse.orderId(), ORDER))
-						)
-						.toList();
+		List<Order> orders = orderService.getOrders(cursorId, pageSize, cakeCategory, orderStatus, region);
 
-		int size = orderGetSimpleResponseList.size();
-		long lastCursor = size <= 0 ? 0 : orderGetSimpleResponseList.get(size - 1).orderId();
+		List<OrdersElementResponse> ordersElementResponseList =
+				orders.stream()
+						.map(order -> toOrderElementResponse(
+								order,
+								imageService.getImages(order.getId(), ORDER)
+						)).toList();
+
+		int size = ordersElementResponseList.size();
+		long lastCursor = size <= 0 ? 0 : ordersElementResponseList.get(size - 1).orderId();
 		boolean isLast = size < pageSize;
 
-		return new OrderGetSimpleResponses(orderGetSimpleResponseList, lastCursor, isLast);
+		return new OrdersResponse(ordersElementResponseList, lastCursor, isLast);
 	}
 
 	@Transactional(readOnly = true)
-	public OrderGetDetailResponse getOrder(Long orderId) {
-		OrderGetDetailServiceResponse orderGetDetailServiceResponse = orderService.getOrderDetail(orderId);
-		ImageResponses imageResponses = imageService.getImages(orderGetDetailServiceResponse.orderId(), ORDER);
-		return toOrderGetDetailResponse(orderGetDetailServiceResponse, imageResponses);
+	public OrderDetailResponse getOrderDetail(Long orderId) {
+		Order order = orderService.getOrderDetail(orderId);
+		return toOrderDetailResponse(order, imageService.getImages(order.getId(), ORDER));
 	}
 
 	@Transactional(readOnly = true)
@@ -121,7 +117,7 @@ public class OrderFacade {
 
 	@Transactional
 	public void deleteOrder(Long orderId) {
-		imageService.deleteImages(orderId, ORDER, ORDER_IMAGE_SUB_PATH);
+		imageIntegrationService.deleteImages(orderId, ORDER, ORDER_IMAGE_SUB_PATH);
 
 		List<Long> orderOfferIdList = orderService.getOrderOfferIdList(orderId);
 		orderOfferIdList.forEach(offerFacade::deleteOfferWithoutAuth);

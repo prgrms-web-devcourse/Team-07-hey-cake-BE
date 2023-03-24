@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.programmers.heycake.domain.member.model.dto.response.OrderGetDetailResponse;
+import com.programmers.heycake.domain.member.model.dto.response.OrderDetailResponse;
 import com.programmers.heycake.domain.order.facade.OrderFacade;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponses;
+import com.programmers.heycake.domain.order.model.dto.response.OrdersResponse;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 
@@ -49,7 +49,7 @@ public class OrderController {
 	}
 
 	@GetMapping
-	public ResponseEntity<OrderGetSimpleResponses> getOrders(
+	public ResponseEntity<OrdersResponse> getOrders(
 			@RequestParam(required = false) Long cursorId,
 			@RequestParam(defaultValue = "10") int pageSize,
 			@RequestParam(required = false) CakeCategory cakeCategory,
@@ -60,8 +60,8 @@ public class OrderController {
 	}
 
 	@GetMapping("/{orderId}")
-	public ResponseEntity<OrderGetDetailResponse> getOrder(@PathVariable Long orderId) {
-		return ResponseEntity.ok(orderFacade.getOrder(orderId));
+	public ResponseEntity<OrderDetailResponse> getOrderDetail(@PathVariable Long orderId) {
+		return ResponseEntity.ok(orderFacade.getOrderDetail(orderId));
 	}
 
 	@GetMapping("/my")
