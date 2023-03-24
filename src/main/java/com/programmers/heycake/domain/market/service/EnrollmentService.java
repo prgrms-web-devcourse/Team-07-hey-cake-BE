@@ -34,15 +34,12 @@ public class EnrollmentService {
 	public Long createEnrollment(EnrollmentCreateRequest request) {
 
 		MarketEnrollment enrollment = EnrollmentMapper.toEntity(request);
-
 		if (enrollment.hasOpenDateAfterNow()) {
 			throw new BusinessException(BAD_REQUEST);
 		}
 
 		Member member = memberRepository.findById(getMemberId())
-				.orElseThrow(() -> {
-					throw new BusinessException(ENTITY_NOT_FOUND);
-				});
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 		if (member.isMarket()) {
 			throw new AccessDeniedException("이미 업체인 고객입니다.");
 		}
@@ -56,17 +53,13 @@ public class EnrollmentService {
 	@Transactional(readOnly = true)
 	public MarketEnrollment getMarketEnrollment(Long enrollmentId) {
 		return marketEnrollmentRepository.findById(enrollmentId)
-				.orElseThrow(() -> {
-					throw new BusinessException(ENTITY_NOT_FOUND);
-				});
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 	}
 
 	@Transactional
 	public void updateEnrollmentStatus(Long enrollmentId, EnrollmentStatus status) {
 		MarketEnrollment enrollment = marketEnrollmentRepository.findByIdFetchWithMember(enrollmentId)
-				.orElseThrow(() -> {
-					throw new BusinessException(ENTITY_NOT_FOUND);
-				});
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 
 		if (enrollment.isSameStatus(status)) {
 			throw new BusinessException(DUPLICATED);

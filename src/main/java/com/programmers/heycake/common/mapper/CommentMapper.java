@@ -3,11 +3,11 @@ package com.programmers.heycake.common.mapper;
 import java.util.List;
 
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
-import com.programmers.heycake.domain.comment.model.dto.response.CommentSummaryResponse;
+import com.programmers.heycake.domain.comment.model.dto.response.CommentsResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.member.model.dto.response.MemberResponse;
+import com.programmers.heycake.domain.member.model.entity.Member;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -29,8 +29,11 @@ public class CommentMapper {
 				.toList();
 	}
 
-	public static CommentSummaryResponse toCommentSummaryResponse(CommentResponse commentResponse,
-			ImageResponses imageResponse, MemberResponse memberResponse) {
+	public static CommentsResponse toCommentsResponse(
+			Comment comment,
+			Member member,
+			ImageResponses imageResponse
+	) {
 		List<String> imageUrls = imageResponse.images().stream()
 				.map(ImageResponse::imageUrl)
 				.toList();
@@ -40,13 +43,13 @@ public class CommentMapper {
 				.findAny()
 				.orElse(null);
 
-		return CommentSummaryResponse.builder()
-				.commentId(commentResponse.commentId())
-				.comment(commentResponse.comment())
+		return CommentsResponse.builder()
+				.commentId(comment.getId())
+				.comment(comment.getContent())
+				.memberId(comment.getMemberId())
+				.createdAt(comment.getCreatedAt())
+				.nickname(member.getNickname())
 				.image(imageUrl)
-				.memberId(commentResponse.memberId())
-				.nickname(memberResponse.nickname())
-				.createdAt(commentResponse.createdAt())
 				.build();
 	}
 }

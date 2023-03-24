@@ -22,7 +22,7 @@ public class MarketFacade {
 
 	@Transactional(readOnly = true)
 	public MarketDetailResponse getMarket(Long marketId) {
-		Market market = marketService.getMarket(marketId);
+		Market market = marketService.getMarketWithMarketEnrollmentById(marketId);
 		ImageResponses images = imageService.getImages(marketId, ImageType.MARKET);
 		return MarketMapper.toMarketDetailResponse(market, images);
 	}

@@ -42,11 +42,15 @@ public class MarketService {
 	}
 
 	@Transactional(readOnly = true)
-	public Market getMarket(Long marketId) {
-		return marketRepository.findByIdFetchWithMarketEnrollment(marketId)
-				.orElseThrow(() -> {
-					throw new BusinessException(ENTITY_NOT_FOUND);
-				});
+	public Market getMarketWithMarketEnrollmentById(Long marketId) {
+		return marketRepository.findFetchWithMarketEnrollmentById(marketId)
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
+	}
+
+	@Transactional(readOnly = true)
+	public Market getMarketById(Long marketId) {
+		return marketRepository.findById(marketId)
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 	}
 
 	@Transactional(readOnly = true)
@@ -57,12 +61,14 @@ public class MarketService {
 				).getId();
 	}
 
-	private MarketEnrollment getMarketEnrollment(Long enrollmentId) {
-		MarketEnrollment enrollment = marketEnrollmentRepository.findById(enrollmentId)
-				.orElseThrow(() -> {
-					throw new BusinessException(ENTITY_NOT_FOUND);
-				});
-		return enrollment;
+	@Transactional(readOnly = true)
+	public Market getMarketByMember(Member member) {
+		return marketRepository.findByMember(member)
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 	}
 
+	private MarketEnrollment getMarketEnrollment(Long enrollmentId) {
+		return marketEnrollmentRepository.findById(enrollmentId)
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
+	}
 }
