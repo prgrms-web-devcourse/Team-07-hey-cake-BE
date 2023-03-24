@@ -83,7 +83,7 @@ public class Order extends BaseEntity {
 		return this.visitDate.isBefore(targetDate);
 	}
 
-	public boolean isClosed() {
+	public boolean isExpired() {
 		return this.orderStatus != OrderStatus.NEW;
 	}
 
