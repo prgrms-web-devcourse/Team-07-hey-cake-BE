@@ -47,11 +47,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.programmers.heycake.common.util.TestUtils;
-import com.programmers.heycake.domain.image.model.dto.ImageResponse;
-import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
-import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
@@ -83,9 +80,6 @@ class OrderControllerTest {
 
 	@Autowired
 	OfferRepository offerRepository;
-
-	@Autowired
-	ImageService imageService;
 
 	@Autowired
 	private ImageRepository imageRepository;
@@ -259,7 +253,7 @@ class OrderControllerTest {
 	@Transactional
 	class GetOrders {
 		@Test
-		@DisplayName("Success - Order 상세 리스트 성공")
+		@DisplayName("Success - Order 리스트 조회 성공해서 200으로 응답한다.")
 		@Transactional
 		void getOrdersSuccess() throws Exception {
 
@@ -294,7 +288,7 @@ class OrderControllerTest {
 					.andExpect(jsonPath("$.content[1].orderStatus").value("NEW"))
 					.andExpect(jsonPath("$.content[1].cakeInfo.cakeCategory").value("PHOTO"))
 					.andExpect(jsonPath("$.content[1].region").value("강남구"))
-					.andDo(document("order/주문 조회 성공",
+					.andDo(document("order/주문 목록 조회 성공",
 							requestParameters(
 									parameterWithName("pageSize").description("페이지 사이즈"),
 									parameterWithName("cakeCategory").description("케익 분류"),
@@ -326,13 +320,12 @@ class OrderControllerTest {
 		}
 	}
 
-
 	@Nested
 	@DisplayName("getOrder")
 	@Transactional
 	class GetOrder {
 		@Test
-		@DisplayName("Success - 주문 상세 조회 성공")
+		@DisplayName("Success - 주문 상세 조회 성공하여 200으로 응답한다.")
 		@Transactional
 		void getOrderSuccess() throws Exception {
 			Order order = orderRepository.save(getOrder(1L));
@@ -457,13 +450,6 @@ class OrderControllerTest {
 									.param("visitTime", visitTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
 							)
 							.andExpect(status().isCreated())
-							.andExpect(jsonPath("").value(""))
-							.andExpect(jsonPath("").value(""))
-							.andExpect(jsonPath("").value(""))
-							.andExpect(jsonPath("").value(""))
-							.andExpect(jsonPath("").value(""))
-							.andExpect(jsonPath("").value(""))
-							.andExpect(jsonPath("").value(""))
 							.andDo(print())
 							.andDo(document("order/주문 생성 성공",
 									getDocumentRequest(),
@@ -495,14 +481,15 @@ class OrderControllerTest {
 			String orderId = mvcResult.getResponse()
 					.getHeader("Location")
 					.substring(15);
-			ImageResponses imageResponses = imageService.getImages(Long.parseLong(orderId), ORDER);
-			List<ImageResponse> images = imageResponses.images();
 
-			assertThat(images.size()).isEqualTo(2);
+			List<Image> imageList = imageRepository.findAllByReferenceIdAndImageType(
+					Long.parseLong(orderId), ORDER);
+
+			assertThat(imageList.size()).isEqualTo(2);
 		}
 
 		@Test
-		@DisplayName("Fail - 주문 생성 실패하여 401으로 응답한다.")
+		@DisplayName("Fail - 주문 생성 권한 인증에 실패하여 401으로 응답한다.")
 		void createOrderFailByUnAuthorized() throws Exception {
 			MockMultipartFile testImageFile = new MockMultipartFile(
 					"cakeImages",
@@ -559,7 +546,7 @@ class OrderControllerTest {
 
 		@Test
 		@Transactional
-		@DisplayName("Fail - 주문 생성에 권한 인가에 실패하여 403로 응답한다.")
+		@DisplayName("Fail - 주문 생성 권한 인가에 실패하여 403로 응답한다.")
 		void createOrderFailByForbidden() throws Exception {
 			MockMultipartFile testImageFile = new MockMultipartFile(
 					"testImageFile",
