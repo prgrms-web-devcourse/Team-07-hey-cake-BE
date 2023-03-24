@@ -5,6 +5,8 @@ import static com.programmers.heycake.common.util.TestUtils.*;
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.MARKET;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
+import static com.programmers.heycake.domain.order.model.vo.CakeCategory.*;
+import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
@@ -251,6 +253,79 @@ class OrderControllerTest {
 					));
 		}
 	}
+
+	@Nested
+	@DisplayName("getOrders")
+	@Transactional
+	class GetOrders {
+		@Test
+		@DisplayName("Success - Order 상세 리스트 성공")
+		@Transactional
+		void getOrdersSuccess() throws Exception {
+
+			orderRepository.saveAll(
+					List.of(
+							TestUtils.getOrder(1L, PHOTO, NEW, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, NEW, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, NEW, "강남구", LocalDateTime.now().minusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, NEW, "강남구", LocalDateTime.now().minusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, PAID, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, PAID, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, LETTERING, NEW, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, LETTERING, NEW, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, LETTERING, NEW, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, NEW, "강동구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, NEW, "강동구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, NEW, "강동구", LocalDateTime.now().plusDays(1))
+					)
+			);
+
+			mockMvc.perform(get("/api/v1/orders")
+							.param("pageSize", "5")
+							.param("cakeCategory", "PHOTO")
+							.param("orderStatus", "NEW")
+							.param("region", "강남구")
+					)
+					.andExpect(status().isOk())
+					.andDo(print())
+					.andExpect(jsonPath("$.content[0].orderStatus").value("NEW"))
+					.andExpect(jsonPath("$.content[0].cakeInfo.cakeCategory").value("PHOTO"))
+					.andExpect(jsonPath("$.content[0].region").value("강남구"))
+					.andExpect(jsonPath("$.content[1].orderStatus").value("NEW"))
+					.andExpect(jsonPath("$.content[1].cakeInfo.cakeCategory").value("PHOTO"))
+					.andExpect(jsonPath("$.content[1].region").value("강남구"))
+					.andDo(document("order/주문 조회 성공",
+							requestParameters(
+									parameterWithName("pageSize").description("페이지 사이즈"),
+									parameterWithName("cakeCategory").description("케익 분류"),
+									parameterWithName("orderStatus").description("주문 상태"),
+									parameterWithName("region").description("희망 지역")
+							),
+							responseFields(
+									fieldWithPath("content").type(JsonFieldType.ARRAY).description("주문 리스트"),
+									fieldWithPath("cursorId").type(JsonFieldType.NUMBER).description("커서"),
+									fieldWithPath("isLast").type(JsonFieldType.BOOLEAN).description("마지막 페이지"),
+									fieldWithPath("content[].orderId").type(JsonFieldType.NUMBER).description("주문 아이디"),
+									fieldWithPath("content[].title").type(JsonFieldType.STRING).description("주문 제목"),
+									fieldWithPath("content[].region").type(JsonFieldType.STRING).description("희망 지역"),
+									fieldWithPath("content[].orderStatus").type(JsonFieldType.STRING).description("주문 상태"),
+									fieldWithPath("content[].hopePrice").type(JsonFieldType.NUMBER).description("희망 가격"),
+									fieldWithPath("content[].visitTime").type(JsonFieldType.STRING).description("희망 방문 시간"),
+									fieldWithPath("content[].cakeInfo").type(JsonFieldType.OBJECT).description("케익 정보"),
+									fieldWithPath("content[].cakeInfo.cakeCategory").type(JsonFieldType.STRING).description("케익 카테고리"),
+									fieldWithPath("content[].cakeInfo.cakeSize").type(JsonFieldType.STRING).description("케익 사이즈"),
+									fieldWithPath("content[].cakeInfo.cakeHeight").type(JsonFieldType.STRING).description("케익 높이"),
+									fieldWithPath("content[].cakeInfo.breadFlavor").type(JsonFieldType.STRING).description("빵 맛"),
+									fieldWithPath("content[].cakeInfo.creamFlavor").type(JsonFieldType.STRING).description("크림 맛"),
+									fieldWithPath("content[].cakeInfo.requirements").type(JsonFieldType.STRING).description("추가 내용"),
+									fieldWithPath("content[].offerCount").type(JsonFieldType.NUMBER).description("업체가 제안한 건수"),
+									fieldWithPath("content[].images").type(JsonFieldType.ARRAY).description("이미지 "),
+									fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("생성 시간")
+							)
+					));
+		}
+	}
+
 
 	@Nested
 	@DisplayName("getOrder")
