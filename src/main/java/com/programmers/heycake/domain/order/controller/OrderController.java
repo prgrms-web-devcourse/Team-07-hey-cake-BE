@@ -51,7 +51,7 @@ public class OrderController {
 	@GetMapping
 	public ResponseEntity<OrderGetSimpleResponses> getOrders(
 			@RequestParam(required = false) Long cursorId,
-			@RequestParam int pageSize,
+			@RequestParam(defaultValue = "10") int pageSize,
 			@RequestParam(required = false) CakeCategory cakeCategory,
 			@RequestParam(required = false) OrderStatus orderStatus,
 			@RequestParam(required = false) String region
