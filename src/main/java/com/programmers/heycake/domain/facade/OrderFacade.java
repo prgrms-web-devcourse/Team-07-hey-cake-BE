@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.facade;
+package com.programmers.heycake.domain.order.facade;
 
 import static com.programmers.heycake.common.mapper.OrderMapper.*;
 import static com.programmers.heycake.common.util.AuthenticationUtil.*;
@@ -45,13 +45,14 @@ public class OrderFacade {
 		Long orderId = orderService.createOrder(orderCreateRequest);
 
 		orderCreateRequest.cakeImages()
-				.forEach(cakeImage ->
-						imageService.createAndUploadImage(
-								cakeImage,
-								ORDER_IMAGE_SUB_PATH,
-								orderId,
-								ORDER
-						));
+				.forEach(
+						cakeImage ->
+								imageService.createAndUploadImage(
+										cakeImage,
+										ORDER_IMAGE_SUB_PATH,
+										orderId,
+										ORDER
+								));
 		return orderId;
 	}
 
