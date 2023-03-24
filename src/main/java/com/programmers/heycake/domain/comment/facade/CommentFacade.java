@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.mapper.CommentMapper;
 import com.programmers.heycake.common.util.AuthenticationUtil;
 import com.programmers.heycake.domain.comment.model.dto.request.CommentCreateRequest;
-import com.programmers.heycake.domain.comment.model.dto.response.CommentListResponse;
+import com.programmers.heycake.domain.comment.model.dto.response.CommentsResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.comment.service.CommentService;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
@@ -86,14 +86,14 @@ public class CommentFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public List<CommentListResponse> getComments(Long offerId) {
+	public List<CommentsResponse> getComments(Long offerId) {
 		List<Comment> comments = commentService.getCommentsByOfferId(offerId);
 		return comments.stream()
 				.map(
 						comment -> {
 							Member member = memberService.getMemberById(comment.getMemberId());
 							ImageResponses imageResponse = imageService.getImages(comment.getId(), ImageType.COMMENT);
-							return CommentMapper.toCommentListResponse(comment, member, imageResponse);
+							return CommentMapper.toCommentsResponse(comment, member, imageResponse);
 						}
 				).toList();
 	}

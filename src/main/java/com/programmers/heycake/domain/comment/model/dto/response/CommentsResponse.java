@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 
 @Builder
-public record CommentListResponse(
+public record CommentsResponse(
 		Long commentId,
 		String comment,
 		String image,

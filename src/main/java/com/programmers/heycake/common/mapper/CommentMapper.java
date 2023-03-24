@@ -2,7 +2,7 @@ package com.programmers.heycake.common.mapper;
 
 import java.util.List;
 
-import com.programmers.heycake.domain.comment.model.dto.response.CommentListResponse;
+import com.programmers.heycake.domain.comment.model.dto.response.CommentsResponse;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
@@ -29,7 +29,7 @@ public class CommentMapper {
 				.toList();
 	}
 
-	public static CommentListResponse toCommentListResponse(
+	public static CommentsResponse toCommentsResponse(
 			Comment comment,
 			Member member,
 			ImageResponses imageResponse
@@ -43,7 +43,7 @@ public class CommentMapper {
 				.findAny()
 				.orElse(null);
 
-		return CommentListResponse.builder()
+		return CommentsResponse.builder()
 				.commentId(comment.getId())
 				.comment(comment.getContent())
 				.memberId(comment.getMemberId())

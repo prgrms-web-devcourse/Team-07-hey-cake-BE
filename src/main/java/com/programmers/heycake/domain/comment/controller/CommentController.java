@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.comment.facade.CommentFacade;
 import com.programmers.heycake.domain.comment.model.dto.request.CommentCreateRequest;
-import com.programmers.heycake.domain.comment.model.dto.response.CommentListResponse;
+import com.programmers.heycake.domain.comment.model.dto.response.CommentsResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -48,8 +48,8 @@ public class CommentController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<CommentListResponse>> getComments(@RequestParam Long offerId) {
-		List<CommentListResponse> comments = commentFacade.getComments(offerId);
+	public ResponseEntity<List<CommentsResponse>> getComments(@RequestParam Long offerId) {
+		List<CommentsResponse> comments = commentFacade.getComments(offerId);
 
 		return ResponseEntity.ok(comments);
 	}
