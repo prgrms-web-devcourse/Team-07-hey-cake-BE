@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.facade.OfferFacade;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferCreateRequest;
-import com.programmers.heycake.domain.offer.model.dto.response.OfferListResponse;
+import com.programmers.heycake.domain.offer.model.dto.response.OffersResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,7 +47,7 @@ public class OfferController {
 	}
 
 	@GetMapping("/api/v1/orders/{orderId}/offers")
-	public ResponseEntity<List<OfferListResponse>> getOffers(@PathVariable Long orderId) {
+	public ResponseEntity<List<OffersResponse>> getOffers(@PathVariable Long orderId) {
 
 		return ResponseEntity.ok(offerFacade.getOffers(orderId));
 	}

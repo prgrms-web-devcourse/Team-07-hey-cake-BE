@@ -12,7 +12,7 @@ import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.offer.model.dto.OfferDto;
-import com.programmers.heycake.domain.offer.model.dto.response.OfferListResponse;
+import com.programmers.heycake.domain.offer.model.dto.response.OffersResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 
@@ -43,7 +43,7 @@ public class OfferMapper {
 				.build();
 	}
 
-	public static OfferListResponse toOfferListResponse(
+	public static OffersResponse toOffersResponse(
 			Offer offer,
 			Market market,
 			ImageResponses imageResponses,
@@ -56,7 +56,7 @@ public class OfferMapper {
 				.map(ImageResponse::imageUrl)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 
-		return OfferListResponse.builder()
+		return OffersResponse.builder()
 				.offerId(offer.getId())
 				.createdDate(offer.getCreatedAt().toLocalDate())
 				.expectedPrice(offer.getExpectedPrice())

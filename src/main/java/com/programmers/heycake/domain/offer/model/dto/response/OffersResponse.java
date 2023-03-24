@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
 @Builder
-public record OfferListResponse(
+public record OffersResponse(
 		Long offerId,
 		Long marketId,
 		Long enrollmentId,

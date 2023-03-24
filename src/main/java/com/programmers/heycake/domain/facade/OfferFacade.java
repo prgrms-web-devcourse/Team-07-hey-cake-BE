@@ -21,7 +21,7 @@ import com.programmers.heycake.domain.market.service.MarketService;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferCreateRequest;
-import com.programmers.heycake.domain.offer.model.dto.response.OfferListResponse;
+import com.programmers.heycake.domain.offer.model.dto.response.OffersResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.service.OfferService;
 import com.programmers.heycake.domain.order.model.entity.Order;
@@ -91,7 +91,7 @@ public class OfferFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public List<OfferListResponse> getOffers(Long orderId) {
+	public List<OffersResponse> getOffers(Long orderId) {
 		validateOrderExistsByOrderId(orderId);
 
 		List<Offer> offers = offerService.getOffersByOrderId(orderId);
@@ -102,7 +102,7 @@ public class OfferFacade {
 							ImageResponses imageResponses = imageService.getImages(offer.getId(), OFFER);
 							boolean isPaid = historyService.isPaidOffer(offer.getMarketId(), orderId);
 							int numberOfCommentsInOffer = commentService.countCommentsByOffer(offer);
-							return OfferMapper.toOfferListResponse(offer, market, imageResponses, isPaid, numberOfCommentsInOffer);
+							return OfferMapper.toOffersResponse(offer, market, imageResponses, isPaid, numberOfCommentsInOffer);
 						}
 				)
 				.toList();

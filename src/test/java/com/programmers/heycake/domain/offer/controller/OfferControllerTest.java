@@ -56,7 +56,7 @@ import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferCreateRequest;
-import com.programmers.heycake.domain.offer.model.dto.response.OfferListResponse;
+import com.programmers.heycake.domain.offer.model.dto.response.OffersResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
@@ -595,7 +595,7 @@ class OfferControllerTest {
 			OrderHistory orderHistory = getOrderHistory(order.getMemberId(), market1.getId(), order);
 			historyRepository.save(orderHistory);
 
-			List<OfferListResponse> offersSuccessResponses = List.of(
+			List<OffersResponse> offersSuccessResponses = List.of(
 					getOffersSuccessResponses(offer1, market1, marketEnrollment1, image1, true, 2),
 					getOffersSuccessResponses(offer2, market2, marketEnrollment2, image2, false, 1)
 			);
@@ -658,11 +658,11 @@ class OfferControllerTest {
 			}
 		}
 
-		private OfferListResponse getOffersSuccessResponses(Offer offer, Market market,
+		private OffersResponse getOffersSuccessResponses(Offer offer, Market market,
 				MarketEnrollment marketEnrollment,
 				Image image, boolean isPaid, int commentCount) {
 
-			return OfferListResponse.builder()
+			return OffersResponse.builder()
 					.offerId(offer.getId())
 					.marketId(market.getId())
 					.enrollmentId(marketEnrollment.getId())
