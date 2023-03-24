@@ -13,7 +13,7 @@ import com.programmers.heycake.domain.comment.facade.CommentFacade;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
-import com.programmers.heycake.domain.market.model.dto.response.MarketDetailNoImageResponse;
+import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.service.MarketService;
 import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferSaveRequest;
@@ -79,9 +79,9 @@ public class OfferFacade {
 				.map(
 						offerResponse -> {
 							ImageResponses imageResponses = imageService.getImages(offerResponse.offerId(), OFFER);
-							MarketDetailNoImageResponse marketResponse = marketService.getMarket(offerResponse.marketId());
+							Market market = marketService.getMarket(offerResponse.marketId());
 							boolean isPaid = historyService.isPaidOffer(offerResponse.marketId(), orderId);
-							return OfferMapper.toOfferSummaryResponse(offerResponse, imageResponses, marketResponse, isPaid);
+							return OfferMapper.toOfferSummaryResponse(offerResponse, imageResponses, market, isPaid);
 						}
 				)
 				.toList();

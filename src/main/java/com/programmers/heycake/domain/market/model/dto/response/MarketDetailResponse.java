@@ -8,9 +8,9 @@ import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 import lombok.Builder;
 
 @Builder
-public record EnrollmentDetailWithImageResponse(
+public record MarketDetailResponse(
 		String phoneNumber,
-		MarketAddress marketAddress,
+		MarketAddress address,
 		@JsonFormat(pattern = "HH:mm") LocalTime openTime,
 		@JsonFormat(pattern = "HH:mm") LocalTime endTime,
 		String description,

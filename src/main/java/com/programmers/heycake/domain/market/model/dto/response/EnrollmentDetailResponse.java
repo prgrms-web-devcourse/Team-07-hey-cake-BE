@@ -8,8 +8,7 @@ import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 import lombok.Builder;
 
 @Builder
-public record EnrollmentDetailNoImageResponse(
-		Long enrollmentId,
+public record EnrollmentDetailResponse(
 		String phoneNumber,
 		MarketAddress marketAddress,
 		@JsonFormat(pattern = "HH:mm") LocalTime openTime,
@@ -17,6 +16,7 @@ public record EnrollmentDetailNoImageResponse(
 		String description,
 		String marketName,
 		String businessNumber,
-		String ownerName
+		String ownerName,
+		String marketImage
 ) {
 }

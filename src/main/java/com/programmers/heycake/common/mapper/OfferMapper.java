@@ -10,7 +10,7 @@ import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.market.model.dto.response.MarketDetailNoImageResponse;
+import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferResponse;
 import com.programmers.heycake.domain.offer.model.dto.response.OfferSummaryResponse;
@@ -44,7 +44,7 @@ public class OfferMapper {
 	}
 
 	public static OfferSummaryResponse toOfferSummaryResponse(OfferResponse offerResponse, ImageResponses imageResponses,
-			MarketDetailNoImageResponse marketResponse, boolean isPaid) {
+			Market market, boolean isPaid) {
 
 		String imageUrl = imageResponses.images()
 				.stream()
@@ -55,8 +55,8 @@ public class OfferMapper {
 		return OfferSummaryResponse.builder()
 				.offerId(offerResponse.offerId())
 				.marketId(offerResponse.marketId())
-				.enrollmentId(marketResponse.enrollmentId())
-				.marketName(marketResponse.marketName())
+				.enrollmentId(market.getMarketEnrollment().getId())
+				.marketName(market.getMarketEnrollment().getMarketName())
 				.expectedPrice(offerResponse.expectedPrice())
 				.imageUrl(imageUrl)
 				.content(offerResponse.content())

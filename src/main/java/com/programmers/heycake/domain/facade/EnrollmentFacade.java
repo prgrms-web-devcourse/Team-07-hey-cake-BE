@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.market.facade;
+package com.programmers.heycake.domain.facade;
 
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 
@@ -11,12 +11,11 @@ import com.programmers.heycake.common.mapper.EnrollmentMapper;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
-import com.programmers.heycake.domain.market.model.dto.request.EnrollmentGetListRequest;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailNoImageResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailWithImageResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentGetListResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentListSummaryNoImageResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentListSummaryWithImageResponse;
+import com.programmers.heycake.domain.market.model.dto.request.EnrollmentsRequest;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsComponentResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsResponse;
+import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 import com.programmers.heycake.domain.market.service.EnrollmentService;
 import com.programmers.heycake.domain.market.service.MarketService;
@@ -55,34 +54,35 @@ public class EnrollmentFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public EnrollmentDetailWithImageResponse getMarketEnrollment(Long enrollmentId) {
-		EnrollmentDetailNoImageResponse enrollment = enrollmentService.getMarketEnrollment(enrollmentId);
+	public EnrollmentDetailResponse getMarketEnrollment(Long enrollmentId) {
+		MarketEnrollment enrollment = enrollmentService.getMarketEnrollment(enrollmentId);
 		ImageResponses images = imageIntegrationService.getImages(enrollmentId, ENROLLMENT_MARKET);
-		return EnrollmentMapper.toEnrollmentDetailWithImageResponse(enrollment, images);
+		return EnrollmentMapper.toEnrollmentDetailResponse(enrollment, images);
 	}
 
 	@Transactional
-	public void changeEnrollmentStatus(Long enrollmentId, EnrollmentStatus status) {
-		enrollmentService.changeEnrollmentStatus(enrollmentId, status);
+	public void updateEnrollmentStatus(Long enrollmentId, EnrollmentStatus status) {
+		enrollmentService.updateEnrollmentStatus(enrollmentId, status);
 
 		if (status == EnrollmentStatus.APPROVED) {
-			marketService.enrollMarket(enrollmentId);
+			marketService.createMarket(enrollmentId);
 		}
 	}
 
 	@Transactional(readOnly = true)
-	public EnrollmentGetListResponse getMarketEnrollments(EnrollmentGetListRequest request) {
-		List<EnrollmentListSummaryNoImageResponse> noImageResponses = enrollmentService.getMarketEnrollments(request);
-		List<EnrollmentListSummaryWithImageResponse> withImageResponses = noImageResponses.stream()
+	public EnrollmentsResponse getMarketEnrollments(EnrollmentsRequest request) {
+		List<MarketEnrollment> enrollments = enrollmentService.getMarketEnrollments(request);
+		List<EnrollmentsComponentResponse> withImageResponses = enrollments.stream()
 				.map(enrollment -> {
-					ImageResponses images = imageIntegrationService.getImages(enrollment.enrollmentId(), ENROLLMENT_MARKET);
-					return EnrollmentMapper.toEnrollmentListSummaryWithImageResponse(enrollment, images);
+					ImageResponses images = imageIntegrationService.getImages(enrollment.getId(), ENROLLMENT_MARKET);
+					return EnrollmentMapper.toEnrollmentsComponentResponse(enrollment, images);
 				})
 				.toList();
+
 		Long nextCursor =
 				withImageResponses.size() < request.pageSize() ?
 						0 : withImageResponses.get(withImageResponses.size() - 1).enrollmentId();
 
-		return EnrollmentMapper.toEnrollmentGetListResponse(withImageResponses, nextCursor);
+		return EnrollmentMapper.toEnrollmentsResponse(withImageResponses, nextCursor);
 	}
 }

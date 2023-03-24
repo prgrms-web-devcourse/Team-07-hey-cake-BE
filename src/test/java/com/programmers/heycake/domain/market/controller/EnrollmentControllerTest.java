@@ -41,13 +41,13 @@ import org.springframework.validation.BindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.util.TestUtils;
+import com.programmers.heycake.domain.facade.EnrollmentFacade;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
-import com.programmers.heycake.domain.market.facade.EnrollmentFacade;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentUpdateStatusRequest;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailWithImageResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentListSummaryWithImageResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsComponentResponse;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
@@ -392,7 +392,7 @@ class EnrollmentControllerTest {
 			Image image = new Image(enrollment.getId(), ENROLLMENT_MARKET, "imageUrl");
 			imageRepository.save(image);
 
-			EnrollmentDetailWithImageResponse enrollmentResponse = getEnrollmentResponse(enrollment, image);
+			EnrollmentDetailResponse enrollmentResponse = getEnrollmentResponse(enrollment, image);
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(
@@ -519,8 +519,8 @@ class EnrollmentControllerTest {
 					.hasMessage(ENTITY_NOT_FOUND.getMessage());
 		}
 
-		private EnrollmentDetailWithImageResponse getEnrollmentResponse(MarketEnrollment enrollment, Image image) {
-			return EnrollmentDetailWithImageResponse.builder()
+		private EnrollmentDetailResponse getEnrollmentResponse(MarketEnrollment enrollment, Image image) {
+			return EnrollmentDetailResponse.builder()
 					.phoneNumber(enrollment.getPhoneNumber())
 					.marketAddress(enrollment.getMarketAddress())
 					.openTime(enrollment.getOpenTime())
@@ -614,7 +614,7 @@ class EnrollmentControllerTest {
 		@DisplayName("Success - 거절된 업체 신청을 승인 대기로 변경하고 204로 응답한다")
 		void changeEnrollmentStatusSuccessToWaiting() throws Exception {
 			// given
-			enrollmentFacade.changeEnrollmentStatus(savedEnrollment.getId(), DELETED);
+			enrollmentFacade.updateEnrollmentStatus(savedEnrollment.getId(), DELETED);
 			EnrollmentUpdateStatusRequest waitingRequest = new EnrollmentUpdateStatusRequest(WAITING);
 
 			// when
@@ -752,7 +752,7 @@ class EnrollmentControllerTest {
 		void changeEnrollmentStatusFailByAlreadyMarket() throws Exception {
 			// given
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
-			enrollmentController.changeEnrollmentStatus(savedEnrollment.getId(), approvedRequest);
+			enrollmentController.updateEnrollmentStatus(savedEnrollment.getId(), approvedRequest);
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(
@@ -812,7 +812,7 @@ class EnrollmentControllerTest {
 			Image image3 = new Image(enrollment3.getId(), ENROLLMENT_MARKET, "imageUrl");
 			imageRepository.saveAll(List.of(image1, image2, image3));
 
-			List<EnrollmentListSummaryWithImageResponse> enrollmentResponses = List.of(
+			List<EnrollmentsComponentResponse> enrollmentResponses = List.of(
 					getEnrollmentResponse(enrollment2, image2),
 					getEnrollmentResponse(enrollment1, image1)
 			);
@@ -958,8 +958,8 @@ class EnrollmentControllerTest {
 		// 			.andReturn();
 		// }
 
-		private EnrollmentListSummaryWithImageResponse getEnrollmentResponse(MarketEnrollment enrollment, Image image) {
-			return EnrollmentListSummaryWithImageResponse.builder()
+		private EnrollmentsComponentResponse getEnrollmentResponse(MarketEnrollment enrollment, Image image) {
+			return EnrollmentsComponentResponse.builder()
 					.enrollmentId(enrollment.getId())
 					.imageUrl(image.getImageUrl())
 					.businessNumber(enrollment.getBusinessNumber())

@@ -7,11 +7,9 @@ import java.util.List;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailNoImageResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailWithImageResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentGetListResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentListSummaryNoImageResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentListSummaryWithImageResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsComponentResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsResponse;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 
@@ -39,9 +37,11 @@ public class EnrollmentMapper {
 				.build();
 	}
 
-	public static EnrollmentDetailNoImageResponse toEnrollmentDetailNoImageResponse(MarketEnrollment enrollment) {
-		return EnrollmentDetailNoImageResponse.builder()
-				.enrollmentId(enrollment.getId())
+	public static EnrollmentDetailResponse toEnrollmentDetailResponse(
+			MarketEnrollment enrollment,
+			ImageResponses images
+	) {
+		return EnrollmentDetailResponse.builder()
 				.phoneNumber(enrollment.getPhoneNumber())
 				.marketAddress(enrollment.getMarketAddress())
 				.openTime(enrollment.getOpenTime())
@@ -50,13 +50,28 @@ public class EnrollmentMapper {
 				.marketName(enrollment.getMarketName())
 				.businessNumber(enrollment.getBusinessNumber())
 				.ownerName(enrollment.getOwnerName())
+				.marketImage(images.images().stream()
+						.findFirst()
+						.orElseThrow(() -> {
+							throw new BusinessException(ENTITY_NOT_FOUND);
+						}).imageUrl()
+				)
 				.build();
 	}
 
-	public static EnrollmentListSummaryNoImageResponse toEnrollmentListSummaryNoImageResponse(
-			MarketEnrollment enrollment) {
-		return EnrollmentListSummaryNoImageResponse.builder()
+	public static EnrollmentsComponentResponse toEnrollmentsComponentResponse(
+			MarketEnrollment enrollment,
+			ImageResponses images
+	) {
+		return EnrollmentsComponentResponse.builder()
 				.enrollmentId(enrollment.getId())
+				.imageUrl(images.images()
+						.stream()
+						.findFirst()
+						.orElseThrow(() -> {
+							throw new BusinessException(ENTITY_NOT_FOUND);
+						}).imageUrl()
+				)
 				.businessNumber(enrollment.getBusinessNumber())
 				.address(enrollment.getMarketAddress())
 				.marketName(enrollment.getMarketName())
@@ -67,54 +82,10 @@ public class EnrollmentMapper {
 				.build();
 	}
 
-	public static EnrollmentDetailWithImageResponse toEnrollmentDetailWithImageResponse(
-			EnrollmentDetailNoImageResponse enrollment,
-			ImageResponses images
+	public static EnrollmentsResponse toEnrollmentsResponse(
+			List<EnrollmentsComponentResponse> enrollments,
+			Long nextCursor
 	) {
-		return EnrollmentDetailWithImageResponse.builder()
-				.phoneNumber(enrollment.phoneNumber())
-				.marketAddress(enrollment.marketAddress())
-				.openTime(enrollment.openTime())
-				.endTime(enrollment.endTime())
-				.description(enrollment.description())
-				.marketName(enrollment.marketName())
-				.businessNumber(enrollment.businessNumber())
-				.ownerName(enrollment.ownerName())
-				.marketImage(images.images().stream()
-						.findFirst()
-						.orElseThrow(() -> {
-							throw new BusinessException(ENTITY_NOT_FOUND);
-						}).imageUrl()
-				)
-				.build();
-	}
-
-	public static EnrollmentListSummaryWithImageResponse toEnrollmentListSummaryWithImageResponse(
-			EnrollmentListSummaryNoImageResponse enrollment,
-			ImageResponses images
-	) {
-		return EnrollmentListSummaryWithImageResponse.builder()
-				.enrollmentId(enrollment.enrollmentId())
-				.imageUrl(images.images()
-						.stream()
-						.findFirst()
-						.orElseThrow(() -> {
-							throw new BusinessException(ENTITY_NOT_FOUND);
-						}).imageUrl()
-				)
-				.businessNumber(enrollment.businessNumber())
-				.address(enrollment.address())
-				.marketName(enrollment.marketName())
-				.phoneNumber(enrollment.phoneNumber())
-				.ownerName(enrollment.ownerName())
-				.status(enrollment.status())
-				.createdAt(enrollment.createdAt())
-				.build();
-	}
-
-	public static EnrollmentGetListResponse toEnrollmentGetListResponse(
-			List<EnrollmentListSummaryWithImageResponse> enrollments,
-			Long nextCursor) {
-		return new EnrollmentGetListResponse(enrollments, nextCursor);
+		return new EnrollmentsResponse(enrollments, nextCursor);
 	}
 }
