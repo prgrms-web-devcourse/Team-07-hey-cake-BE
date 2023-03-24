@@ -8,17 +8,12 @@ import org.springframework.stereotype.Service;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.common.mapper.CommentMapper;
 import com.programmers.heycake.common.util.AuthenticationUtil;
-import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.comment.repository.CommentRepository;
 import com.programmers.heycake.domain.market.model.entity.Market;
-import com.programmers.heycake.domain.market.repository.MarketRepository;
 import com.programmers.heycake.domain.member.model.entity.Member;
-import com.programmers.heycake.domain.member.repository.MemberRepository;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
-import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.entity.Order;
 
 import lombok.RequiredArgsConstructor;
@@ -28,17 +23,14 @@ import lombok.RequiredArgsConstructor;
 public class CommentService {
 
 	private final CommentRepository commentRepository;
-	private final OfferRepository offerRepository;
-	private final MarketRepository marketRepository;
-	private final MemberRepository memberRepository;
 
-	public Long saveComment(String content, Long offerId, Long memberId) {
-		Offer offer = getOffer(offerId);
+	public Long createComment(String content, Offer offer, Market market, Member member) {
 		Order order = offer.getOrder();
 
-		verifyCommentWriteAuthority(order, offer, memberId);
+		verifyOrderExpired(order);
+		verifyCommentWriteAuthority(order, market, member);
 
-		Comment comment = toEntity(memberId, content);
+		Comment comment = toEntity(member.getId(), content);
 		comment.setOffer(offer);
 
 		commentRepository.save(comment);
@@ -46,34 +38,22 @@ public class CommentService {
 		return comment.getId();
 	}
 
-	private void verifyCommentWriteAuthority(Order order, Offer offer, Long memberId) {
-		Market market = getMarket(offer.getMarketId());
-		Member member = getMember(memberId);
-
-		if ((order.isNotWrittenBy(memberId)) && member.isDifferentMember(market.getMember())) {
+	private void verifyCommentWriteAuthority(Order order, Market market, Member member) {
+		if ((order.isNotWrittenBy(member.getId())) && member.isDifferentMember(market.getMember())) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
 	}
 
-	private Offer getOffer(Long offerId) {
-		return offerRepository.findByIdFetchOrder(offerId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-	}
-
-	private Market getMarket(Long marketId) {
-		return marketRepository.findById(marketId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-	}
-
-	private Member getMember(Long memberId) {
-		return memberRepository.findById(memberId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+	private void verifyOrderExpired(Order order) {
+		if (order.isExpired()) {
+			throw new BusinessException(ErrorCode.ORDER_EXPIRED);
+		}
 	}
 
 	public void deleteComment(Long commentId) {
 		Long memberId = AuthenticationUtil.getMemberId();
 
-		Comment comment = getComment(commentId);
+		Comment comment = getCommentById(commentId);
 
 		verifyCommentDeleteAuthority(comment, memberId);
 
@@ -90,16 +70,13 @@ public class CommentService {
 		}
 	}
 
-	private Comment getComment(Long commentId) {
+	public Comment getCommentById(Long commentId) {
 		return commentRepository.findById(commentId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
-	public List<CommentResponse> getComments(Long offerId) {
-		return commentRepository.findByOfferId(offerId)
-				.stream()
-				.map(CommentMapper::toCommentResponse)
-				.toList();
+	public List<Comment> getCommentsByOfferId(Long offerId) {
+		return commentRepository.findAllByOfferId(offerId);
 	}
 
 	public int countCommentsByOffer(Offer offer) {

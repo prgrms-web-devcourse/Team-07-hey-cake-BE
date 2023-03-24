@@ -74,7 +74,7 @@ public class OfferService {
 
 	private void isNew(Long offerId) {
 		if (getOffer(offerId).getOrder().isExpired()) {
-			throw new BusinessException(ErrorCode.ORDER_CLOSED);
+			throw new BusinessException(ErrorCode.ORDER_EXPIRED);
 		}
 	}
 
@@ -97,7 +97,7 @@ public class OfferService {
 
 	private void validateOrderIsExpired(Order order) {
 		if (order.isExpired()) {
-			throw new BusinessException(ErrorCode.ORDER_CLOSED);
+			throw new BusinessException(ErrorCode.ORDER_EXPIRED);
 		}
 	}
 
@@ -105,5 +105,10 @@ public class OfferService {
 		return offerRepository.findAllByOrderId(orderId)
 				.stream()
 				.toList();
+	}
+
+	public Offer getOfferWithOrderById(Long offerId) {
+		return offerRepository.findFetchWithOrderById(offerId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 }

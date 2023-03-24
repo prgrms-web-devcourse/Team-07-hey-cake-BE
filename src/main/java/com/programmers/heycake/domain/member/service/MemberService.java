@@ -212,22 +212,12 @@ public class MemberService {
 
 	@Transactional(readOnly = true)
 	public Member getMemberById(Long memberId) {
-		return memberRepository
-				.findById(memberId)
-				.orElseThrow(
-						() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND)
-				);
+		return memberRepository.findById(memberId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
 	@Transactional(readOnly = true)
 	public boolean isMarketById(Long memberId) {
 		return getMemberById(memberId).isMarket();
-	}
-
-	public MemberResponse getMemberResponseByMemberId(Long memberId) {
-		Member member = memberRepository.findById(memberId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-
-		return MemberMapper.toMemberResponse(member);
 	}
 }

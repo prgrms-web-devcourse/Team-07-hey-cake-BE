@@ -76,4 +76,8 @@ public class MarketService {
 		return marketRepository.findFetchWithMarketEnrollmentById(marketId)
 				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 	}
+	public Market getMarketById(Long marketId) {
+		return marketRepository.findById(marketId)
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
+	}
 }
