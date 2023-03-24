@@ -9,13 +9,12 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.domain.facade.OfferFacade;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.service.MarketService;
 import com.programmers.heycake.domain.member.model.dto.response.OrderGetDetailResponse;
 import com.programmers.heycake.domain.member.service.MemberService;
-import com.programmers.heycake.domain.facade.OfferFacade;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
@@ -38,9 +37,8 @@ public class OrderFacade {
 	private final OrderService orderService;
 	private final MemberService memberService;
 	private final HistoryService historyService;
-	private final ImageService imageService;
 	private final OfferFacade offerFacade;
-	private final ImageIntegrationService imageIntegrationService;
+	private final ImageService imageService;
 	private final MarketService marketService;
 
 	private static final String ORDER_IMAGE_SUB_PATH = "images/orders";
@@ -52,7 +50,7 @@ public class OrderFacade {
 		orderCreateRequest.cakeImages()
 				.forEach(
 						cakeImage ->
-								imageIntegrationService.createAndUploadImage(
+								imageService.createAndUploadImage(
 										cakeImage,
 										ORDER_IMAGE_SUB_PATH,
 										orderId,
@@ -123,7 +121,7 @@ public class OrderFacade {
 
 	@Transactional
 	public void deleteOrder(Long orderId) {
-		imageIntegrationService.deleteImages(orderId, ORDER, ORDER_IMAGE_SUB_PATH);
+		imageService.deleteImages(orderId, ORDER, ORDER_IMAGE_SUB_PATH);
 
 		List<Long> orderOfferIdList = orderService.getOrderOfferIdList(orderId);
 		orderOfferIdList.forEach(offerFacade::deleteOfferWithoutAuth);

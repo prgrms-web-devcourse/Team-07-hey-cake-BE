@@ -2,8 +2,8 @@ package com.programmers.heycake.common.mapper;
 
 import java.util.List;
 
-import com.programmers.heycake.domain.comment.model.dto.response.CommentsResponse;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
+import com.programmers.heycake.domain.comment.model.dto.response.CommentsResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;

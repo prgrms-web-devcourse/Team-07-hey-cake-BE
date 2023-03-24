@@ -14,7 +14,6 @@ import com.programmers.heycake.domain.comment.service.CommentService;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
-import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.service.MarketService;
@@ -35,14 +34,13 @@ public class CommentFacade {
 	private final CommentService commentService;
 	private final MarketService marketService;
 	private final OfferService offerService;
-	private final ImageIntegrationService imageIntegrationService;
 	private final ImageService imageService;
 
 	@Transactional
 	public void deleteComment(Long commentId) {
 		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
 		if (!commentImageResponse.isEmpty()) {
-			imageIntegrationService.deleteImages(commentId, ImageType.COMMENT, COMMENT_SUB_PATH);
+			imageService.deleteImages(commentId, ImageType.COMMENT, COMMENT_SUB_PATH);
 		}
 
 		commentService.deleteComment(commentId);
@@ -52,7 +50,7 @@ public class CommentFacade {
 	public void deleteCommentWithoutAuth(Long commentId) {
 		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
 		if (!commentImageResponse.isEmpty()) {
-			imageIntegrationService.deleteImages(commentId, ImageType.COMMENT, COMMENT_SUB_PATH);
+			imageService.deleteImages(commentId, ImageType.COMMENT, COMMENT_SUB_PATH);
 		}
 
 		commentService.deleteCommentWithoutAuth(commentId);
@@ -74,7 +72,7 @@ public class CommentFacade {
 		);
 
 		if (commentCreateRequest.existsImage()) {
-			imageIntegrationService.createAndUploadImage(
+			imageService.createAndUploadImage(
 					commentCreateRequest.image(),
 					COMMENT_SUB_PATH,
 					createdCommentId,

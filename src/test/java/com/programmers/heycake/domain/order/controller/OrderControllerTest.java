@@ -47,6 +47,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.programmers.heycake.common.util.TestUtils;
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
+import com.programmers.heycake.domain.image.model.entity.Image;
+import com.programmers.heycake.domain.image.repository.ImageRepository;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
@@ -81,7 +83,10 @@ class OrderControllerTest {
 	OfferRepository offerRepository;
 
 	@Autowired
-	private ImageService imageService;
+	ImageService imageService;
+
+	@Autowired
+	private ImageRepository imageRepository;
 
 	private static final String ACCESS_TOKEN = "access_token";
 
@@ -269,8 +274,8 @@ class OrderControllerTest {
 
 			String imageUrl1 = "testUrl1";
 			String imageUrl2 = "testUrl2";
-			imageService.createImage(order.getId(), ORDER, imageUrl1);
-			imageService.createImage(order.getId(), ORDER, imageUrl2);
+			imageRepository.save(new Image(order.getId(), ORDER, imageUrl1));
+			imageRepository.save(new Image(order.getId(), ORDER, imageUrl2));
 
 			mockMvc.perform(get("/api/v1/orders/{orderId}", order.getId()))
 					.andExpect(status().isOk())

@@ -14,7 +14,6 @@ import com.programmers.heycake.common.mapper.OfferMapper;
 import com.programmers.heycake.domain.comment.facade.CommentFacade;
 import com.programmers.heycake.domain.comment.service.CommentService;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.service.MarketService;
@@ -36,15 +35,14 @@ public class OfferFacade {
 
 	private static final String OFFER_IMAGE_SUB_PATH = "images/offers";
 
+	private final CommentFacade commentFacade;
+	private final CommentService commentService;
 	private final OfferService offerService;
 	private final OrderService orderService;
 	private final MarketService marketService;
 	private final MemberService memberService;
-	private final ImageService imageService;
-	private final CommentFacade commentFacade;
 	private final HistoryService historyService;
-	private final CommentService commentService;
-	private final ImageIntegrationService imageIntegrationService;
+	private final ImageService imageService;
 
 	@Transactional
 	public Long createOffer(OfferCreateRequest offerCreateRequest) {
@@ -59,7 +57,7 @@ public class OfferFacade {
 				offerCreateRequest.content()
 		);
 
-		imageIntegrationService.createAndUploadImage(
+		imageService.createAndUploadImage(
 				offerCreateRequest.offerImage(),
 				OFFER_IMAGE_SUB_PATH,
 				createdOfferId,
@@ -72,7 +70,7 @@ public class OfferFacade {
 	@Transactional
 	public void deleteOffer(Long offerId) {
 		Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(getMemberId()));
-		imageIntegrationService.deleteImages(offerId, OFFER, OFFER_IMAGE_SUB_PATH);
+		imageService.deleteImages(offerId, OFFER, OFFER_IMAGE_SUB_PATH);
 
 		List<Long> offerCommentIdList = offerService.getOfferCommentIdList(offerId);
 		offerCommentIdList.forEach(commentFacade::deleteCommentWithoutAuth);
@@ -82,7 +80,7 @@ public class OfferFacade {
 
 	@Transactional
 	public void deleteOfferWithoutAuth(Long offerId) {
-		imageIntegrationService.deleteImages(offerId, OFFER, OFFER_IMAGE_SUB_PATH);
+		imageService.deleteImages(offerId, OFFER, OFFER_IMAGE_SUB_PATH);
 
 		List<Long> offerCommentIdList = offerService.getOfferCommentIdList(offerId);
 		offerCommentIdList.forEach(commentFacade::deleteCommentWithoutAuth);
