@@ -9,8 +9,9 @@ import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 import lombok.Builder;
 
 @Builder
-public record EnrollmentListSummaryNoImageResponse(
+public record EnrollmentsElementResponse(
 		Long enrollmentId,
+		String imageUrl,
 		String businessNumber,
 		MarketAddress address,
 		String marketName,

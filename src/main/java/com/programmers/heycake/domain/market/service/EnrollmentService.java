@@ -10,11 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
-import com.programmers.heycake.common.mapper.EnrollmentMapper;
+import com.programmers.heycake.domain.market.mapper.EnrollmentMapper;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
-import com.programmers.heycake.domain.market.model.dto.request.EnrollmentGetListRequest;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailNoImageResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentListSummaryNoImageResponse;
+import com.programmers.heycake.domain.market.model.dto.request.EnrollmentsRequest;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 import com.programmers.heycake.domain.market.repository.EnrollmentQueryDslRepository;
@@ -36,15 +34,12 @@ public class EnrollmentService {
 	public Long createEnrollment(EnrollmentCreateRequest request) {
 
 		MarketEnrollment enrollment = EnrollmentMapper.toEntity(request);
-
 		if (enrollment.hasOpenDateAfterNow()) {
 			throw new BusinessException(BAD_REQUEST);
 		}
 
 		Member member = memberRepository.findById(getMemberId())
-				.orElseThrow(() -> {
-					throw new BusinessException(ENTITY_NOT_FOUND);
-				});
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 		if (member.isMarket()) {
 			throw new AccessDeniedException("이미 업체인 고객입니다.");
 		}
@@ -56,20 +51,15 @@ public class EnrollmentService {
 	}
 
 	@Transactional(readOnly = true)
-	public EnrollmentDetailNoImageResponse getMarketEnrollment(Long enrollmentId) {
-		MarketEnrollment enrollment = marketEnrollmentRepository.findById(enrollmentId)
-				.orElseThrow(() -> {
-					throw new BusinessException(ENTITY_NOT_FOUND);
-				});
-		return EnrollmentMapper.toEnrollmentDetailNoImageResponse(enrollment);
+	public MarketEnrollment getMarketEnrollment(Long enrollmentId) {
+		return marketEnrollmentRepository.findById(enrollmentId)
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 	}
 
 	@Transactional
-	public void changeEnrollmentStatus(Long enrollmentId, EnrollmentStatus status) {
+	public void updateEnrollmentStatus(Long enrollmentId, EnrollmentStatus status) {
 		MarketEnrollment enrollment = marketEnrollmentRepository.findByIdFetchWithMember(enrollmentId)
-				.orElseThrow(() -> {
-					throw new BusinessException(ENTITY_NOT_FOUND);
-				});
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 
 		if (enrollment.isSameStatus(status)) {
 			throw new BusinessException(DUPLICATED);
@@ -78,15 +68,11 @@ public class EnrollmentService {
 		enrollment.updateEnrollmentStatus(status);
 	}
 
-	public List<EnrollmentListSummaryNoImageResponse> getMarketEnrollments(EnrollmentGetListRequest request) {
-		List<MarketEnrollment> marketEnrollments = enrollmentQueryDslRepository.findAllOrderByCreatedAtDesc(
+	public List<MarketEnrollment> getMarketEnrollments(EnrollmentsRequest request) {
+		return enrollmentQueryDslRepository.findAllOrderByCreatedAtDesc(
 				request.cursorEnrollmentId(),
 				request.pageSize(),
 				request.status()
 		);
-
-		return marketEnrollments.stream()
-				.map(EnrollmentMapper::toEnrollmentListSummaryNoImageResponse)
-				.toList();
 	}
 }

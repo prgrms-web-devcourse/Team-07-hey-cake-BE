@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.programmers.heycake.domain.market.facade.EnrollmentFacade;
+import com.programmers.heycake.domain.facade.EnrollmentFacade;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
-import com.programmers.heycake.domain.market.model.dto.request.EnrollmentGetListRequest;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentUpdateStatusRequest;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailWithImageResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentGetListResponse;
+import com.programmers.heycake.domain.market.model.dto.request.EnrollmentsRequest;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsResponse;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
 
 import lombok.RequiredArgsConstructor;
@@ -44,32 +44,32 @@ public class EnrollmentController {
 	}
 
 	@GetMapping("/{enrollmentId}")
-	public ResponseEntity<EnrollmentDetailWithImageResponse> getMarketEnrollment(@PathVariable Long enrollmentId) {
-		EnrollmentDetailWithImageResponse enrollment = enrollmentFacade.getMarketEnrollment(enrollmentId);
+	public ResponseEntity<EnrollmentDetailResponse> getMarketEnrollment(@PathVariable Long enrollmentId) {
+		EnrollmentDetailResponse enrollment = enrollmentFacade.getMarketEnrollment(enrollmentId);
 		return ResponseEntity.ok(enrollment);
 	}
 
 	@PatchMapping("/{enrollmentId}")
-	public ResponseEntity<Void> changeEnrollmentStatus(
+	public ResponseEntity<Void> updateEnrollmentStatus(
 			@PathVariable Long enrollmentId,
 			@Valid @RequestBody EnrollmentUpdateStatusRequest request
 	) {
-		enrollmentFacade.changeEnrollmentStatus(enrollmentId, request.status());
+		enrollmentFacade.updateEnrollmentStatus(enrollmentId, request.status());
 		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping
-	public ResponseEntity<EnrollmentGetListResponse> getMarketEnrollments(
+	public ResponseEntity<EnrollmentsResponse> getMarketEnrollments(
 			@RequestParam(required = false) Long cursorId,
 			@RequestParam(defaultValue = "10") Integer pageSize,
 			@RequestParam(required = false) EnrollmentStatus status
 	) {
-		EnrollmentGetListRequest request = new EnrollmentGetListRequest(
+		EnrollmentsRequest request = new EnrollmentsRequest(
 				cursorId,
 				pageSize,
 				status
 		);
-		EnrollmentGetListResponse marketEnrollments = enrollmentFacade.getMarketEnrollments(request);
+		EnrollmentsResponse marketEnrollments = enrollmentFacade.getMarketEnrollments(request);
 		return ResponseEntity.ok(marketEnrollments);
 	}
 }

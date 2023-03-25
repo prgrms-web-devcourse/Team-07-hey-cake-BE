@@ -7,8 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
-import com.programmers.heycake.common.mapper.MarketMapper;
-import com.programmers.heycake.domain.market.model.dto.response.MarketDetailNoImageResponse;
+import com.programmers.heycake.domain.market.mapper.MarketMapper;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
@@ -25,7 +24,7 @@ public class MarketService {
 	private final MarketEnrollmentRepository marketEnrollmentRepository;
 
 	@Transactional
-	public Long enrollMarket(Long enrollmentId) {
+	public Long createMarket(Long enrollmentId) {
 
 		MarketEnrollment enrollment = getMarketEnrollment(enrollmentId);
 		Member member = enrollment.getMember();
@@ -43,12 +42,15 @@ public class MarketService {
 	}
 
 	@Transactional(readOnly = true)
-	public MarketDetailNoImageResponse getMarket(Long marketId) {
-		Market market = marketRepository.findFetchWithMarketEnrollmentById(marketId)
-				.orElseThrow(() -> {
-					throw new BusinessException(ENTITY_NOT_FOUND);
-				});
-		return MarketMapper.toMarketDetailNoImageResponse(market);
+	public Market getMarketWithMarketEnrollmentById(Long marketId) {
+		return marketRepository.findFetchWithMarketEnrollmentById(marketId)
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
+	}
+
+	@Transactional(readOnly = true)
+	public Market getMarketById(Long marketId) {
+		return marketRepository.findById(marketId)
+				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 	}
 
 	@Transactional(readOnly = true)
@@ -59,25 +61,14 @@ public class MarketService {
 				).getId();
 	}
 
-	private MarketEnrollment getMarketEnrollment(Long enrollmentId) {
-		MarketEnrollment enrollment = marketEnrollmentRepository.findById(enrollmentId)
-				.orElseThrow(() -> {
-					throw new BusinessException(ENTITY_NOT_FOUND);
-				});
-		return enrollment;
-	}
-
+	@Transactional(readOnly = true)
 	public Market getMarketByMember(Member member) {
 		return marketRepository.findByMember(member)
 				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 	}
 
-	public Market getMarketWithMarketEnrollmentById(Long marketId) {
-		return marketRepository.findFetchWithMarketEnrollmentById(marketId)
-				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
-	}
-	public Market getMarketById(Long marketId) {
-		return marketRepository.findById(marketId)
+	private MarketEnrollment getMarketEnrollment(Long enrollmentId) {
+		return marketEnrollmentRepository.findById(enrollmentId)
 				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 	}
 }
