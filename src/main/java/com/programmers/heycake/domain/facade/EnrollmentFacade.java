@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.image.service.ImageIntegrationService;
+import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.mapper.EnrollmentMapper;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentsRequest;
@@ -29,7 +29,7 @@ public class EnrollmentFacade {
 	private static final String ENROLLMENT_IMAGE_PATH = "images/marketEnrollments";
 
 	private final EnrollmentService enrollmentService;
-	private final ImageIntegrationService imageIntegrationService;
+	private final ImageService imageService;
 	private final MarketService marketService;
 
 	@Transactional
@@ -37,13 +37,13 @@ public class EnrollmentFacade {
 
 		Long enrollmentId = enrollmentService.createEnrollment(request);
 
-		imageIntegrationService.createAndUploadImage(
+		imageService.createAndUploadImage(
 				request.businessLicenseImage(),
 				ENROLLMENT_IMAGE_PATH,
 				enrollmentId,
 				ENROLLMENT_LICENSE
 		);
-		imageIntegrationService.createAndUploadImage(
+		imageService.createAndUploadImage(
 				request.marketImage(),
 				ENROLLMENT_IMAGE_PATH,
 				enrollmentId,
@@ -56,7 +56,7 @@ public class EnrollmentFacade {
 	@Transactional(readOnly = true)
 	public EnrollmentDetailResponse getMarketEnrollment(Long enrollmentId) {
 		MarketEnrollment enrollment = enrollmentService.getMarketEnrollment(enrollmentId);
-		ImageResponses images = imageIntegrationService.getImages(enrollmentId, ENROLLMENT_MARKET);
+		ImageResponses images = imageService.getImages(enrollmentId, ENROLLMENT_MARKET);
 		return EnrollmentMapper.toEnrollmentDetailResponse(enrollment, images);
 	}
 
@@ -74,7 +74,7 @@ public class EnrollmentFacade {
 		List<MarketEnrollment> enrollments = enrollmentService.getMarketEnrollments(request);
 		List<EnrollmentsElementResponse> withImageResponses = enrollments.stream()
 				.map(enrollment -> {
-					ImageResponses images = imageIntegrationService.getImages(enrollment.getId(), ENROLLMENT_MARKET);
+					ImageResponses images = imageService.getImages(enrollment.getId(), ENROLLMENT_MARKET);
 					return EnrollmentMapper.toEnrollmentsElementResponse(enrollment, images);
 				})
 				.toList();
