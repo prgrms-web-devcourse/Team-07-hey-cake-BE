@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
-import com.programmers.heycake.common.mapper.MarketMapper;
+import com.programmers.heycake.domain.market.mapper.MarketMapper;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;

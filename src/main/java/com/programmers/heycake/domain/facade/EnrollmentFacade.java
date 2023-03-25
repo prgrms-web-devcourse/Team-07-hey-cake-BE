@@ -7,9 +7,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.programmers.heycake.common.mapper.EnrollmentMapper;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageIntegrationService;
+import com.programmers.heycake.domain.market.mapper.EnrollmentMapper;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentsRequest;
 import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailResponse;
