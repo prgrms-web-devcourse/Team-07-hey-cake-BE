@@ -47,7 +47,7 @@ import com.programmers.heycake.domain.image.repository.ImageRepository;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentUpdateStatusRequest;
 import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsComponentResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsElementResponse;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
@@ -812,7 +812,7 @@ class EnrollmentControllerTest {
 			Image image3 = new Image(enrollment3.getId(), ENROLLMENT_MARKET, "imageUrl");
 			imageRepository.saveAll(List.of(image1, image2, image3));
 
-			List<EnrollmentsComponentResponse> enrollmentResponses = List.of(
+			List<EnrollmentsElementResponse> enrollmentResponses = List.of(
 					getEnrollmentResponse(enrollment2, image2),
 					getEnrollmentResponse(enrollment1, image1)
 			);
@@ -958,8 +958,8 @@ class EnrollmentControllerTest {
 		// 			.andReturn();
 		// }
 
-		private EnrollmentsComponentResponse getEnrollmentResponse(MarketEnrollment enrollment, Image image) {
-			return EnrollmentsComponentResponse.builder()
+		private EnrollmentsElementResponse getEnrollmentResponse(MarketEnrollment enrollment, Image image) {
+			return EnrollmentsElementResponse.builder()
 					.enrollmentId(enrollment.getId())
 					.imageUrl(image.getImageUrl())
 					.businessNumber(enrollment.getBusinessNumber())

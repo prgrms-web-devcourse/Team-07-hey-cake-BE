@@ -8,7 +8,7 @@ import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsComponentResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsElementResponse;
 import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsResponse;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.MarketAddress;
@@ -59,11 +59,11 @@ public class EnrollmentMapper {
 				.build();
 	}
 
-	public static EnrollmentsComponentResponse toEnrollmentsComponentResponse(
+	public static EnrollmentsElementResponse toEnrollmentsElementResponse(
 			MarketEnrollment enrollment,
 			ImageResponses images
 	) {
-		return EnrollmentsComponentResponse.builder()
+		return EnrollmentsElementResponse.builder()
 				.enrollmentId(enrollment.getId())
 				.imageUrl(images.images()
 						.stream()
@@ -83,7 +83,7 @@ public class EnrollmentMapper {
 	}
 
 	public static EnrollmentsResponse toEnrollmentsResponse(
-			List<EnrollmentsComponentResponse> enrollments,
+			List<EnrollmentsElementResponse> enrollments,
 			Long nextCursor
 	) {
 		return new EnrollmentsResponse(enrollments, nextCursor);

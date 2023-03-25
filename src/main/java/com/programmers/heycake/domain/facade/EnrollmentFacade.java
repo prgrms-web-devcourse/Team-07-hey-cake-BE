@@ -13,7 +13,7 @@ import com.programmers.heycake.domain.image.service.ImageIntegrationService;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentsRequest;
 import com.programmers.heycake.domain.market.model.dto.response.EnrollmentDetailResponse;
-import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsComponentResponse;
+import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsElementResponse;
 import com.programmers.heycake.domain.market.model.dto.response.EnrollmentsResponse;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.EnrollmentStatus;
@@ -72,10 +72,10 @@ public class EnrollmentFacade {
 	@Transactional(readOnly = true)
 	public EnrollmentsResponse getMarketEnrollments(EnrollmentsRequest request) {
 		List<MarketEnrollment> enrollments = enrollmentService.getMarketEnrollments(request);
-		List<EnrollmentsComponentResponse> withImageResponses = enrollments.stream()
+		List<EnrollmentsElementResponse> withImageResponses = enrollments.stream()
 				.map(enrollment -> {
 					ImageResponses images = imageIntegrationService.getImages(enrollment.getId(), ENROLLMENT_MARKET);
-					return EnrollmentMapper.toEnrollmentsComponentResponse(enrollment, images);
+					return EnrollmentMapper.toEnrollmentsElementResponse(enrollment, images);
 				})
 				.toList();
 
