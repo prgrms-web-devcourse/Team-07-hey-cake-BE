@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.member.model.dto.response.OrderDetailResponse;
-import com.programmers.heycake.domain.order.facade.OrderFacade;
+import com.programmers.heycake.domain.facade.OrderFacade;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;

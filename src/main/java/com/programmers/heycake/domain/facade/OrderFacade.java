@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.order.facade;
+package com.programmers.heycake.domain.facade;
 
 import static com.programmers.heycake.common.mapper.OrderMapper.*;
 import static com.programmers.heycake.common.util.AuthenticationUtil.*;
