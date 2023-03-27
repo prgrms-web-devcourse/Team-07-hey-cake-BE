@@ -5,6 +5,8 @@ import static com.programmers.heycake.common.util.TestUtils.*;
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.MARKET;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
+import static com.programmers.heycake.domain.order.model.vo.CakeCategory.*;
+import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
@@ -45,11 +47,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.programmers.heycake.common.util.TestUtils;
-import com.programmers.heycake.domain.image.model.dto.ImageResponse;
-import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
-import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
@@ -83,9 +82,6 @@ class OrderControllerTest {
 	OfferRepository offerRepository;
 
 	@Autowired
-	ImageService imageService;
-
-	@Autowired
 	private ImageRepository imageRepository;
 
 	private static final String ACCESS_TOKEN = "access_token";
@@ -99,7 +95,7 @@ class OrderControllerTest {
 	@Nested
 	@DisplayName("getMyOrderList")
 	@Transactional
-	class GetMyOrderList {
+	class GetMyOrder {
 		@Test
 		@DisplayName("Success - getMyOrderList 조회한다.")
 		void getMyOrderListSuccess() throws Exception {
@@ -111,7 +107,8 @@ class OrderControllerTest {
 			//when //then
 			mockMvc.perform(get("/api/v1/orders/my?cursorId=1&pageSize=10&orderStatus=NEW")
 							.header("access_token", ACCESS_TOKEN)
-					).andExpect(status().isOk())
+					)
+					.andExpect(status().isOk())
 					.andDo(print())
 					.andDo(document(
 							"order/내 주문 목록 조회 성공",
@@ -252,11 +249,83 @@ class OrderControllerTest {
 	}
 
 	@Nested
-	@DisplayName("주문 상세 조회")
+	@DisplayName("getOrders")
 	@Transactional
-	class GetOrderTest {
+	class GetOrders {
 		@Test
-		@DisplayName("Success - 주문 상세 조회 성공")
+		@DisplayName("Success - Order 리스트 조회 성공해서 200으로 응답한다.")
+		@Transactional
+		void getOrdersSuccess() throws Exception {
+
+			orderRepository.saveAll(
+					List.of(
+							TestUtils.getOrder(1L, PHOTO, NEW, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, NEW, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, NEW, "강남구", LocalDateTime.now().minusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, NEW, "강남구", LocalDateTime.now().minusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, PAID, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, PAID, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, LETTERING, NEW, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, LETTERING, NEW, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, LETTERING, NEW, "강남구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, NEW, "강동구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, NEW, "강동구", LocalDateTime.now().plusDays(1)),
+							TestUtils.getOrder(1L, PHOTO, NEW, "강동구", LocalDateTime.now().plusDays(1))
+					)
+			);
+
+			mockMvc.perform(get("/api/v1/orders")
+							.param("pageSize", "5")
+							.param("cakeCategory", "PHOTO")
+							.param("orderStatus", "NEW")
+							.param("region", "강남구")
+					)
+					.andExpect(status().isOk())
+					.andDo(print())
+					.andExpect(jsonPath("$.content[0].orderStatus").value("NEW"))
+					.andExpect(jsonPath("$.content[0].cakeInfo.cakeCategory").value("PHOTO"))
+					.andExpect(jsonPath("$.content[0].region").value("강남구"))
+					.andExpect(jsonPath("$.content[1].orderStatus").value("NEW"))
+					.andExpect(jsonPath("$.content[1].cakeInfo.cakeCategory").value("PHOTO"))
+					.andExpect(jsonPath("$.content[1].region").value("강남구"))
+					.andDo(document("order/주문 목록 조회 성공",
+							requestParameters(
+									parameterWithName("pageSize").description("페이지 사이즈"),
+									parameterWithName("cakeCategory").description("케익 분류"),
+									parameterWithName("orderStatus").description("주문 상태"),
+									parameterWithName("region").description("희망 지역")
+							),
+							responseFields(
+									fieldWithPath("content").type(JsonFieldType.ARRAY).description("주문 리스트"),
+									fieldWithPath("cursorId").type(JsonFieldType.NUMBER).description("커서"),
+									fieldWithPath("isLast").type(JsonFieldType.BOOLEAN).description("마지막 페이지"),
+									fieldWithPath("content[].orderId").type(JsonFieldType.NUMBER).description("주문 아이디"),
+									fieldWithPath("content[].title").type(JsonFieldType.STRING).description("주문 제목"),
+									fieldWithPath("content[].region").type(JsonFieldType.STRING).description("희망 지역"),
+									fieldWithPath("content[].orderStatus").type(JsonFieldType.STRING).description("주문 상태"),
+									fieldWithPath("content[].hopePrice").type(JsonFieldType.NUMBER).description("희망 가격"),
+									fieldWithPath("content[].visitTime").type(JsonFieldType.STRING).description("희망 방문 시간"),
+									fieldWithPath("content[].cakeInfo").type(JsonFieldType.OBJECT).description("케익 정보"),
+									fieldWithPath("content[].cakeInfo.cakeCategory").type(JsonFieldType.STRING).description("케익 카테고리"),
+									fieldWithPath("content[].cakeInfo.cakeSize").type(JsonFieldType.STRING).description("케익 사이즈"),
+									fieldWithPath("content[].cakeInfo.cakeHeight").type(JsonFieldType.STRING).description("케익 높이"),
+									fieldWithPath("content[].cakeInfo.breadFlavor").type(JsonFieldType.STRING).description("빵 맛"),
+									fieldWithPath("content[].cakeInfo.creamFlavor").type(JsonFieldType.STRING).description("크림 맛"),
+									fieldWithPath("content[].cakeInfo.requirements").type(JsonFieldType.STRING).description("추가 내용"),
+									fieldWithPath("content[].offerCount").type(JsonFieldType.NUMBER).description("업체가 제안한 건수"),
+									fieldWithPath("content[].images").type(JsonFieldType.ARRAY).description("이미지 "),
+									fieldWithPath("content[].createdAt").type(JsonFieldType.STRING).description("생성 시간")
+							)
+					));
+		}
+	}
+
+	@Nested
+	@DisplayName("getOrder")
+	@Transactional
+	class GetOrder {
+		@Test
+		@DisplayName("Success - 주문 상세 조회 성공하여 200으로 응답한다.")
 		@Transactional
 		void getOrderSuccess() throws Exception {
 			Order order = orderRepository.save(getOrder(1L));
@@ -296,7 +365,7 @@ class OrderControllerTest {
 					.andExpect(jsonPath("images[0]").value(imageUrl1))
 					.andExpect(jsonPath("images[1]").value(imageUrl2))
 					.andDo(print())
-					.andDo(document("order/주문 조회 성공",
+					.andDo(document("order/주문 상세 조회 성공",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							responseFields(
@@ -323,7 +392,7 @@ class OrderControllerTest {
 		}
 
 		@Test
-		@DisplayName("Fail - 주문 상세 조회 실패.(NotFound)")
+		@DisplayName("Fail - 존재하지 않는 주문에 대해 404로 응답한다.")
 		@Transactional
 		void getOrderFailByNotFound() throws Exception {
 			int orderId = -1;
@@ -334,7 +403,7 @@ class OrderControllerTest {
 					.andExpect(jsonPath("path").value("/api/v1/orders/" + orderId))
 					.andExpect(jsonPath("time").exists())
 					.andExpect(jsonPath("inputErrors").isEmpty())
-					.andDo(document("order/주문 조회 실패",
+					.andDo(document("order/주문 조회 실패 - 존재하지 않는 주문인 경우",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							responseFields(
@@ -348,9 +417,10 @@ class OrderControllerTest {
 	}
 
 	@Nested
+	@DisplayName("createOrder")
 	@Transactional
-	class CreateOrderTest {
-		@DisplayName("Success - Order 생성 성공")
+	class CreateOrder {
+		@DisplayName("Success - 주문 생성 성공하여 201으로 응답한다.")
 		@MethodSource("com.programmers.heycake.domain.order.argument.TestArguments#OrderCreateRequestSuccessArguments")
 		@Transactional
 		@ParameterizedTest
@@ -360,8 +430,6 @@ class OrderControllerTest {
 				CakeHeight cakeHeight, BreadFlavor breadFlavor, CreamFlavor creamFlavor,
 				String requirements, List<MultipartFile> cakeImages
 		) throws Exception {
-
-			Long memberId = 1L;
 
 			TestUtils.setContext(1L, USER);
 
@@ -413,14 +481,15 @@ class OrderControllerTest {
 			String orderId = mvcResult.getResponse()
 					.getHeader("Location")
 					.substring(15);
-			ImageResponses imageResponses = imageService.getImages(Long.parseLong(orderId), ORDER);
-			List<ImageResponse> images = imageResponses.images();
 
-			assertThat(images.size()).isEqualTo(2);
+			List<Image> imageList = imageRepository.findAllByReferenceIdAndImageType(
+					Long.parseLong(orderId), ORDER);
+
+			assertThat(imageList.size()).isEqualTo(2);
 		}
 
 		@Test
-		@DisplayName("Fail - Order 생성 실패.(UnAuthorized)")
+		@DisplayName("Fail - 주문 생성 권한 인증에 실패하여 401으로 응답한다.")
 		void createOrderFailByUnAuthorized() throws Exception {
 			MockMultipartFile testImageFile = new MockMultipartFile(
 					"cakeImages",
@@ -445,7 +514,7 @@ class OrderControllerTest {
 					)
 					.andExpect(status().isUnauthorized())
 					.andDo(print())
-					.andDo(document("order/주문 생성 실패(UnAuthorize)",
+					.andDo(document("order/주문 생성 실패 - 사용자 인증 실패",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestParts(
@@ -477,7 +546,7 @@ class OrderControllerTest {
 
 		@Test
 		@Transactional
-		@DisplayName("Fail - Order 생성 실패.(Forbidden)")
+		@DisplayName("Fail - 주문 생성 권한 인가에 실패하여 403로 응답한다.")
 		void createOrderFailByForbidden() throws Exception {
 			MockMultipartFile testImageFile = new MockMultipartFile(
 					"testImageFile",
@@ -504,7 +573,7 @@ class OrderControllerTest {
 					)
 					.andExpect(status().isForbidden())
 					.andDo(print())
-					.andDo(document("order/주문 생성 실패(Forbidden)",
+					.andDo(document("order/주문 생성 실패 - 권한 인가 실패",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestParts(
@@ -534,7 +603,7 @@ class OrderControllerTest {
 					));
 		}
 
-		@DisplayName("Fail - Order 생성 실패.(invalidArgument)")
+		@DisplayName("Fail - 잘못된 입력값으로 주문 생성에 실패하여 400으로 응답한다.")
 		@MethodSource("com.programmers.heycake.domain.order.argument.TestArguments#OrderCreateRequestFailArguments")
 		@ParameterizedTest
 		void createOrderFailByInvalidArgument(
@@ -572,7 +641,7 @@ class OrderControllerTest {
 					)
 					.andExpect(status().isBadRequest())
 					.andDo(print())
-					.andDo(document("order/주문 생성 실패(Forbidden)",
+					.andDo(document("order/주문 생성 실패 - 잘못된 입력값이 들어온 경우",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestParts(
