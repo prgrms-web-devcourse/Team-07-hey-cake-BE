@@ -60,7 +60,7 @@ public class OrderService {
 	}
 
 	@Transactional
-	public Long create(OrderCreateRequest orderCreateRequest) {
+	public Long createOrder(OrderCreateRequest orderCreateRequest) {
 		CakeInfo cakeInfo = CakeInfo.builder()
 				.cakeCategory(orderCreateRequest.cakeCategory())
 				.cakeSize(orderCreateRequest.cakeSize())

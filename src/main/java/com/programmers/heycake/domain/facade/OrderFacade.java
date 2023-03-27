@@ -9,7 +9,6 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.programmers.heycake.domain.facade.OfferFacade;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.service.MarketService;
 import com.programmers.heycake.domain.member.model.dto.response.OrderDetailResponse;
@@ -43,7 +42,7 @@ public class OrderFacade {
 
 	@Transactional
 	public Long createOrder(OrderCreateRequest orderCreateRequest) {
-		Long orderId = orderService.create(orderCreateRequest);
+		Long orderId = orderService.createOrder(orderCreateRequest);
 
 		orderCreateRequest.cakeImages()
 				.forEach(
