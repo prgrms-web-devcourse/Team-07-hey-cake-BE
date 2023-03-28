@@ -61,18 +61,18 @@ public class OrderFacade {
 	) {
 		List<Order> orders = orderService.getOrders(cursorId, pageSize, cakeCategory, orderStatus, region);
 
-		List<OrdersElementResponse> ordersElementResponseList =
+		List<OrdersElementResponse> ordersElementResponses =
 				orders.stream()
 						.map(order -> toOrdersElementResponse(
 								order,
 								imageService.getImages(order.getId(), ORDER)
 						)).toList();
 
-		int size = ordersElementResponseList.size();
-		long lastCursor = size <= 0 ? 0 : ordersElementResponseList.get(size - 1).orderId();
+		int size = ordersElementResponses.size();
+		long lastCursor = size <= 0 ? 0 : ordersElementResponses.get(size - 1).orderId();
 		boolean isLast = size < pageSize;
 
-		return new OrdersResponse(ordersElementResponseList, lastCursor, isLast);
+		return new OrdersResponse(ordersElementResponses, lastCursor, isLast);
 	}
 
 	@Transactional(readOnly = true)
