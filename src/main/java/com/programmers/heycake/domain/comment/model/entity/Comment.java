@@ -40,13 +40,21 @@ public class Comment extends BaseEntity {
 	@Column(name = "content", length = 500, nullable = false)
 	private String content;
 
+	@Column(name = "depth", nullable = false)
+	private int depth;
+
+	@Column(name = "parent_comment_id", nullable = true)
+	private Long parentCommentId;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "offer_id")
 	private Offer offer;
 
-	public Comment(Long memberId, String content) {
+	public Comment(Long memberId, String content, int depth, Long parentCommentId) {
 		this.memberId = memberId;
 		this.content = content;
+		this.depth = depth;
+		this.parentCommentId = parentCommentId;
 	}
 
 	public void setOffer(Offer offer) {
