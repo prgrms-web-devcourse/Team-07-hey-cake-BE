@@ -124,6 +124,10 @@ dependencies {
     //sentry
     implementation 'io.sentry:sentry-spring-boot-starter:6.15.0'
     compile 'io.sentry:sentry-logback:1.7.23'
+
+    // cache
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.github.ben-manes.caffeine:caffeine'
 }
 
 asciidoctor {
