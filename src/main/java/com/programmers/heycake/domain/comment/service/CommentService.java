@@ -24,13 +24,24 @@ public class CommentService {
 
 	private final CommentRepository commentRepository;
 
-	public Long createComment(String content, Offer offer, Market market, Member member) {
+	public Long createComment(
+			String content,
+			int depth,
+			Long parentCommentId,
+			Offer offer,
+			Market market,
+			Member member
+	) {
 		Order order = offer.getOrder();
 
 		verifyOrderExpired(order);
 		verifyCommentWriteAuthority(order, market, member);
+		if (parentCommentId != null) {
+			verifyCommentParentExists(parentCommentId);
+		}
 
-		Comment comment = toEntity(member.getId(), content);
+		Comment comment = toEntity(member.getId(), content, depth, parentCommentId);
+
 		comment.setOffer(offer);
 
 		commentRepository.save(comment);
@@ -47,6 +58,12 @@ public class CommentService {
 	private void verifyOrderExpired(Order order) {
 		if (order.isExpired()) {
 			throw new BusinessException(ErrorCode.ORDER_EXPIRED);
+		}
+	}
+
+	private void verifyCommentParentExists(Long parentCommentId) {
+		if (!commentRepository.existsById(parentCommentId)) {
+			throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
 		}
 	}
 

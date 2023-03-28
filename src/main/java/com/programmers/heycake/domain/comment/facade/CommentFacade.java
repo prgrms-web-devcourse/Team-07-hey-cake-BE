@@ -70,6 +70,8 @@ public class CommentFacade {
 
 		Long createdCommentId = commentService.createComment(
 				commentCreateRequest.content(),
+				commentCreateRequest.depth(),
+				commentCreateRequest.parentCommentId(),
 				offer,
 				market,
 				member

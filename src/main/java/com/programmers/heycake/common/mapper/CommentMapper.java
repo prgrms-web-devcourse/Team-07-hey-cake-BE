@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentMapper {
 
-	public static Comment toEntity(Long memberId, String content) {
-		return new Comment(memberId, content);
+	public static Comment toEntity(Long memberId, String content, int depth, Long parentCommentId) {
+		return new Comment(memberId, content, depth, parentCommentId);
 	}
 
 	public static CommentResponse toCommentResponse(Comment comment) {
