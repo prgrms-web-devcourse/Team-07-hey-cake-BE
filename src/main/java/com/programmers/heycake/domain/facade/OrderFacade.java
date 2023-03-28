@@ -45,14 +45,13 @@ public class OrderFacade {
 		Long orderId = orderService.createOrder(orderCreateRequest);
 
 		orderCreateRequest.cakeImages()
-				.forEach(
-						cakeImage ->
-								imageService.createAndUploadImage(
-										cakeImage,
-										ORDER_IMAGE_SUB_PATH,
-										orderId,
-										ORDER
-								));
+				.forEach(cakeImage ->
+						imageService.createAndUploadImage(
+								cakeImage,
+								ORDER_IMAGE_SUB_PATH,
+								orderId,
+								ORDER
+						));
 		return orderId;
 	}
 
@@ -60,12 +59,11 @@ public class OrderFacade {
 	public OrdersResponse getOrders(
 			Long cursorId, int pageSize, CakeCategory cakeCategory, OrderStatus orderStatus, String region
 	) {
-
 		List<Order> orders = orderService.getOrders(cursorId, pageSize, cakeCategory, orderStatus, region);
 
 		List<OrdersElementResponse> ordersElementResponseList =
 				orders.stream()
-						.map(order -> toOrderElementResponse(
+						.map(order -> toOrdersElementResponse(
 								order,
 								imageService.getImages(order.getId(), ORDER)
 						)).toList();
@@ -78,8 +76,8 @@ public class OrderFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public OrderDetailResponse getOrderDetail(Long orderId) {
-		Order order = orderService.getOrderDetail(orderId);
+	public OrderDetailResponse getOrder(Long orderId) {
+		Order order = orderService.getOrderById(orderId);
 		return toOrderDetailResponse(order, imageService.getImages(order.getId(), ORDER));
 	}
 

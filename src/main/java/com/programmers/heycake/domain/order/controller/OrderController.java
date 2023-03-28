@@ -60,8 +60,8 @@ public class OrderController {
 	}
 
 	@GetMapping("/{orderId}")
-	public ResponseEntity<OrderDetailResponse> getOrderDetail(@PathVariable Long orderId) {
-		return ResponseEntity.ok(orderFacade.getOrderDetail(orderId));
+	public ResponseEntity<OrderDetailResponse> getOrder(@PathVariable Long orderId) {
+		return ResponseEntity.ok(orderFacade.getOrder(orderId));
 	}
 
 	@GetMapping("/my")

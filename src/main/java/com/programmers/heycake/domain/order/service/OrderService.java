@@ -87,9 +87,10 @@ public class OrderService {
 				.toList();
 	}
 
-	@Transactional(readOnly = true)
-	public Order getOrderDetail(Long orderId) {
-		return getOrderById(orderId);
+	@Transactional
+	public Order getOrderById(Long orderId) {
+		return orderRepository.findById(orderId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
 	@Transactional(readOnly = true)
@@ -119,11 +120,6 @@ public class OrderService {
 	@Transactional(readOnly = true)
 	public int offerCount(Long orderId) {
 		return getOrderById(orderId).getOffers().size();
-	}
-
-	public Order getOrderById(Long orderId) {
-		return orderRepository.findById(orderId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
 	public boolean existsById(Long orderId) {
