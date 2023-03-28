@@ -11,14 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.common.mapper.OrderMapper;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSimpleResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
@@ -63,7 +60,7 @@ public class OrderService {
 	}
 
 	@Transactional
-	public Long create(OrderCreateRequest orderCreateRequest) {
+	public Long createOrder(OrderCreateRequest orderCreateRequest) {
 		CakeInfo cakeInfo = CakeInfo.builder()
 				.cakeCategory(orderCreateRequest.cakeCategory())
 				.cakeSize(orderCreateRequest.cakeSize())
@@ -79,19 +76,21 @@ public class OrderService {
 		return savedOrder.getId();
 	}
 
-	public List<OrderGetServiceSimpleResponse> getOrders(
+	public List<Order> getOrders(
 			Long cursorId, int pageSize, CakeCategory cakeCategory, OrderStatus orderStatus, String region
 	) {
 		return orderQueryDslRepository
-				.findAllByRegionAndCategoryOrderByCreatedAtAsc(cursorId, pageSize, cakeCategory, orderStatus, region)
+				.findAllByRegionAndCategoryOrderByCreatedAtAsc(
+						cursorId, pageSize, cakeCategory, orderStatus, region
+				)
 				.stream()
-				.map(OrderMapper::toOrderGetServiceSimpleResponse)
 				.toList();
 	}
 
-	@Transactional(readOnly = true)
-	public OrderGetDetailServiceResponse getOrderDetail(Long orderId) {
-		return OrderMapper.toOrderGetDetailServiceResponse(getOrderById(orderId));
+	@Transactional
+	public Order getOrderById(Long orderId) {
+		return orderRepository.findById(orderId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
 	@Transactional(readOnly = true)
@@ -123,9 +122,8 @@ public class OrderService {
 		return getOrderById(orderId).getOffers().size();
 	}
 
-	public Order getOrderById(Long orderId) {
-		return orderRepository.findById(orderId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+	public boolean existsById(Long orderId) {
+		return orderRepository.existsById(orderId);
 	}
 
 	private void identifyAuthor(Long orderId) {
@@ -138,9 +136,5 @@ public class OrderService {
 		if (getOrderById(orderId).isExpired()) {
 			throw new BusinessException(ErrorCode.ORDER_EXPIRED);
 		}
-	}
-
-	public boolean existsById(Long orderId) {
-		return orderRepository.existsById(orderId);
 	}
 }

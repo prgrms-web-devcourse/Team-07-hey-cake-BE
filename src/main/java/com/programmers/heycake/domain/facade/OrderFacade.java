@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.order.facade;
+package com.programmers.heycake.domain.facade;
 
 import static com.programmers.heycake.common.mapper.OrderMapper.*;
 import static com.programmers.heycake.common.util.AuthenticationUtil.*;
@@ -9,20 +9,17 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.programmers.heycake.domain.facade.OfferFacade;
-import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.service.MarketService;
-import com.programmers.heycake.domain.member.model.dto.response.OrderGetDetailResponse;
+import com.programmers.heycake.domain.member.model.dto.response.OrderDetailResponse;
 import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSimpleResponse;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponse;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponses;
+import com.programmers.heycake.domain.order.model.dto.response.OrdersElementResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrdersResponse;
+import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.service.HistoryService;
@@ -37,57 +34,51 @@ public class OrderFacade {
 	private final OrderService orderService;
 	private final MemberService memberService;
 	private final HistoryService historyService;
-	private final OfferFacade offerFacade;
 	private final ImageService imageService;
+	private final OfferFacade offerFacade;
 	private final MarketService marketService;
 
 	private static final String ORDER_IMAGE_SUB_PATH = "images/orders";
 
 	@Transactional
 	public Long createOrder(OrderCreateRequest orderCreateRequest) {
-		Long orderId = orderService.create(orderCreateRequest);
+		Long orderId = orderService.createOrder(orderCreateRequest);
 
 		orderCreateRequest.cakeImages()
-				.forEach(
-						cakeImage ->
-								imageService.createAndUploadImage(
-										cakeImage,
-										ORDER_IMAGE_SUB_PATH,
-										orderId,
-										ORDER
-								));
+				.forEach(cakeImage ->
+						imageService.createAndUploadImage(
+								cakeImage,
+								ORDER_IMAGE_SUB_PATH,
+								orderId,
+								ORDER
+						));
 		return orderId;
 	}
 
 	@Transactional(readOnly = true)
-	public OrderGetSimpleResponses getOrders(
+	public OrdersResponse getOrders(
 			Long cursorId, int pageSize, CakeCategory cakeCategory, OrderStatus orderStatus, String region
 	) {
-		List<OrderGetServiceSimpleResponse> orderGetSimpleServiceResponses =
-				orderService.getOrders(cursorId, pageSize, cakeCategory, orderStatus, region);
+		List<Order> orders = orderService.getOrders(cursorId, pageSize, cakeCategory, orderStatus, region);
 
-		List<OrderGetSimpleResponse> orderGetSimpleResponseList =
-				orderGetSimpleServiceResponses
-						.stream()
-						.map(orderSimpleGetServiceResponse ->
-								toOrderGetSimpleResponse(
-										orderSimpleGetServiceResponse,
-										imageService.getImages(orderSimpleGetServiceResponse.orderId(), ORDER))
-						)
-						.toList();
+		List<OrdersElementResponse> ordersElementResponses =
+				orders.stream()
+						.map(order -> toOrdersElementResponse(
+								order,
+								imageService.getImages(order.getId(), ORDER)
+						)).toList();
 
-		int size = orderGetSimpleResponseList.size();
-		long lastCursor = size <= 0 ? 0 : orderGetSimpleResponseList.get(size - 1).orderId();
+		int size = ordersElementResponses.size();
+		long lastCursor = size <= 0 ? 0 : ordersElementResponses.get(size - 1).orderId();
 		boolean isLast = size < pageSize;
 
-		return new OrderGetSimpleResponses(orderGetSimpleResponseList, lastCursor, isLast);
+		return new OrdersResponse(ordersElementResponses, lastCursor, isLast);
 	}
 
 	@Transactional(readOnly = true)
-	public OrderGetDetailResponse getOrder(Long orderId) {
-		OrderGetDetailServiceResponse orderGetDetailServiceResponse = orderService.getOrderDetail(orderId);
-		ImageResponses imageResponses = imageService.getImages(orderGetDetailServiceResponse.orderId(), ORDER);
-		return toOrderGetDetailResponse(orderGetDetailServiceResponse, imageResponses);
+	public OrderDetailResponse getOrder(Long orderId) {
+		Order order = orderService.getOrderById(orderId);
+		return toOrderDetailResponse(order, imageService.getImages(order.getId(), ORDER));
 	}
 
 	@Transactional(readOnly = true)
