@@ -1,16 +1,12 @@
 package com.programmers.heycake.domain.member.service;
 
-import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
-
-import java.util.Optional;
 
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.stereotype.Service;
@@ -21,13 +17,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.common.jwt.Jwt;
 import com.programmers.heycake.domain.member.model.dto.MemberInfo;
-import com.programmers.heycake.domain.member.model.dto.response.TokenResponse;
 import com.programmers.heycake.domain.member.model.entity.Member;
-import com.programmers.heycake.domain.member.model.entity.Token;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
-import com.programmers.heycake.domain.member.repository.TokenRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,15 +32,14 @@ public class MemberService {
 	private static final String GET_ACCESS_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
 	private static final String GET_MEMBER_INFO_URL = "https://kapi.kakao.com/v2/user/me";
 
-	private final MemberRepository memberRepository;
-	private final TokenRepository tokenRepository;
+	private final RestTemplate restTemplate;
 
-	private final Jwt jwt;
+	private final MemberRepository memberRepository;
 
 	private final InMemoryClientRegistrationRepository inMemoryClientRegistrationRepository;
 
 	@Transactional
-	public TokenResponse loginForKakao(String authorizedCode) {
+	public Member loginForKakao(String authorizedCode) {
 
 		String accessToken = getAccessToken(authorizedCode);
 		MemberInfo memberInfo = getMemberInfo(accessToken);
@@ -58,29 +49,18 @@ public class MemberService {
 					new Member(memberInfo.email(), USER, memberInfo.birthday(), memberInfo.nickname())
 			);
 		}
+		return memberRepository.findByEmail(memberInfo.email()).get();
+	}
 
-		Member member = memberRepository.findByEmail(memberInfo.email()).get();
-		Optional<Token> foundToken = tokenRepository.findByMemberId(member.getId());
+	@Transactional(readOnly = true)
+	public Member getMemberById(Long memberId) {
+		return memberRepository.findById(memberId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+	}
 
-		TokenResponse tokenResponse = jwt.generateAllToken(
-				Jwt.Claims.from(
-						member.getId(),
-						new String[] {
-								member.getMemberAuthority().getRole()
-						})
-		);
-
-		Token newToken = new Token(
-				member.getId(),
-				tokenResponse.refreshToken()
-		);
-
-		if (foundToken.isPresent()) {
-			foundToken.get().updateRefreshToken(tokenResponse.refreshToken());
-		} else {
-			tokenRepository.save(newToken);
-		}
-		return tokenResponse;
+	@Transactional(readOnly = true)
+	public boolean isMarketById(Long memberId) {
+		return getMemberById(memberId).isMarket();
 	}
 
 	private String getAccessToken(String authorizedCode) {
@@ -91,7 +71,6 @@ public class MemberService {
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
 
-		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response = restTemplate.exchange(
 				GET_ACCESS_TOKEN_URL,
 				HttpMethod.POST,
@@ -127,7 +106,6 @@ public class MemberService {
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
 
-		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response = restTemplate.exchange(
 				GET_MEMBER_INFO_URL,
 				HttpMethod.POST,
@@ -169,53 +147,5 @@ public class MemberService {
 				.getString("nickname");
 
 		return new MemberInfo(email, birthday, profileUrl, nickname);
-	}
-
-	@Transactional
-	public TokenResponse reissueToken(String refreshToken) {
-		Optional<Token> optionalToken = tokenRepository.findTokenByRefreshToken(refreshToken);
-		if (optionalToken.isEmpty()) {
-			throw new AccessDeniedException("token 발급 제한");
-		}
-		Long memberId;
-		String[] roles;
-
-		try {
-			Jwt.Claims claims = jwt.verify(optionalToken.get().getRefreshToken());
-			memberId = claims.getMemberId();
-			roles = claims.getRoles();
-		} catch (Exception e) {
-			log.warn("Jwt 처리중 문제가 발생하였습니다 : {}", e.getMessage());
-			throw e;
-		} finally {
-			tokenRepository.delete(optionalToken.get());
-			tokenRepository.flush();
-		}
-
-		TokenResponse tokenResponse = jwt.generateAllToken(
-				Jwt.Claims
-						.from(memberId, roles)
-		);
-		Token token = new Token(memberId, tokenResponse.refreshToken());
-		tokenRepository.save(token);
-
-		return tokenResponse;
-	}
-
-	@Transactional
-	public void logout() {
-		tokenRepository.findByMemberId(getMemberId())
-				.ifPresent(tokenRepository::delete);
-	}
-
-	@Transactional(readOnly = true)
-	public Member getMemberById(Long memberId) {
-		return memberRepository.findById(memberId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-	}
-
-	@Transactional(readOnly = true)
-	public boolean isMarketById(Long memberId) {
-		return getMemberById(memberId).isMarket();
 	}
 }
