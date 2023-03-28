@@ -59,7 +59,7 @@ public class OrderMapper {
 				.build();
 	}
 
-	public static OrdersElementResponse toOrderElementResponse(
+	public static OrdersElementResponse toOrdersElementResponse(
 			Order order,
 			ImageResponses imageResponses
 	) {
