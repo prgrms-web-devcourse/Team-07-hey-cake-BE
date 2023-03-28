@@ -32,7 +32,8 @@ public class CommentMapper {
 	public static CommentsResponse toCommentsResponse(
 			Comment comment,
 			Member member,
-			ImageResponses imageResponse
+			ImageResponses imageResponse,
+			int childCommentCount
 	) {
 		List<String> imageUrls = imageResponse.images().stream()
 				.map(ImageResponse::imageUrl)
@@ -50,6 +51,7 @@ public class CommentMapper {
 				.createdAt(comment.getCreatedAt())
 				.nickname(member.getNickname())
 				.image(imageUrl)
+				.childCommentCount(childCommentCount)
 				.build();
 	}
 }

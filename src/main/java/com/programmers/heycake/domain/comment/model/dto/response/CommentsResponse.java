@@ -11,6 +11,7 @@ public record CommentsResponse(
 		String image,
 		Long memberId,
 		String nickname,
-		LocalDateTime createdAt
+		LocalDateTime createdAt,
+		int childCommentCount
 ) {
 }

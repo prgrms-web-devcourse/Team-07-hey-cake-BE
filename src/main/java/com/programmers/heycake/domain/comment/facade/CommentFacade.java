@@ -97,8 +97,9 @@ public class CommentFacade {
 				.map(
 						comment -> {
 							Member member = memberService.getMemberById(comment.getMemberId());
+							int numberOfChildComment = commentService.countChildComment(comment.getId());
 							ImageResponses imageResponse = imageService.getImages(comment.getId(), ImageType.COMMENT);
-							return CommentMapper.toCommentsResponse(comment, member, imageResponse);
+							return CommentMapper.toCommentsResponse(comment, member, imageResponse, numberOfChildComment);
 						}
 				).toList();
 	}

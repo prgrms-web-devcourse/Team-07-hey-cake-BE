@@ -99,4 +99,8 @@ public class CommentService {
 	public int countCommentsByOffer(Offer offer) {
 		return commentRepository.countByOffer(offer);
 	}
+
+	public int countChildComment(Long parentCommentId) {
+		return commentRepository.countByParentCommentId(parentCommentId);
+	}
 }
