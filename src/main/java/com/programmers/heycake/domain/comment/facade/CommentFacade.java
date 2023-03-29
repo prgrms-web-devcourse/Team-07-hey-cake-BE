@@ -93,7 +93,7 @@ public class CommentFacade {
 	@Cacheable(cacheNames = "comments", key = "#offerId")
 	@Transactional(readOnly = true)
 	public List<CommentsResponse> getComments(Long offerId) {
-		List<Comment> comments = commentService.getCommentsByOfferId(offerId);
+		List<Comment> comments = commentService.getParentCommentsByOfferId(offerId);
 		return comments.stream()
 				.map(
 						comment -> {

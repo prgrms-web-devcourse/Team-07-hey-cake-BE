@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CommentService {
 
+	private static final int PARENT_COMMENT_DEPTH = 0;
+
 	private final CommentRepository commentRepository;
 
 	public Long createComment(
@@ -92,8 +94,8 @@ public class CommentService {
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
-	public List<Comment> getCommentsByOfferId(Long offerId) {
-		return commentRepository.findAllByOfferId(offerId);
+	public List<Comment> getParentCommentsByOfferId(Long offerId) {
+		return commentRepository.findAllByOfferIdAndDepth(offerId, PARENT_COMMENT_DEPTH);
 	}
 
 	public List<Comment> getChildCommentsById(Long parentCommentId) {
