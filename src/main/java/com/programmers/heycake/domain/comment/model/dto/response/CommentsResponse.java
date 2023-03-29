@@ -12,6 +12,7 @@ public record CommentsResponse(
 		Long memberId,
 		String nickname,
 		LocalDateTime createdAt,
-		int childCommentCount
+		int childCommentCount,
+		boolean isDeleted
 ) {
 }

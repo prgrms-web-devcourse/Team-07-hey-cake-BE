@@ -11,6 +11,7 @@ public record ChildCommentsResponse(
 		String image,
 		Long memberId,
 		String nickname,
-		LocalDateTime createdAt
+		LocalDateTime createdAt,
+		boolean isDeleted
 ) {
 }

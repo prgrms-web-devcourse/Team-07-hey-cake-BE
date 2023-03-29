@@ -53,6 +53,7 @@ public class CommentMapper {
 				.nickname(member.getNickname())
 				.image(imageUrl)
 				.childCommentCount(childCommentCount)
+				.isDeleted(comment.isDeleted())
 				.build();
 	}
 
@@ -77,6 +78,7 @@ public class CommentMapper {
 				.createdAt(comment.getCreatedAt())
 				.nickname(member.getNickname())
 				.image(imageUrl)
+				.isDeleted(comment.isDeleted())
 				.build();
 	}
 }

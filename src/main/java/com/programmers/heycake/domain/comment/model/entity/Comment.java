@@ -13,7 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import com.programmers.heycake.domain.BaseEntity;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
@@ -26,7 +25,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE comment SET deleted_at = NOW() WHERE id = ?")
 public class Comment extends BaseEntity {
 
@@ -67,5 +65,9 @@ public class Comment extends BaseEntity {
 
 	public boolean isNotWrittenBy(Long targetMemberId) {
 		return !Objects.equals(this.memberId, targetMemberId);
+	}
+
+	public boolean isDeleted() {
+		return this.getDeletedAt() != null;
 	}
 }
