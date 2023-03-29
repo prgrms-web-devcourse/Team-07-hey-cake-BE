@@ -210,7 +210,7 @@ public class TestUtils {
 	}
 
 	public static Comment getComment(Long memberId, Offer offer) {
-		Comment comment = new Comment(memberId, "comment");
+		Comment comment = new Comment(memberId, "comment", 0, null);
 		comment.setOffer(offer);
 
 		return comment;
