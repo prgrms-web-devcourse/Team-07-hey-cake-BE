@@ -96,6 +96,10 @@ public class CommentService {
 		return commentRepository.findAllByOfferId(offerId);
 	}
 
+	public List<Comment> getChildCommentsById(Long parentCommentId) {
+		return commentRepository.findAllByParentCommentId(parentCommentId);
+	}
+
 	public int countCommentsByOffer(Offer offer) {
 		return commentRepository.countByOffer(offer);
 	}

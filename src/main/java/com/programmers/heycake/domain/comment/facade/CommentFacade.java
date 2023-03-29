@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.mapper.CommentMapper;
 import com.programmers.heycake.common.util.AuthenticationUtil;
 import com.programmers.heycake.domain.comment.model.dto.request.CommentCreateRequest;
+import com.programmers.heycake.domain.comment.model.dto.response.ChildCommentsResponse;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentsResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.comment.service.CommentService;
@@ -98,8 +99,21 @@ public class CommentFacade {
 						comment -> {
 							Member member = memberService.getMemberById(comment.getMemberId());
 							int numberOfChildComment = commentService.countChildComment(comment.getId());
-							ImageResponses imageResponse = imageService.getImages(comment.getId(), ImageType.COMMENT);
-							return CommentMapper.toCommentsResponse(comment, member, imageResponse, numberOfChildComment);
+							ImageResponses imageResponses = imageService.getImages(comment.getId(), ImageType.COMMENT);
+							return CommentMapper.toCommentsResponse(comment, member, imageResponses, numberOfChildComment);
+						}
+				).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public List<ChildCommentsResponse> getChildComments(Long commentId) {
+		List<Comment> childComments = commentService.getChildCommentsById(commentId);
+		return childComments.stream()
+				.map(
+						comment -> {
+							Member member = memberService.getMemberById(comment.getMemberId());
+							ImageResponses imageResponses = imageService.getImages(comment.getId(), ImageType.COMMENT);
+							return CommentMapper.toChildCommentResponse(comment, member, imageResponses);
 						}
 				).toList();
 	}
