@@ -18,6 +18,16 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |  
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+              ${{ runner.os }}-gradle-
 
       - name: Generate environment file
         run: |
@@ -38,7 +48,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew bootJar
 
       - name: Make zip file
         run: zip -qq -r ./$GITHUB_SHA.zip .
