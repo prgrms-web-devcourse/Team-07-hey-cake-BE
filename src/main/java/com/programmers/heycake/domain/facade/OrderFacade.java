@@ -36,7 +36,6 @@ public class OrderFacade {
 	private final HistoryService historyService;
 	private final ImageService imageService;
 	private final OfferFacade offerFacade;
-	private final ImageIntegrationService imageIntegrationService;
 	private final MarketService marketService;
 
 	private static final String ORDER_IMAGE_SUB_PATH = "images/orders";

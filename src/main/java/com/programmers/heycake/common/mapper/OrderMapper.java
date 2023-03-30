@@ -59,31 +59,17 @@ public class OrderMapper {
 				.build();
 	}
 
-	public static OrderGetServiceSimpleResponse toOrderGetServiceSimpleResponse(Order order) {
-		return OrderGetServiceSimpleResponse.builder()
+	public static OrdersElementResponse toOrdersElementResponse(
+			Order order,
+			ImageResponses imageResponses
+	) {
+		return OrdersElementResponse.builder()
 				.orderId(order.getId())
 				.title(order.getTitle())
 				.cakeInfo(order.getCakeInfo())
 				.orderStatus(order.getOrderStatus())
 				.hopePrice(order.getHopePrice())
 				.offerCount(order.getOffers().size())
-				.region(order.getRegion())
-				.visitDate(order.getVisitDate())
-				.createdAt(order.getCreatedAt())
-				.build();
-	}
-
-	public static OrderGetSimpleResponse toOrderGetSimpleResponse(
-			OrderGetServiceSimpleResponse orderSimpleGetServiceResponse,
-			ImageResponses imageResponses
-	) {
-		return OrderGetSimpleResponse.builder()
-				.orderId(orderSimpleGetServiceResponse.orderId())
-				.title(orderSimpleGetServiceResponse.title())
-				.cakeInfo(orderSimpleGetServiceResponse.cakeInfo())
-				.orderStatus(orderSimpleGetServiceResponse.orderStatus())
-				.hopePrice(orderSimpleGetServiceResponse.hopePrice())
-				.offerCount(orderSimpleGetServiceResponse.offerCount())
 				.images(imageResponses.images()
 						.stream()
 						.map(ImageResponse::imageUrl)
@@ -103,31 +89,12 @@ public class OrderMapper {
 				.orderId(order.getId())
 				.memberId(order.getMemberId())
 				.title(order.getTitle())
-				.cakeInfo(order.getCakeInfo())
-				.orderStatus(order.getOrderStatus())
-				.visitDate(order.getVisitDate())
-				.hopePrice(order.getHopePrice())
 				.region(order.getRegion())
+				.orderStatus(order.getOrderStatus())
+				.hopePrice(order.getHopePrice())
+				.visitDate(order.getVisitDate())
+				.cakeInfo(order.getCakeInfo())
 				.offerCount(order.getOffers().size())
-				.createdAt(order.getCreatedAt())
-				.updatedAt(order.getUpdatedAt())
-				.build();
-	}
-
-	public static OrderGetDetailResponse toOrderGetDetailResponse(
-			OrderGetDetailServiceResponse orderGetDetailServiceResponse,
-			ImageResponses imageResponses
-	) {
-		return OrderGetDetailResponse.builder()
-				.orderId(orderGetDetailServiceResponse.orderId())
-				.memberId(orderGetDetailServiceResponse.memberId())
-				.title(orderGetDetailServiceResponse.title())
-				.region(orderGetDetailServiceResponse.region())
-				.orderStatus(orderGetDetailServiceResponse.orderStatus())
-				.hopePrice(orderGetDetailServiceResponse.hopePrice())
-				.visitDate(orderGetDetailServiceResponse.visitDate())
-				.cakeInfo(orderGetDetailServiceResponse.cakeInfo())
-				.offerCount(orderGetDetailServiceResponse.offerCount())
 				.images(imageResponses.images()
 						.stream()
 						.map(ImageResponse::imageUrl)
