@@ -35,10 +35,9 @@ public class MemberController {
 	}
 
 	@PostMapping("api/v1/members/refresh")
-	public ResponseEntity<String> refreshToken(
+	public ResponseEntity<TokenResponse> refreshToken(
 			@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest
 	) {
-		TokenResponse tokenResponse = memberFacade.reissueToken(tokenRefreshRequest.refreshToken());
-		return ResponseEntity.ok(tokenResponse.refreshToken());
+		return ResponseEntity.ok(memberFacade.reissueToken(tokenRefreshRequest.refreshToken()));
 	}
 }
