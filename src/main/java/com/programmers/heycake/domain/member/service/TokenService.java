@@ -59,7 +59,7 @@ public class TokenService {
 	public TokenResponse reissueToken(String refreshToken) {
 		Optional<Token> optionalToken = tokenRepository.findTokenByRefreshToken(refreshToken);
 		if (optionalToken.isEmpty()) {
-			throw new AccessDeniedException("token 발급 제한");
+			throw new AccessDeniedException("refresh token이 만료되었습니다.");
 		}
 		Long memberId;
 		String[] roles;
