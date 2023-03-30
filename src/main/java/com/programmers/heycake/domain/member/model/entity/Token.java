@@ -35,4 +35,13 @@ public class Token {
 	public void updateRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
 	}
+
+	@Override
+	public String toString() {
+		return "Token{" +
+				"id=" + id +
+				", memberId=" + memberId +
+				", refreshToken='" + refreshToken + '\'' +
+				'}';
+	}
 }
