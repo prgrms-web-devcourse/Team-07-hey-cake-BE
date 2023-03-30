@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -47,5 +47,5 @@ jobs:
       - name: Get execution permission to gradlew
         run: chmod +x ./gradlew
 
-      - name: Test with Gradle
-        run: ./gradlew test
+      - name: Build with Gradle
+        run: ./gradlew clean build
