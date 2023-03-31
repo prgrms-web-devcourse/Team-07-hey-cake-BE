@@ -1,6 +1,9 @@
 create table if not exists image
 (
     id           bigint auto_increment primary key,
+    created_at       datetime(6)  not null,
+    deleted_at       datetime(6)  null,
+    updated_at       datetime(6)  not null,
     image_type   varchar(20)   not null,
     image_url    varchar(2000) not null,
     reference_id bigint        not null

@@ -9,6 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
+import com.programmers.heycake.domain.BaseEntity;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 
 import lombok.AccessLevel;
@@ -19,7 +23,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Image {
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE image SET deleted_at = NOW() WHERE id = ?")
+public class Image extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
