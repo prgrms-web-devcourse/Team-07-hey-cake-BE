@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.service.OfferService;
-import com.programmers.heycake.domain.order.model.dto.request.HistoryControllerRequest;
-import com.programmers.heycake.domain.order.model.dto.request.HistoryFacadeRequest;
+import com.programmers.heycake.domain.order.model.dto.request.HistoryCreateControllerRequest;
+import com.programmers.heycake.domain.order.model.dto.request.HistoryCreateFacadeRequest;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.service.HistoryService;
@@ -24,15 +24,16 @@ public class HistoryFacade {
 	private final OrderService orderService;
 
 	@Transactional
-	public Long createHistory(HistoryControllerRequest historyControllerRequest) {
-		orderService.hasOffer(historyControllerRequest.orderId(), historyControllerRequest.offerId());
+	public Long createHistory(HistoryCreateControllerRequest historyCreateRequest) {
+		orderService.hasOffer(historyCreateRequest.orderId(), historyCreateRequest.offerId());
 
-		OrderStatus orderStatus = checkPayment(historyControllerRequest.isPaid());
-		orderService.updateOrderState(historyControllerRequest.orderId(), orderStatus);
+		OrderStatus orderStatus = checkPayment(historyCreateRequest.isPaid());
+		orderService.updateOrderState(historyCreateRequest.orderId(), orderStatus);
 
-		OfferDto offerDto = offerService.getOfferById(historyControllerRequest.offerId());
+		OfferDto offerDto = offerService.getOfferById(historyCreateRequest.offerId());
 		Order order = orderService.getOrderById(offerDto.orderDto().id());
-		HistoryFacadeRequest historyFacadeRequest = new HistoryFacadeRequest(getMemberId(), offerDto.marketId(), order);
+		HistoryCreateFacadeRequest historyFacadeRequest =
+				new HistoryCreateFacadeRequest(getMemberId(), offerDto.marketId(), order);
 
 		return historyService.createHistory(historyFacadeRequest);
 	}

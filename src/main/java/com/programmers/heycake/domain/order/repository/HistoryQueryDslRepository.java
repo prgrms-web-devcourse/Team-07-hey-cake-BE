@@ -36,7 +36,7 @@ public class HistoryQueryDslRepository {
 			LocalDateTime cursorDate,
 			int pageSize) {
 
-		Map<Long, MyOrderResponse> myOrderResponseMap = jpaQueryFactory
+		Map<Long, MyOrderResponse> differenceMyOrders = jpaQueryFactory
 				.select(
 						qOrderHistory.order.id,
 						qOrderHistory.order.title,
@@ -78,11 +78,11 @@ public class HistoryQueryDslRepository {
 								)
 				);
 
-		if (myOrderResponseMap.size() > pageSize) {
-			return new ArrayList<>(myOrderResponseMap.values()).subList(0, pageSize);
+		if (differenceMyOrders.size() > pageSize) {
+			return new ArrayList<>(differenceMyOrders.values()).subList(0, pageSize);
 		}
 
-		return new ArrayList<>(myOrderResponseMap.values());
+		return new ArrayList<>(differenceMyOrders.values());
 	}
 
 	private BooleanExpression gtVisitDate(LocalDateTime cursorTime) {

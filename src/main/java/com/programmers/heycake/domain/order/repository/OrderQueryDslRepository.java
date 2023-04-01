@@ -37,7 +37,7 @@ public class OrderQueryDslRepository {
 			LocalDateTime cursorDate,
 			int pageSize) {
 
-		Map<Long, MyOrderResponse> myOrderResponseMap = jpaQueryFactory
+		Map<Long, MyOrderResponse> differenceMyOrders = jpaQueryFactory
 				.select(
 						qOrder.id,
 						qOrder.title,
@@ -81,11 +81,11 @@ public class OrderQueryDslRepository {
 								)
 				);
 
-		if (myOrderResponseMap.size() > pageSize) {
-			return new ArrayList<>(myOrderResponseMap.values()).subList(0, pageSize);
+		if (differenceMyOrders.size() > pageSize) {
+			return new ArrayList<>(differenceMyOrders.values()).subList(0, pageSize);
 		}
 
-		return new ArrayList<>(myOrderResponseMap.values());
+		return new ArrayList<>(differenceMyOrders.values());
 	}
 
 	public List<Order> findAllByRegionAndCategoryOrderByCreatedAtAsc(
