@@ -12,3 +12,9 @@ spring:
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
+
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
