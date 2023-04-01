@@ -40,7 +40,7 @@ public class CommentFacade {
 	public void deleteComment(Long commentId) {
 		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
 		if (!commentImageResponse.isEmpty()) {
-			imageService.deleteImages(commentId, ImageType.COMMENT, COMMENT_SUB_PATH);
+			imageService.deleteImages(commentId, ImageType.COMMENT);
 		}
 
 		commentService.deleteComment(commentId);
@@ -50,7 +50,7 @@ public class CommentFacade {
 	public void deleteCommentWithoutAuth(Long commentId) {
 		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
 		if (!commentImageResponse.isEmpty()) {
-			imageService.deleteImages(commentId, ImageType.COMMENT, COMMENT_SUB_PATH);
+			imageService.deleteImages(commentId, ImageType.COMMENT);
 		}
 
 		commentService.deleteCommentWithoutAuth(commentId);

@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.domain.image.event.DeleteEvent;
 import com.programmers.heycake.domain.image.event.UploadRollbackEvent;
 import com.programmers.heycake.domain.image.mapper.ImageMapper;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
@@ -38,18 +37,8 @@ public class ImageService {
 	}
 
 	@Transactional
-	public void deleteImages(Long referenceId, ImageType imageType, String subPath) {
-		List<Image> images = imageRepository.findAllByReferenceIdAndImageType(referenceId, imageType);
-		imageRepository.deleteAllByReferenceIdAndImageType(referenceId, imageType);
-
-		List<String> imageUrls = images.stream()
-				.map(Image::getImageUrl)
-				.toList();
-
-		imageUrls
-				.forEach(
-						imageUrl -> applicationEventPublisher.publishEvent(new DeleteEvent(subPath, getImageFilename(imageUrl)))
-				);
+	public void deleteImages(Long referenceId, ImageType imageType) {
+		imageRepository.softDeleteByReferenceIdAndImageType(referenceId, imageType);
 	}
 
 	@Transactional(readOnly = true)

@@ -9,9 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
-
 import com.programmers.heycake.domain.BaseEntity;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 
@@ -23,8 +20,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Where(clause = "deleted_at IS NULL")
-@SQLDelete(sql = "UPDATE image SET deleted_at = NOW() WHERE id = ?")
 public class Image extends BaseEntity {
 
 	@Id
@@ -50,5 +45,13 @@ public class Image extends BaseEntity {
 	public String getFilename() {
 		int beforeFilenameIndex = imageUrl.lastIndexOf("/");
 		return imageUrl.substring(beforeFilenameIndex + 1);
+	}
+
+	public String getSubPath() {
+		String subPath = imageUrl.replaceFirst("//", "");
+		int beforeSubPathIndex = subPath.indexOf("/");
+		int afterSubPathIndex = subPath.lastIndexOf("/");
+		subPath = subPath.substring(beforeSubPathIndex + 1, afterSubPathIndex);
+		return subPath;
 	}
 }

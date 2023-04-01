@@ -70,7 +70,7 @@ public class OfferFacade {
 	@Transactional
 	public void deleteOffer(Long offerId) {
 		Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(getMemberId()));
-		imageService.deleteImages(offerId, OFFER, OFFER_IMAGE_SUB_PATH);
+		imageService.deleteImages(offerId, OFFER);
 
 		List<Long> offerCommentIdList = offerService.getOfferCommentIdList(offerId);
 		offerCommentIdList.forEach(commentFacade::deleteCommentWithoutAuth);
@@ -80,7 +80,7 @@ public class OfferFacade {
 
 	@Transactional
 	public void deleteOfferWithoutAuth(Long offerId) {
-		imageService.deleteImages(offerId, OFFER, OFFER_IMAGE_SUB_PATH);
+		imageService.deleteImages(offerId, OFFER);
 
 		List<Long> offerCommentIdList = offerService.getOfferCommentIdList(offerId);
 		offerCommentIdList.forEach(commentFacade::deleteCommentWithoutAuth);
