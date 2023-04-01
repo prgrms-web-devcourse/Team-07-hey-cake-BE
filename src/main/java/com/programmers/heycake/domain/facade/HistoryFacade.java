@@ -24,18 +24,18 @@ public class HistoryFacade {
 	private final OrderService orderService;
 
 	@Transactional
-	public Long createHistory(HistoryCreateControllerRequest historyCreateRequest) {
-		orderService.hasOffer(historyCreateRequest.orderId(), historyCreateRequest.offerId());
+	public Long createHistory(HistoryCreateControllerRequest historyCreateControllerRequest) {
+		orderService.hasOffer(historyCreateControllerRequest.orderId(), historyCreateControllerRequest.offerId());
 
-		OrderStatus orderStatus = checkPayment(historyCreateRequest.isPaid());
-		orderService.updateOrderState(historyCreateRequest.orderId(), orderStatus);
+		OrderStatus orderStatus = checkPayment(historyCreateControllerRequest.isPaid());
+		orderService.updateOrderState(historyCreateControllerRequest.orderId(), orderStatus);
 
-		OfferDto offerDto = offerService.getOfferById(historyCreateRequest.offerId());
+		OfferDto offerDto = offerService.getOfferById(historyCreateControllerRequest.offerId());
 		Order order = orderService.getOrderById(offerDto.orderDto().id());
-		HistoryCreateFacadeRequest historyFacadeRequest =
+		HistoryCreateFacadeRequest historyCreateFacadeRequest =
 				new HistoryCreateFacadeRequest(getMemberId(), offerDto.marketId(), order);
 
-		return historyService.createHistory(historyFacadeRequest);
+		return historyService.createHistory(historyCreateFacadeRequest);
 	}
 
 	private OrderStatus checkPayment(Boolean isPaid) {

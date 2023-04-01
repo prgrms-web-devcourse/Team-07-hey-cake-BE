@@ -76,8 +76,8 @@ public class OfferFacade {
 		Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(getMemberId()));
 		imageService.deleteImages(offerId, OFFER, OFFER_IMAGE_SUB_PATH);
 
-		List<Long> offerCommentIdList = offerService.getOfferCommentIdList(offerId);
-		offerCommentIdList.forEach(commentFacade::deleteCommentWithoutAuth);
+		List<Long> offerCommentsId = offerService.getOffersCommentId(offerId);
+		offerCommentsId.forEach(commentFacade::deleteCommentWithoutAuth);
 
 		offerService.deleteOffer(offerId, marketId);
 	}
@@ -86,8 +86,8 @@ public class OfferFacade {
 	public void deleteOfferWithoutAuth(Long offerId) {
 		imageService.deleteImages(offerId, OFFER, OFFER_IMAGE_SUB_PATH);
 
-		List<Long> offerCommentIdList = offerService.getOfferCommentIdList(offerId);
-		offerCommentIdList.forEach(commentFacade::deleteCommentWithoutAuth);
+		List<Long> offerCommentsId = offerService.getOffersCommentId(offerId);
+		offerCommentsId.forEach(commentFacade::deleteCommentWithoutAuth);
 
 		offerService.deleteOfferWithoutAuth(offerId);
 	}
@@ -105,7 +105,9 @@ public class OfferFacade {
 							ImageResponses imageResponses = imageService.getImages(offer.getId(), OFFER);
 							boolean isPaid = historyService.isPaidOffer(offer.getMarketId(), orderId);
 							int numberOfCommentsInOffer = commentService.countCommentsByOffer(offer);
-							return OfferMapper.toOffersResponse(offer, market, imageResponses, isPaid, numberOfCommentsInOffer);
+							return OfferMapper.toOffersResponse(
+									offer, market, imageResponses, isPaid, numberOfCommentsInOffer
+							);
 						}
 				)
 				.toList();

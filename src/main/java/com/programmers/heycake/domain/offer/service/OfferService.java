@@ -42,12 +42,12 @@ public class OfferService {
 	@Transactional
 	public void deleteOffer(Long offerId, Long marketId) {
 		identifyAuthor(offerId, marketId);
-		isNew(offerId);
+		validateIsNew(offerId);
 		offerRepository.deleteById(offerId);
 	}
 
 	@Transactional(readOnly = true)
-	public List<Long> getOfferCommentIdList(Long offerId) {
+	public List<Long> getOffersCommentId(Long offerId) {
 		return getOffer(offerId)
 				.getComments()
 				.stream()
@@ -58,6 +58,11 @@ public class OfferService {
 	@Transactional(readOnly = true)
 	public OfferDto getOfferById(Long offerId) {
 		return toOfferDto(getOffer(offerId));
+	}
+
+	@Transactional
+	public void deleteOfferWithoutAuth(Long offerId) {
+		offerRepository.deleteById(offerId);
 	}
 
 	private Offer getOffer(Long offerId) {
@@ -72,15 +77,10 @@ public class OfferService {
 		}
 	}
 
-	private void isNew(Long offerId) {
+	private void validateIsNew(Long offerId) {
 		if (getOffer(offerId).getOrder().isExpired()) {
 			throw new BusinessException(ErrorCode.ORDER_EXPIRED);
 		}
-	}
-
-	@Transactional
-	public void deleteOfferWithoutAuth(Long offerId) {
-		offerRepository.deleteById(offerId);
 	}
 
 	private void validateDuplicateOffer(Long marketId, Order order) {
