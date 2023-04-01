@@ -32,7 +32,7 @@ import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
-import com.programmers.heycake.domain.order.model.dto.request.HistoryControllerRequest;
+import com.programmers.heycake.domain.order.model.dto.request.HistoryCreateControllerRequest;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 
@@ -105,8 +105,8 @@ class HistoryControllerTest {
 
 			Offer offer = setTestOffer(order, market);
 
-			HistoryControllerRequest historyControllerRequest =
-					new HistoryControllerRequest(order.getId(), offer.getId(), true);
+			HistoryCreateControllerRequest historyControllerRequest =
+					new HistoryCreateControllerRequest(order.getId(), offer.getId(), true);
 
 			//when //then
 			mockMvc.perform(post("/api/v1/histories")
@@ -156,8 +156,8 @@ class HistoryControllerTest {
 
 			Offer anotherOffer = setTestOffer(anotherOrder, anotherMarket);
 
-			HistoryControllerRequest historyControllerRequest =
-					new HistoryControllerRequest(order.getId(), anotherOffer.getId(), true);
+			HistoryCreateControllerRequest historyControllerRequest =
+					new HistoryCreateControllerRequest(order.getId(), anotherOffer.getId(), true);
 
 			//when //then
 			mockMvc.perform(post("/api/v1/histories")
@@ -192,7 +192,7 @@ class HistoryControllerTest {
 		@DisplayName("Fail - orderHistory 생성실패.(Unauthorized)")
 		void createHistoryUnauthorized() throws Exception {
 			//given
-			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(2L, 2L, true);
+			HistoryCreateControllerRequest historyControllerRequest = new HistoryCreateControllerRequest(2L, 2L, true);
 
 			//when //then
 			mockMvc.perform(post("/api/v1/histories")
@@ -239,7 +239,7 @@ class HistoryControllerTest {
 
 			Offer anotherOffer = setTestOffer(anotherOrder, anotherMarket);
 
-			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(anotherOrder.getId(),
+			HistoryCreateControllerRequest historyControllerRequest = new HistoryCreateControllerRequest(anotherOrder.getId(),
 					anotherOffer.getId(), true);
 
 			//when //then
@@ -272,8 +272,8 @@ class HistoryControllerTest {
 			Member member = memberRepository.save(getMember("member"));
 			setContext(member.getId(), MemberAuthority.USER);
 
-			HistoryControllerRequest historyControllerRequest =
-					new HistoryControllerRequest(0L, 0L, true);
+			HistoryCreateControllerRequest historyControllerRequest =
+					new HistoryCreateControllerRequest(0L, 0L, true);
 
 			//when //then
 			mockMvc.perform(post("/api/v1/histories")

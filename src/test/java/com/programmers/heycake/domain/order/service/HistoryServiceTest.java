@@ -10,7 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.programmers.heycake.domain.order.model.dto.request.HistoryFacadeRequest;
+import com.programmers.heycake.domain.order.model.dto.request.HistoryCreateFacadeRequest;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.entity.OrderHistory;
 import com.programmers.heycake.domain.order.repository.HistoryRepository;
@@ -30,7 +30,7 @@ class HistoryServiceTest {
 		public void createHistorySuccess() {
 			//given
 			Order order = Order.builder().build();
-			HistoryFacadeRequest historyFacadeRequest = new HistoryFacadeRequest(1L, 1L, order);
+			HistoryCreateFacadeRequest historyFacadeRequest = new HistoryCreateFacadeRequest(1L, 1L, order);
 
 			//when
 			when(historyRepository.save(any(OrderHistory.class)))
