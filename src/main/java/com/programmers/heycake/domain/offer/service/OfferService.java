@@ -1,6 +1,6 @@
 package com.programmers.heycake.domain.offer.service;
 
-import static com.programmers.heycake.common.mapper.OfferMapper.*;
+import static com.programmers.heycake.domain.offer.mapper.OfferMapper.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.common.mapper.OfferMapper;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.market.model.entity.Market;
+import com.programmers.heycake.domain.offer.mapper.OfferMapper;
 import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;

@@ -1,4 +1,4 @@
-package com.programmers.heycake.common.mapper;
+package com.programmers.heycake.domain.order.mapper;
 
 import com.programmers.heycake.domain.order.model.dto.request.HistoryCreateFacadeRequest;
 import com.programmers.heycake.domain.order.model.entity.OrderHistory;

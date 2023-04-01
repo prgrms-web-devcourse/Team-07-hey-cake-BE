@@ -1,5 +1,7 @@
-package com.programmers.heycake.common.mapper;
+package com.programmers.heycake.domain.order.mapper;
 
+import static com.programmers.heycake.common.util.AuthenticationUtil.*;
+import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 import static lombok.AccessLevel.*;
 
 import java.util.List;
@@ -8,15 +10,29 @@ import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.member.model.dto.response.OrderDetailResponse;
 import com.programmers.heycake.domain.order.model.dto.OrderDto;
+import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrdersResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrdersElementResponse;
+import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = PRIVATE)
 public class OrderMapper {
+
+	public static Order toEntity(OrderCreateRequest orderCreateRequest, CakeInfo cakeInfo) {
+		return Order.builder()
+				.cakeInfo(cakeInfo)
+				.hopePrice(orderCreateRequest.hopePrice())
+				.memberId(getMemberId())
+				.orderStatus(NEW)
+				.visitDate(orderCreateRequest.visitTime())
+				.title(orderCreateRequest.title())
+				.region(orderCreateRequest.region())
+				.build();
+	}
 
 	public static OrderDto toOrderDto(Order order) {
 		return OrderDto.builder()

@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.common.mapper.OfferMapper;
 import com.programmers.heycake.domain.comment.facade.CommentFacade;
 import com.programmers.heycake.domain.comment.service.CommentService;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
@@ -21,6 +20,7 @@ import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.service.MarketService;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.service.MemberService;
+import com.programmers.heycake.domain.offer.mapper.OfferMapper;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferCreateRequest;
 import com.programmers.heycake.domain.offer.model.dto.response.OffersResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
