@@ -48,7 +48,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: ./gradlew bootJar
+        run: ./gradlew clean build
 
       - name: Make zip file
         run: zip -qq -r ./$GITHUB_SHA.zip .
