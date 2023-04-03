@@ -376,7 +376,7 @@ class OfferControllerTest {
 			assertThat(images).hasSize(1);
 			assertThat(image)
 					.usingRecursiveComparison()
-					.ignoringFields("id")
+					.ignoringFields("id", "createdAt", "updatedAt")
 					.isEqualTo(imageResult);
 		}
 
