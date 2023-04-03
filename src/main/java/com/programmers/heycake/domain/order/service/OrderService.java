@@ -14,8 +14,6 @@ import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrdersRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
-import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
-import com.programmers.heycake.domain.order.model.dto.response.MyOrdersResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
@@ -39,7 +37,7 @@ public class OrderService {
 	}
 
 	@Transactional(readOnly = true)
-	public MyOrdersResponse getMyOrders(MyOrdersRequest myOrdersRequest, Long memberId) {
+	public List<Order> getMyOrders(MyOrdersRequest myOrdersRequest, Long memberId) {
 		LocalDateTime cursorTime = null;
 		if (myOrdersRequest.cursorId() != null) {
 			cursorTime = orderRepository.findById(myOrdersRequest.cursorId())
@@ -47,16 +45,12 @@ public class OrderService {
 					.orElse(null);
 		}
 
-		List<MyOrderResponse> orders = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
+		return orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
 				myOrdersRequest.orderStatus(),
 				cursorTime,
 				myOrdersRequest.pageSize()
 		);
-
-		Long lastId = orders.isEmpty() ? 0L : orders.get(orders.size() - 1).id();
-
-		return toMyOrdersResponse(orders, lastId);
 	}
 
 	@Transactional

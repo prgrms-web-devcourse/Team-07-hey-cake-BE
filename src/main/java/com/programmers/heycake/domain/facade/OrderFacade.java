@@ -107,7 +107,25 @@ public class OrderFacade {
 							).toList(),
 					myOrders.cursorId());
 		} else {
-			return orderService.getMyOrders(getOrderRequest, memberId);
+			List<Order> myOrders = orderService.getMyOrders(getOrderRequest, memberId);
+
+			Long lastId = myOrders.isEmpty() ? 0L : myOrders.get(myOrders.size() - 1).getId();
+
+			return new MyOrdersResponse(
+					myOrders.stream()
+							.map(myOrder -> new MyOrderResponse(
+									myOrder.getId(),
+									myOrder.getTitle(),
+									myOrder.getOrderStatus(),
+									myOrder.getRegion(),
+									myOrder.getVisitDate(),
+									myOrder.getCreatedAt(),
+									myOrder.getCakeInfo(),
+									myOrder.getHopePrice(),
+									imageService.getImageUrl(myOrder.getId(), ORDER),
+									orderService.offerCount(myOrder.getId()))
+							).toList(),
+					lastId);
 		}
 	}
 
