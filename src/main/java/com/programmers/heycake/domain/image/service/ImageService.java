@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.domain.image.event.UploadRollbackEvent;
+import com.programmers.heycake.domain.image.event.RollbackUploadEvent;
 import com.programmers.heycake.domain.image.mapper.ImageMapper;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.entity.Image;
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ImageService {
 
-	private final ImageUploadService imageUploadService;
+	private final ImageStorageService imageStorageService;
 	private final ImageRepository imageRepository;
 	private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -31,8 +31,8 @@ public class ImageService {
 		if (multipartFile.isEmpty()) {
 			throw new BusinessException(ErrorCode.BAD_REQUEST);
 		}
-		String savedUrl = imageUploadService.upload(multipartFile, subPath);
-		applicationEventPublisher.publishEvent(new UploadRollbackEvent(subPath, getImageFilename(savedUrl)));
+		String savedUrl = imageStorageService.upload(multipartFile, subPath);
+		applicationEventPublisher.publishEvent(new RollbackUploadEvent(subPath, getImageFilename(savedUrl)));
 		imageRepository.save(new Image(referenceId, imageType, savedUrl));
 	}
 

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
-import com.programmers.heycake.domain.image.service.ImageUploadService;
+import com.programmers.heycake.domain.image.service.ImageStorageService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +25,7 @@ public class BatchConfig {
 	private final JobBuilderFactory jobBuilderFactory;
 	private final StepBuilderFactory stepBuilderFactory;
 	private final ImageRepository imageRepository;
-	private final ImageUploadService imageUploadService;
+	private final ImageStorageService imageStorageService;
 
 	@Bean
 	public Job deleteS3ImagesJob() {
@@ -42,7 +42,7 @@ public class BatchConfig {
 
 					deletedImages
 							.forEach(image -> {
-								imageUploadService.delete(image.getSubPath(), image.getFilename());
+								imageStorageService.delete(image.getSubPath(), image.getFilename());
 							});
 					imageRepository.deleteAllInBatch(deletedImages);
 
