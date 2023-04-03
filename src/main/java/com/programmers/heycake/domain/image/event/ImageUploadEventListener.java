@@ -19,9 +19,4 @@ public class ImageUploadEventListener {
 		imageUploadService.delete(event.getSubPath(), event.getSavedFilename());
 	}
 
-	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-	public void deleteImage(DeleteEvent event) {
-		imageUploadService.delete(event.getSubPath(), event.getSavedFilename());
-	}
-
 }
