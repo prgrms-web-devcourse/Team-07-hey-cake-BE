@@ -76,8 +76,8 @@ public class OfferFacade {
 		Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(getMemberId()));
 		imageService.deleteImages(offerId, OFFER, OFFER_IMAGE_SUB_PATH);
 
-		List<Long> offerCommentsId = offerService.getOffersCommentId(offerId);
-		offerCommentsId.forEach(commentFacade::deleteCommentWithoutAuth);
+		List<Long> offerCommentIds = offerService.getOfferCommentIds(offerId);
+		offerCommentIds.forEach(commentFacade::deleteCommentWithoutAuth);
 
 		offerService.deleteOffer(offerId, marketId);
 	}
@@ -86,8 +86,8 @@ public class OfferFacade {
 	public void deleteOfferWithoutAuth(Long offerId) {
 		imageService.deleteImages(offerId, OFFER, OFFER_IMAGE_SUB_PATH);
 
-		List<Long> offerCommentsId = offerService.getOffersCommentId(offerId);
-		offerCommentsId.forEach(commentFacade::deleteCommentWithoutAuth);
+		List<Long> offerCommentIds = offerService.getOfferCommentIds(offerId);
+		offerCommentIds.forEach(commentFacade::deleteCommentWithoutAuth);
 
 		offerService.deleteOfferWithoutAuth(offerId);
 	}

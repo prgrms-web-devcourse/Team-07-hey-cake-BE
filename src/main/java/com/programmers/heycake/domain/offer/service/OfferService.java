@@ -47,7 +47,7 @@ public class OfferService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Long> getOffersCommentId(Long offerId) {
+	public List<Long> getOfferCommentIds(Long offerId) {
 		return getOffer(offerId)
 				.getComments()
 				.stream()
