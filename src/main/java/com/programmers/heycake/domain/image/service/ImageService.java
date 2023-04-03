@@ -58,6 +58,16 @@ public class ImageService {
 		return ImageMapper.toResponse(images);
 	}
 
+	@Transactional(readOnly = true)
+	public String getImageUrl(Long referenceId, ImageType imageType) {
+		List<Image> images = imageRepository.findAllByReferenceIdAndImageType(referenceId, imageType);
+
+		if (!images.isEmpty()) {
+			return images.get(0).getImageUrl();
+		}
+		return null;
+	}
+
 	private String getImageFilename(String imageUrl) {
 		int beforeFilenameIndex = imageUrl.lastIndexOf("/");
 		return imageUrl.substring(beforeFilenameIndex + 1);
