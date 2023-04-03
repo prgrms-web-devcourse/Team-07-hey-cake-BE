@@ -129,3 +129,13 @@ create table if not exists token
     constraint refresh_token_uk unique (refresh_token),
     constraint member_id_uk unique (member_id)
 );
+
+CREATE TABLE `follow` (
+      id	BIGINT	NOT NULL auto_increment primary key,
+      member_id	BIGINT	NOT NULL,
+      market_id	BIGINT	NOT NULL,
+      created_at	TIMESTAMP	NOT NULL,
+      updated_at	TIMESTAMP	NOT NULL,
+      deleted_at	TIMESTAMP	NULL
+);
+
