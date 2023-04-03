@@ -78,7 +78,8 @@ public class SecurityConfig {
 		http
 				.csrf().disable()
 				.authorizeRequests()
-				.antMatchers("/api/v1/login").permitAll()
+				.antMatchers("/login").permitAll()
+				.antMatchers(HttpMethod.POST, "/logout").hasAnyRole("ADMIN", "MARKET", "USER")
 				.antMatchers(HttpMethod.POST, "/api/v1/orders").hasRole("USER")
 				.antMatchers(HttpMethod.GET, "/api/v1/orders/**").permitAll()
 				.antMatchers(HttpMethod.DELETE, "/api/v1/orders/**").hasAnyRole("ADMIN", "USER")

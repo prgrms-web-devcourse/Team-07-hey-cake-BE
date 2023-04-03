@@ -45,13 +45,14 @@ public class OrderFacade {
 		Long orderId = orderService.createOrder(orderCreateRequest);
 
 		orderCreateRequest.cakeImages()
-				.forEach(cakeImage ->
-						imageService.createAndUploadImage(
-								cakeImage,
-								ORDER_IMAGE_SUB_PATH,
-								orderId,
-								ORDER
-						));
+				.forEach(
+						cakeImage ->
+								imageService.createAndUploadImage(
+										cakeImage,
+										ORDER_IMAGE_SUB_PATH,
+										orderId,
+										ORDER
+								));
 		return orderId;
 	}
 
