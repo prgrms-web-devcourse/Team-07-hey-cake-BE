@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.programmers.heycake.domain.member.model.dto.response.OrderDetailResponse;
 import com.programmers.heycake.domain.facade.OrderFacade;
-import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
+import com.programmers.heycake.domain.member.model.dto.response.OrderDetailResponse;
+import com.programmers.heycake.domain.order.model.dto.request.MyOrdersRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
-import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrdersResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrdersResponse;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
@@ -66,15 +66,15 @@ public class OrderController {
 
 	@GetMapping("/my")
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_MARKET')")
-	public ResponseEntity<MyOrderResponseList> getOrderList(
+	public ResponseEntity<MyOrdersResponse> getMyOrders(
 			@RequestParam(required = false) @Positive Long cursorId,
 			@RequestParam(defaultValue = "10") @Positive Integer pageSize,
 			@RequestParam(required = false) OrderStatus orderStatus
 	) {
-		MyOrderRequest myOrderRequest = new MyOrderRequest(cursorId, pageSize, orderStatus);
-		MyOrderResponseList myOrderList = orderFacade.getMyOrderList(myOrderRequest);
+		MyOrdersRequest myOrderRequest = new MyOrdersRequest(cursorId, pageSize, orderStatus);
+		MyOrdersResponse myOrders = orderFacade.getMyOrders(myOrderRequest);
 
-		return ResponseEntity.ok(myOrderList);
+		return ResponseEntity.ok(myOrders);
 	}
 
 	@DeleteMapping("/{orderId}")

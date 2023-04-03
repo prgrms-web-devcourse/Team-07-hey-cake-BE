@@ -1,4 +1,4 @@
-package com.programmers.heycake.common.mapper;
+package com.programmers.heycake.domain.order.mapper;
 
 import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
@@ -12,7 +12,7 @@ import com.programmers.heycake.domain.member.model.dto.response.OrderDetailRespo
 import com.programmers.heycake.domain.order.model.dto.OrderDto;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
-import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrdersResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrdersElementResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
@@ -21,18 +21,6 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = PRIVATE)
 public class OrderMapper {
-
-	public static Order toEntity(OrderDto orderDto) {
-		return Order.builder()
-				.memberId(orderDto.memberId())
-				.title(orderDto.title())
-				.orderStatus(orderDto.orderStatus())
-				.hopePrice(orderDto.hopePrice())
-				.region(orderDto.region())
-				.visitDate(orderDto.visitDate())
-				.cakeInfo(orderDto.cakeInfo())
-				.build();
-	}
 
 	public static Order toEntity(OrderCreateRequest orderCreateRequest, CakeInfo cakeInfo) {
 		return Order.builder()
@@ -105,9 +93,9 @@ public class OrderMapper {
 				.build();
 	}
 
-	public static MyOrderResponseList toMyOrderResponseList(
+	public static MyOrdersResponse toMyOrdersResponse(
 			List<MyOrderResponse> orderList,
 			Long cursorId) {
-		return new MyOrderResponseList(orderList, cursorId);
+		return new MyOrdersResponse(orderList, cursorId);
 	}
 }

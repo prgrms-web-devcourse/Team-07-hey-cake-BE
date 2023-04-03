@@ -1,8 +1,8 @@
 package com.programmers.heycake.domain.facade;
 
-import static com.programmers.heycake.common.mapper.OrderMapper.*;
 import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
+import static com.programmers.heycake.domain.order.mapper.OrderMapper.*;
 
 import java.util.List;
 
@@ -13,10 +13,10 @@ import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.service.MarketService;
 import com.programmers.heycake.domain.member.model.dto.response.OrderDetailResponse;
 import com.programmers.heycake.domain.member.service.MemberService;
-import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
+import com.programmers.heycake.domain.order.model.dto.request.MyOrdersRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
-import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrdersResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrdersElementResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrdersResponse;
 import com.programmers.heycake.domain.order.model.entity.Order;
@@ -45,13 +45,14 @@ public class OrderFacade {
 		Long orderId = orderService.createOrder(orderCreateRequest);
 
 		orderCreateRequest.cakeImages()
-				.forEach(cakeImage ->
-						imageService.createAndUploadImage(
-								cakeImage,
-								ORDER_IMAGE_SUB_PATH,
-								orderId,
-								ORDER
-						));
+				.forEach(
+						cakeImage ->
+								imageService.createAndUploadImage(
+										cakeImage,
+										ORDER_IMAGE_SUB_PATH,
+										orderId,
+										ORDER
+								));
 		return orderId;
 	}
 
@@ -82,15 +83,15 @@ public class OrderFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public MyOrderResponseList getMyOrderList(MyOrderRequest getOrderRequest) {
+	public MyOrdersResponse getMyOrders(MyOrdersRequest getOrderRequest) {
 		Long memberId = getMemberId();
 		if (memberService.isMarketById(memberId)) {
 			Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(memberId));
-			MyOrderResponseList myOrderList =
-					historyService.getMyOrderList(getOrderRequest, marketId);
+			MyOrdersResponse myOrders =
+					historyService.getMyOrders(getOrderRequest, marketId);
 
-			return new MyOrderResponseList(
-					myOrderList.myOrderResponseList()
+			return new MyOrdersResponse(
+					myOrders.myOrdersResponse()
 							.stream()
 							.map(myOrder -> new MyOrderResponse(
 									myOrder.id(),
@@ -104,9 +105,9 @@ public class OrderFacade {
 									myOrder.imageUrl(),
 									orderService.offerCount(myOrder.id()))
 							).toList(),
-					myOrderList.cursorId());
+					myOrders.cursorId());
 		} else {
-			return orderService.getMyOrderList(getOrderRequest, memberId);
+			return orderService.getMyOrders(getOrderRequest, memberId);
 		}
 	}
 
@@ -114,8 +115,8 @@ public class OrderFacade {
 	public void deleteOrder(Long orderId) {
 		imageService.deleteImages(orderId, ORDER);
 
-		List<Long> orderOfferIdList = orderService.getOrderOfferIdList(orderId);
-		orderOfferIdList.forEach(offerFacade::deleteOfferWithoutAuth);
+		List<Long> ordersOfferId = orderService.getOrdersOfferId(orderId);
+		ordersOfferId.forEach(offerFacade::deleteOfferWithoutAuth);
 
 		orderService.deleteOrder(orderId);
 	}

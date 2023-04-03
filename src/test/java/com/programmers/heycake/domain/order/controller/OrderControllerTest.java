@@ -123,23 +123,23 @@ class OrderControllerTest {
 									parameterWithName("orderStatus").description("주문 상태")
 							),
 							responseFields(
-									fieldWithPath("myOrderResponseList").description("주문 목록"),
-									fieldWithPath("myOrderResponseList[].id").description("주문 식별자"),
-									fieldWithPath("myOrderResponseList[].title").description("주문 제목"),
-									fieldWithPath("myOrderResponseList[].orderStatus").description("주문 상태"),
-									fieldWithPath("myOrderResponseList[].region").description("주문 지역"),
-									fieldWithPath("myOrderResponseList[].visitTime").description("방문 시간"),
-									fieldWithPath("myOrderResponseList[].createdAt").description("생성 시간"),
-									fieldWithPath("myOrderResponseList[].cakeInfo").description("생성 시간"),
-									fieldWithPath("myOrderResponseList[].cakeInfo.cakeCategory").description("케익 종류"),
-									fieldWithPath("myOrderResponseList[].cakeInfo.cakeSize").description("케익 크기"),
-									fieldWithPath("myOrderResponseList[].cakeInfo.cakeHeight").description("케익 높이"),
-									fieldWithPath("myOrderResponseList[].cakeInfo.breadFlavor").description("빵 맛"),
-									fieldWithPath("myOrderResponseList[].cakeInfo.creamFlavor").description("크림 맛"),
-									fieldWithPath("myOrderResponseList[].cakeInfo.requirements").description("요청 사항"),
-									fieldWithPath("myOrderResponseList[].hopePrice").description("희망 가격"),
-									fieldWithPath("myOrderResponseList[].imageUrl").description("이미지 주소"),
-									fieldWithPath("myOrderResponseList[].offerCount").description("오퍼 갯수"),
+									fieldWithPath("myOrdersResponse").description("주문 목록"),
+									fieldWithPath("myOrdersResponse[].id").description("주문 식별자"),
+									fieldWithPath("myOrdersResponse[].title").description("주문 제목"),
+									fieldWithPath("myOrdersResponse[].orderStatus").description("주문 상태"),
+									fieldWithPath("myOrdersResponse[].region").description("주문 지역"),
+									fieldWithPath("myOrdersResponse[].visitTime").description("방문 시간"),
+									fieldWithPath("myOrdersResponse[].createdAt").description("생성 시간"),
+									fieldWithPath("myOrdersResponse[].cakeInfo").description("생성 시간"),
+									fieldWithPath("myOrdersResponse[].cakeInfo.cakeCategory").description("케익 종류"),
+									fieldWithPath("myOrdersResponse[].cakeInfo.cakeSize").description("케익 크기"),
+									fieldWithPath("myOrdersResponse[].cakeInfo.cakeHeight").description("케익 높이"),
+									fieldWithPath("myOrdersResponse[].cakeInfo.breadFlavor").description("빵 맛"),
+									fieldWithPath("myOrdersResponse[].cakeInfo.creamFlavor").description("크림 맛"),
+									fieldWithPath("myOrdersResponse[].cakeInfo.requirements").description("요청 사항"),
+									fieldWithPath("myOrdersResponse[].hopePrice").description("희망 가격"),
+									fieldWithPath("myOrdersResponse[].imageUrl").description("이미지 주소"),
+									fieldWithPath("myOrdersResponse[].offerCount").description("오퍼 갯수"),
 									fieldWithPath("cursorId").description("커서 식별자")
 							)));
 		}
@@ -635,8 +635,8 @@ class OrderControllerTest {
 							.param("requirements", requirements)
 							.param("hopePrice", hopePrice != null ? hopePrice.toString() : null)
 							.param("region", region)
-							.param("visitTime", visitTime != null ?
-									visitTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")) : null
+							.param("visitTime", visitTime != null
+									? visitTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")) : null
 							)
 					)
 					.andExpect(status().isBadRequest())

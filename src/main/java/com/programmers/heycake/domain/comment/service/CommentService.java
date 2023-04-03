@@ -24,13 +24,23 @@ public class CommentService {
 
 	private final CommentRepository commentRepository;
 
-	public Long createComment(String content, Offer offer, Market market, Member member) {
+	public Long createComment(
+			String content,
+			Long parentCommentId,
+			Offer offer,
+			Market market,
+			Member member
+	) {
 		Order order = offer.getOrder();
 
 		verifyOrderExpired(order);
 		verifyCommentWriteAuthority(order, market, member);
+		if (parentCommentId != null) {
+			verifyCommentParentExists(parentCommentId);
+		}
 
-		Comment comment = toEntity(member.getId(), content);
+		Comment comment = toEntity(member.getId(), content, parentCommentId);
+
 		comment.setOffer(offer);
 
 		commentRepository.save(comment);
@@ -47,6 +57,12 @@ public class CommentService {
 	private void verifyOrderExpired(Order order) {
 		if (order.isExpired()) {
 			throw new BusinessException(ErrorCode.ORDER_EXPIRED);
+		}
+	}
+
+	private void verifyCommentParentExists(Long parentCommentId) {
+		if (!commentRepository.existsById(parentCommentId)) {
+			throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
 		}
 	}
 
@@ -75,11 +91,19 @@ public class CommentService {
 				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 	}
 
-	public List<Comment> getCommentsByOfferId(Long offerId) {
-		return commentRepository.findAllByOfferId(offerId);
+	public List<Comment> getParentCommentsByOfferId(Long offerId) {
+		return commentRepository.findAllByOfferIdAndParentCommentIdIsNull(offerId);
+	}
+
+	public List<Comment> getChildCommentsById(Long parentCommentId) {
+		return commentRepository.findAllByParentCommentId(parentCommentId);
 	}
 
 	public int countCommentsByOffer(Offer offer) {
 		return commentRepository.countByOffer(offer);
+	}
+
+	public int countChildComment(Long parentCommentId) {
+		return commentRepository.countByParentCommentId(parentCommentId);
 	}
 }

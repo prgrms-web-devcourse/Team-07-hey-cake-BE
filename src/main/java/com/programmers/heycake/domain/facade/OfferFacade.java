@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.common.mapper.OfferMapper;
 import com.programmers.heycake.domain.comment.facade.CommentFacade;
 import com.programmers.heycake.domain.comment.service.CommentService;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
@@ -21,6 +20,7 @@ import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.service.MarketService;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.service.MemberService;
+import com.programmers.heycake.domain.offer.mapper.OfferMapper;
 import com.programmers.heycake.domain.offer.model.dto.request.OfferCreateRequest;
 import com.programmers.heycake.domain.offer.model.dto.response.OffersResponse;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
@@ -76,8 +76,8 @@ public class OfferFacade {
 		Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(getMemberId()));
 		imageService.deleteImages(offerId, OFFER);
 
-		List<Long> offerCommentIdList = offerService.getOfferCommentIdList(offerId);
-		offerCommentIdList.forEach(commentFacade::deleteCommentWithoutAuth);
+		List<Long> offerCommentIds = offerService.getOfferCommentIds(offerId);
+		offerCommentIds.forEach(commentFacade::deleteCommentWithoutAuth);
 
 		offerService.deleteOffer(offerId, marketId);
 	}
@@ -86,8 +86,8 @@ public class OfferFacade {
 	public void deleteOfferWithoutAuth(Long offerId) {
 		imageService.deleteImages(offerId, OFFER);
 
-		List<Long> offerCommentIdList = offerService.getOfferCommentIdList(offerId);
-		offerCommentIdList.forEach(commentFacade::deleteCommentWithoutAuth);
+		List<Long> offerCommentIds = offerService.getOfferCommentIds(offerId);
+		offerCommentIds.forEach(commentFacade::deleteCommentWithoutAuth);
 
 		offerService.deleteOfferWithoutAuth(offerId);
 	}
@@ -105,7 +105,9 @@ public class OfferFacade {
 							ImageResponses imageResponses = imageService.getImages(offer.getId(), OFFER);
 							boolean isPaid = historyService.isPaidOffer(offer.getMarketId(), orderId);
 							int numberOfCommentsInOffer = commentService.countCommentsByOffer(offer);
-							return OfferMapper.toOffersResponse(offer, market, imageResponses, isPaid, numberOfCommentsInOffer);
+							return OfferMapper.toOffersResponse(
+									offer, market, imageResponses, isPaid, numberOfCommentsInOffer
+							);
 						}
 				)
 				.toList();

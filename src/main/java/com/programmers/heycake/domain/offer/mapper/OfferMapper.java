@@ -1,7 +1,7 @@
-package com.programmers.heycake.common.mapper;
+package com.programmers.heycake.domain.offer.mapper;
 
 import static com.programmers.heycake.common.mapper.CommentMapper.*;
-import static com.programmers.heycake.common.mapper.OrderMapper.*;
+import static com.programmers.heycake.domain.order.mapper.OrderMapper.*;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.mapper.CommentMapper;
 import com.programmers.heycake.common.util.AuthenticationUtil;
 import com.programmers.heycake.domain.comment.model.dto.request.CommentCreateRequest;
+import com.programmers.heycake.domain.comment.model.dto.response.ChildCommentsResponse;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentsResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.comment.service.CommentService;
@@ -70,6 +71,7 @@ public class CommentFacade {
 
 		Long createdCommentId = commentService.createComment(
 				commentCreateRequest.content(),
+				commentCreateRequest.parentCommentId(),
 				offer,
 				market,
 				member
@@ -90,13 +92,27 @@ public class CommentFacade {
 	@Cacheable(cacheNames = "comments", key = "#offerId")
 	@Transactional(readOnly = true)
 	public List<CommentsResponse> getComments(Long offerId) {
-		List<Comment> comments = commentService.getCommentsByOfferId(offerId);
+		List<Comment> comments = commentService.getParentCommentsByOfferId(offerId);
 		return comments.stream()
 				.map(
 						comment -> {
 							Member member = memberService.getMemberById(comment.getMemberId());
-							ImageResponses imageResponse = imageService.getImages(comment.getId(), ImageType.COMMENT);
-							return CommentMapper.toCommentsResponse(comment, member, imageResponse);
+							int numberOfChildComment = commentService.countChildComment(comment.getId());
+							ImageResponses imageResponses = imageService.getImages(comment.getId(), ImageType.COMMENT);
+							return CommentMapper.toCommentsResponse(comment, member, imageResponses, numberOfChildComment);
+						}
+				).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public List<ChildCommentsResponse> getChildComments(Long commentId) {
+		List<Comment> childComments = commentService.getChildCommentsById(commentId);
+		return childComments.stream()
+				.map(
+						comment -> {
+							Member member = memberService.getMemberById(comment.getMemberId());
+							ImageResponses imageResponses = imageService.getImages(comment.getId(), ImageType.COMMENT);
+							return CommentMapper.toChildCommentResponse(comment, member, imageResponses);
 						}
 				).toList();
 	}

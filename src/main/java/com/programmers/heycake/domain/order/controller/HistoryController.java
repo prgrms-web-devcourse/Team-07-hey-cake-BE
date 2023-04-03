@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.facade.HistoryFacade;
-import com.programmers.heycake.domain.order.model.dto.request.HistoryControllerRequest;
+import com.programmers.heycake.domain.order.model.dto.request.HistoryCreateControllerRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,8 +23,8 @@ public class HistoryController {
 
 	@PostMapping
 	public ResponseEntity<Void> createHistory(
-			@RequestBody HistoryControllerRequest historyRequest, HttpServletRequest request) {
-		Long historyId = historyFacade.createHistory(historyRequest);
+			@RequestBody HistoryCreateControllerRequest historyCreateControllerRequest, HttpServletRequest request) {
+		Long historyId = historyFacade.createHistory(historyCreateControllerRequest);
 
 		URI location = URI.create(request.getRequestURI() + "/" + historyId);
 		return ResponseEntity.created(location).build();

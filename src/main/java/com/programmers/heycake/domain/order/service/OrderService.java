@@ -1,7 +1,7 @@
 package com.programmers.heycake.domain.order.service;
 
-import static com.programmers.heycake.common.mapper.OrderMapper.*;
 import static com.programmers.heycake.common.util.AuthenticationUtil.*;
+import static com.programmers.heycake.domain.order.mapper.OrderMapper.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
-import com.programmers.heycake.domain.order.model.dto.request.MyOrderRequest;
+import com.programmers.heycake.domain.order.model.dto.request.MyOrdersRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
-import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
+import com.programmers.heycake.domain.order.model.dto.response.MyOrdersResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
@@ -39,24 +39,24 @@ public class OrderService {
 	}
 
 	@Transactional(readOnly = true)
-	public MyOrderResponseList getMyOrderList(MyOrderRequest myOrderRequest, Long memberId) {
+	public MyOrdersResponse getMyOrders(MyOrdersRequest myOrdersRequest, Long memberId) {
 		LocalDateTime cursorTime = null;
-		if (myOrderRequest.cursorId() != null) {
-			cursorTime = orderRepository.findById(myOrderRequest.cursorId())
+		if (myOrdersRequest.cursorId() != null) {
+			cursorTime = orderRepository.findById(myOrdersRequest.cursorId())
 					.map(Order::getVisitDate)
 					.orElse(null);
 		}
 
-		List<MyOrderResponse> orderList = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
+		List<MyOrderResponse> orders = orderQueryDslRepository.findAllByMemberIdOrderByVisitDateAsc(
 				memberId,
-				myOrderRequest.orderStatus(),
+				myOrdersRequest.orderStatus(),
 				cursorTime,
-				myOrderRequest.pageSize()
+				myOrdersRequest.pageSize()
 		);
 
-		Long lastId = orderList.isEmpty() ? 0L : orderList.get(orderList.size() - 1).id();
+		Long lastId = orders.isEmpty() ? 0L : orders.get(orders.size() - 1).id();
 
-		return toMyOrderResponseList(orderList, lastId);
+		return toMyOrdersResponse(orders, lastId);
 	}
 
 	@Transactional
@@ -94,7 +94,7 @@ public class OrderService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Long> getOrderOfferIdList(Long orderId) {
+	public List<Long> getOrdersOfferId(Long orderId) {
 		return getOrderById(orderId)
 				.getOffers()
 				.stream()
@@ -111,8 +111,8 @@ public class OrderService {
 
 	@Transactional(readOnly = true)
 	public void hasOffer(Long orderId, Long offerId) {
-		List<Offer> offerList = getOrderById(orderId).getOffers();
-		if (offerList.stream().noneMatch(offer -> offer.isMatch(offerId))) {
+		List<Offer> offers = getOrderById(orderId).getOffers();
+		if (offers.stream().noneMatch(offer -> offer.isMatch(offerId))) {
 			throw new BusinessException(ErrorCode.BAD_REQUEST);
 		}
 	}
