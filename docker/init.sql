@@ -4,7 +4,7 @@ create table if not exists image
     image_type   varchar(20)   not null,
     image_url    varchar(2000) not null,
     reference_id bigint        not null
-    );
+);
 
 create table if not exists member
 (
@@ -17,7 +17,7 @@ create table if not exists member
     member_authority varchar(255) not null,
     nickname         varchar(30)  not null,
     constraint member_email_uk unique (email)
-    );
+);
 
 drop table if exists market_enrollment;
 
@@ -42,7 +42,7 @@ create table if not exists market_enrollment
     member_id         bigint       not null,
     constraint business_number_uk unique (business_number),
     constraint market_enrollment_with_member_id_fk foreign key (member_id) references member (id)
-    );
+);
 
 create table if not exists market
 (
@@ -61,7 +61,7 @@ create table if not exists market
     member_id            bigint       not null,
     constraint market_with_member_id_fk foreign key (member_id) references member (id),
     constraint market_with_market_enrollment_id_fk foreign key (market_enrollment_id) references market_enrollment (id)
-    );
+);
 
 create table if not exists orders
 (
@@ -81,7 +81,7 @@ create table if not exists orders
     region        varchar(40)  not null,
     title         varchar(20)  not null,
     visit_date    datetime(6)  not null
-    );
+);
 
 create table if not exists offer
 (
@@ -94,19 +94,20 @@ create table if not exists offer
     market_id      bigint       not null,
     order_id       bigint       not null,
     constraint offer_with_order_id_fk foreign key (order_id) references orders (id)
-    );
+);
 
 create table if not exists comment
 (
-    id         bigint auto_increment primary key,
-    created_at datetime(6)  not null,
-    deleted_at datetime(6)  null,
-    updated_at datetime(6)  not null,
-    content    varchar(500) not null,
-    member_id  bigint       not null,
-    offer_id   bigint       not null,
+    id                bigint auto_increment primary key,
+    created_at        datetime(6)  not null,
+    deleted_at        datetime(6)  null,
+    updated_at        datetime(6)  not null,
+    content           varchar(500) not null,
+    member_id         bigint       not null,
+    offer_id          bigint       not null,
+    parent_comment_id bigint       null,
     constraint comment_with_offer_id_fk foreign key (offer_id) references offer (id)
-    );
+);
 
 create table if not exists order_history
 (
@@ -118,7 +119,7 @@ create table if not exists order_history
     member_id  bigint      not null,
     order_id   bigint      not null,
     constraint order_history_with_order_id_fk foreign key (order_id) references orders (id)
-    );
+);
 
 create table if not exists token
 (
@@ -127,4 +128,4 @@ create table if not exists token
     refresh_token varchar(300) not null,
     constraint refresh_token_uk unique (refresh_token),
     constraint member_id_uk unique (member_id)
-    );
+);

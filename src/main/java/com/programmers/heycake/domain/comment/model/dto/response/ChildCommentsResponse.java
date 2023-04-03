@@ -5,14 +5,13 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 
 @Builder
-public record CommentsResponse(
+public record ChildCommentsResponse(
 		Long commentId,
 		String comment,
 		String image,
 		Long memberId,
 		String nickname,
 		LocalDateTime createdAt,
-		int childCommentCount,
 		boolean isDeleted
 ) {
 }

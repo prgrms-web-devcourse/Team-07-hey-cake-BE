@@ -2,6 +2,7 @@ package com.programmers.heycake.common.mapper;
 
 import java.util.List;
 
+import com.programmers.heycake.domain.comment.model.dto.response.ChildCommentsResponse;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentResponse;
 import com.programmers.heycake.domain.comment.model.dto.response.CommentsResponse;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
@@ -15,8 +16,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentMapper {
 
-	public static Comment toEntity(Long memberId, String content) {
-		return new Comment(memberId, content);
+	public static Comment toEntity(Long memberId, String content, Long parentCommentId) {
+		return new Comment(memberId, content, parentCommentId);
 	}
 
 	public static CommentResponse toCommentResponse(Comment comment) {
@@ -32,7 +33,8 @@ public class CommentMapper {
 	public static CommentsResponse toCommentsResponse(
 			Comment comment,
 			Member member,
-			ImageResponses imageResponse
+			ImageResponses imageResponse,
+			int childCommentCount
 	) {
 		List<String> imageUrls = imageResponse.images().stream()
 				.map(ImageResponse::imageUrl)
@@ -50,6 +52,33 @@ public class CommentMapper {
 				.createdAt(comment.getCreatedAt())
 				.nickname(member.getNickname())
 				.image(imageUrl)
+				.childCommentCount(childCommentCount)
+				.isDeleted(comment.isDeleted())
+				.build();
+	}
+
+	public static ChildCommentsResponse toChildCommentResponse(
+			Comment comment,
+			Member member,
+			ImageResponses imageResponses
+	) {
+		List<String> imageUrls = imageResponses.images().stream()
+				.map(ImageResponse::imageUrl)
+				.toList();
+
+		String imageUrl = imageUrls
+				.stream()
+				.findAny()
+				.orElse(null);
+
+		return ChildCommentsResponse.builder()
+				.commentId(comment.getId())
+				.comment(comment.getContent())
+				.memberId(comment.getMemberId())
+				.createdAt(comment.getCreatedAt())
+				.nickname(member.getNickname())
+				.image(imageUrl)
+				.isDeleted(comment.isDeleted())
 				.build();
 	}
 }

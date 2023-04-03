@@ -5,6 +5,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 import org.hibernate.validator.constraints.Length;
+import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 public record CommentCreateRequest(
@@ -14,7 +15,10 @@ public record CommentCreateRequest(
 		@Length(max = 500)
 		@NotBlank
 		String content,
-		MultipartFile image
+		MultipartFile image,
+		@Positive
+		@Nullable
+		Long parentCommentId
 ) {
 	public boolean existsImage() {
 		return this.image != null;

@@ -9,7 +9,11 @@ import com.programmers.heycake.domain.offer.model.entity.Offer;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-	List<Comment> findAllByOfferId(Long offerId);
+	List<Comment> findAllByOfferIdAndParentCommentIdIsNull(Long offerId);
+
+	List<Comment> findAllByParentCommentId(Long parentCommentId);
 
 	int countByOffer(Offer offer);
+
+	int countByParentCommentId(Long parentCommentId);
 }
