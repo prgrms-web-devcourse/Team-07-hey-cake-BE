@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.programmers.heycake.common.util.AuthenticationUtil;
 import com.programmers.heycake.common.util.WithMockCustomUser;
+import com.programmers.heycake.domain.facade.HistoryFacade;
 import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.service.OfferService;
 import com.programmers.heycake.domain.order.model.dto.OrderDto;

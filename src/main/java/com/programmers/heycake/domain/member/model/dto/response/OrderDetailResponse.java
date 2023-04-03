@@ -10,7 +10,7 @@ import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import lombok.Builder;
 
 @Builder
-public record OrderGetDetailResponse(
+public record OrderDetailResponse(
 		Long orderId,
 		Long memberId,
 		String title,

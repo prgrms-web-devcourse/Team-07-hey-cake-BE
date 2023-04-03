@@ -8,14 +8,12 @@ import java.util.List;
 
 import com.programmers.heycake.domain.image.model.dto.ImageResponse;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.member.model.dto.response.OrderGetDetailResponse;
+import com.programmers.heycake.domain.member.model.dto.response.OrderDetailResponse;
 import com.programmers.heycake.domain.order.model.dto.OrderDto;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponseList;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetDetailServiceResponse;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetServiceSimpleResponse;
-import com.programmers.heycake.domain.order.model.dto.response.OrderGetSimpleResponse;
+import com.programmers.heycake.domain.order.model.dto.response.OrdersElementResponse;
 import com.programmers.heycake.domain.order.model.entity.CakeInfo;
 import com.programmers.heycake.domain.order.model.entity.Order;
 
@@ -61,80 +59,49 @@ public class OrderMapper {
 				.build();
 	}
 
-	public static OrderGetServiceSimpleResponse toOrderGetServiceSimpleResponse(Order order) {
-		return OrderGetServiceSimpleResponse.builder()
+	public static OrdersElementResponse toOrdersElementResponse(
+			Order order,
+			ImageResponses imageResponses
+	) {
+		return OrdersElementResponse.builder()
 				.orderId(order.getId())
 				.title(order.getTitle())
 				.cakeInfo(order.getCakeInfo())
 				.orderStatus(order.getOrderStatus())
 				.hopePrice(order.getHopePrice())
 				.offerCount(order.getOffers().size())
-				.region(order.getRegion())
-				.visitDate(order.getVisitDate())
-				.createdAt(order.getCreatedAt())
-				.build();
-	}
-
-	public static OrderGetSimpleResponse toOrderGetSimpleResponse(
-			OrderGetServiceSimpleResponse orderSimpleGetServiceResponse,
-			ImageResponses imageResponses
-	) {
-		return OrderGetSimpleResponse.builder()
-				.orderId(orderSimpleGetServiceResponse.orderId())
-				.title(orderSimpleGetServiceResponse.title())
-				.cakeInfo(orderSimpleGetServiceResponse.cakeInfo())
-				.orderStatus(orderSimpleGetServiceResponse.orderStatus())
-				.hopePrice(orderSimpleGetServiceResponse.hopePrice())
-				.offerCount(orderSimpleGetServiceResponse.offerCount())
 				.images(imageResponses.images()
 						.stream()
 						.map(ImageResponse::imageUrl)
 						.toList()
 				)
-				.region(orderSimpleGetServiceResponse.region())
-				.visitTime(orderSimpleGetServiceResponse.visitDate())
-				.createdAt(orderSimpleGetServiceResponse.createdAt())
+				.region(order.getRegion())
+				.visitTime(order.getVisitDate())
+				.createdAt(order.getCreatedAt())
 				.build();
 	}
 
-	public static OrderGetDetailServiceResponse toOrderGetDetailServiceResponse(Order order) {
-		return OrderGetDetailServiceResponse.builder()
+	public static OrderDetailResponse toOrderDetailResponse(
+			Order order,
+			ImageResponses imageResponses
+	) {
+		return OrderDetailResponse.builder()
 				.orderId(order.getId())
 				.memberId(order.getMemberId())
 				.title(order.getTitle())
-				.cakeInfo(order.getCakeInfo())
-				.orderStatus(order.getOrderStatus())
-				.visitDate(order.getVisitDate())
-				.hopePrice(order.getHopePrice())
 				.region(order.getRegion())
+				.orderStatus(order.getOrderStatus())
+				.hopePrice(order.getHopePrice())
+				.visitDate(order.getVisitDate())
+				.cakeInfo(order.getCakeInfo())
 				.offerCount(order.getOffers().size())
-				.createdAt(order.getCreatedAt())
-				.updatedAt(order.getUpdatedAt())
-				.build();
-	}
-
-	public static OrderGetDetailResponse toOrderGetDetailResponse(
-			OrderGetDetailServiceResponse orderGetDetailServiceResponse,
-			ImageResponses imageResponses
-	) {
-		return OrderGetDetailResponse.builder()
-				.orderId(orderGetDetailServiceResponse.orderId())
-				.memberId(orderGetDetailServiceResponse.memberId())
-				.title(orderGetDetailServiceResponse.title())
-				.region(orderGetDetailServiceResponse.region())
-				.orderStatus(orderGetDetailServiceResponse.orderStatus())
-				.hopePrice(orderGetDetailServiceResponse.hopePrice())
-				.visitDate(orderGetDetailServiceResponse.visitDate())
-				.cakeInfo(orderGetDetailServiceResponse.cakeInfo())
-				.offerCount(orderGetDetailServiceResponse.offerCount())
 				.images(imageResponses.images()
 						.stream()
 						.map(ImageResponse::imageUrl)
 						.toList()
 				)
-				.offerCount(orderGetDetailServiceResponse.offerCount())
-				.createdAt(orderGetDetailServiceResponse.createdAt())
-				.updatedAt(orderGetDetailServiceResponse.updatedAt())
+				.createdAt(order.getCreatedAt())
+				.updatedAt(order.getUpdatedAt())
 				.build();
 	}
 

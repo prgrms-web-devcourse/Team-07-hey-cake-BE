@@ -2,6 +2,8 @@ package com.programmers.heycake.domain.comment.facade;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,7 @@ public class CommentFacade {
 	private final OfferService offerService;
 	private final ImageService imageService;
 
+	@CacheEvict(cacheNames = "comments", allEntries = true)
 	@Transactional
 	public void deleteComment(Long commentId) {
 		List<ImageResponse> commentImageResponse = imageService.getImages(commentId, ImageType.COMMENT).images();
@@ -56,6 +59,7 @@ public class CommentFacade {
 		commentService.deleteCommentWithoutAuth(commentId);
 	}
 
+	@CacheEvict(cacheNames = "comments", key = "#commentCreateRequest.offerId")
 	@Transactional
 	public Long createComment(CommentCreateRequest commentCreateRequest) {
 		Long memberId = AuthenticationUtil.getMemberId();
@@ -83,6 +87,7 @@ public class CommentFacade {
 		return createdCommentId;
 	}
 
+	@Cacheable(cacheNames = "comments", key = "#offerId")
 	@Transactional(readOnly = true)
 	public List<CommentsResponse> getComments(Long offerId) {
 		List<Comment> comments = commentService.getCommentsByOfferId(offerId);
