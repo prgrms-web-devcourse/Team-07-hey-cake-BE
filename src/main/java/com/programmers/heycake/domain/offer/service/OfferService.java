@@ -1,6 +1,6 @@
 package com.programmers.heycake.domain.offer.service;
 
-import static com.programmers.heycake.common.mapper.OfferMapper.*;
+import static com.programmers.heycake.domain.offer.mapper.OfferMapper.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.common.mapper.OfferMapper;
 import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.market.model.entity.Market;
+import com.programmers.heycake.domain.offer.mapper.OfferMapper;
 import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
@@ -42,12 +42,12 @@ public class OfferService {
 	@Transactional
 	public void deleteOffer(Long offerId, Long marketId) {
 		identifyAuthor(offerId, marketId);
-		isNew(offerId);
+		validateIsNew(offerId);
 		offerRepository.deleteById(offerId);
 	}
 
 	@Transactional(readOnly = true)
-	public List<Long> getOfferCommentIdList(Long offerId) {
+	public List<Long> getOfferCommentIds(Long offerId) {
 		return getOffer(offerId)
 				.getComments()
 				.stream()
@@ -58,6 +58,11 @@ public class OfferService {
 	@Transactional(readOnly = true)
 	public OfferDto getOfferById(Long offerId) {
 		return toOfferDto(getOffer(offerId));
+	}
+
+	@Transactional
+	public void deleteOfferWithoutAuth(Long offerId) {
+		offerRepository.deleteById(offerId);
 	}
 
 	private Offer getOffer(Long offerId) {
@@ -72,15 +77,10 @@ public class OfferService {
 		}
 	}
 
-	private void isNew(Long offerId) {
+	private void validateIsNew(Long offerId) {
 		if (getOffer(offerId).getOrder().isExpired()) {
 			throw new BusinessException(ErrorCode.ORDER_EXPIRED);
 		}
-	}
-
-	@Transactional
-	public void deleteOfferWithoutAuth(Long offerId) {
-		offerRepository.deleteById(offerId);
 	}
 
 	private void validateDuplicateOffer(Long marketId, Order order) {

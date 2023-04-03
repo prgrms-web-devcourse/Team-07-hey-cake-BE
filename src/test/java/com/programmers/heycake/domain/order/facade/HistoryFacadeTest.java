@@ -19,8 +19,8 @@ import com.programmers.heycake.domain.facade.HistoryFacade;
 import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.service.OfferService;
 import com.programmers.heycake.domain.order.model.dto.OrderDto;
-import com.programmers.heycake.domain.order.model.dto.request.HistoryControllerRequest;
-import com.programmers.heycake.domain.order.model.dto.request.HistoryFacadeRequest;
+import com.programmers.heycake.domain.order.model.dto.request.HistoryCreateControllerRequest;
+import com.programmers.heycake.domain.order.model.dto.request.HistoryCreateFacadeRequest;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.service.HistoryService;
@@ -48,7 +48,7 @@ public class HistoryFacadeTest {
 		@WithMockCustomUser(memberId = 1L)
 		void createHistorySuccess() {
 			//given
-			HistoryControllerRequest historyControllerRequest = new HistoryControllerRequest(1L, 1L, true);
+			HistoryCreateControllerRequest historyControllerRequest = new HistoryCreateControllerRequest(1L, 1L, true);
 			OrderDto orderDto = OrderDto.builder().id(1L).build();
 			OfferDto offerDto = OfferDto.builder().orderDto(orderDto).build();
 
@@ -58,7 +58,7 @@ public class HistoryFacadeTest {
 				doNothing().when(orderService).updateOrderState(anyLong(), any(OrderStatus.class));
 				doReturn(Order.builder().build()).when(orderService).getOrderById(anyLong());
 				doReturn(offerDto).when(offerService).getOfferById(anyLong());
-				doReturn(1L).when(historyService).createHistory(any(HistoryFacadeRequest.class));
+				doReturn(1L).when(historyService).createHistory(any(HistoryCreateFacadeRequest.class));
 				historyFacade.createHistory(historyControllerRequest);
 			}
 
@@ -66,7 +66,7 @@ public class HistoryFacadeTest {
 			verify(orderService).updateOrderState(anyLong(), any(OrderStatus.class));
 			verify(offerService).getOfferById(anyLong());
 			verify(orderService).getOrderById(anyLong());
-			verify(historyService).createHistory(any(HistoryFacadeRequest.class));
+			verify(historyService).createHistory(any(HistoryCreateFacadeRequest.class));
 		}
 	}
 }
