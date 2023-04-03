@@ -22,13 +22,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CommentService {
 
-	private static final int PARENT_COMMENT_DEPTH = 0;
-
 	private final CommentRepository commentRepository;
 
 	public Long createComment(
 			String content,
-			int depth,
 			Long parentCommentId,
 			Offer offer,
 			Market market,
@@ -42,7 +39,7 @@ public class CommentService {
 			verifyCommentParentExists(parentCommentId);
 		}
 
-		Comment comment = toEntity(member.getId(), content, depth, parentCommentId);
+		Comment comment = toEntity(member.getId(), content, parentCommentId);
 
 		comment.setOffer(offer);
 
@@ -95,7 +92,7 @@ public class CommentService {
 	}
 
 	public List<Comment> getParentCommentsByOfferId(Long offerId) {
-		return commentRepository.findAllByOfferIdAndDepth(offerId, PARENT_COMMENT_DEPTH);
+		return commentRepository.findAllByOfferIdAndParentCommentIdIsNull(offerId);
 	}
 
 	public List<Comment> getChildCommentsById(Long parentCommentId) {

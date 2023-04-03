@@ -16,7 +16,6 @@ public record CommentCreateRequest(
 		@NotBlank
 		String content,
 		MultipartFile image,
-		int depth,
 		@Positive
 		@Nullable
 		Long parentCommentId

@@ -105,7 +105,6 @@ create table if not exists comment
     content           varchar(500) not null,
     member_id         bigint       not null,
     offer_id          bigint       not null,
-    depth             int          not null,
     parent_comment_id bigint       null,
     constraint comment_with_offer_id_fk foreign key (offer_id) references offer (id)
 );

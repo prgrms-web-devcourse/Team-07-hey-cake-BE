@@ -9,7 +9,7 @@ import com.programmers.heycake.domain.offer.model.entity.Offer;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-	List<Comment> findAllByOfferIdAndDepth(Long offerId, int depth);
+	List<Comment> findAllByOfferIdAndParentCommentIdIsNull(Long offerId);
 
 	List<Comment> findAllByParentCommentId(Long parentCommentId);
 
