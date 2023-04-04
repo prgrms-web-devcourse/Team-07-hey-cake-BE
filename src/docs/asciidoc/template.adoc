@@ -9,6 +9,17 @@
 .. <<사용자 refresh token 재발급 성공>>
 .. <<사용자 refresh token 재발급 실패 - 토큰값 없이 요청한 경우>>
 .. <<사용자 refresh token 재발급 실패 - 리프레시 토큰이 만료되었을 경우>>
+. <<팔로우 생성>>
+.. <<팔로우 생성 성공>>
+.. <<팔로우 생성 실패 - 존재하지 않는 marketId 인 경우>>
+.. <<팔로우 생성 실패 - 회원 인증 실패>>
+.. <<팔로우 생성 실패 - 회원 권한이 아닌 경우>>
+.. <<팔로우 생성 실패(Conflict)>>
+. <<팔로우 삭제>>
+.. <<팔로우 삭제 성공>>
+.. <<팔로우 삭제 실패 - 존재하지 않는 marketId 거나 팔로우하지 않은 경우>>
+.. <<팔로우 삭제 실패 - 회원 인증 실패>>
+.. <<팔로우 삭제 실패 - 회원 권한이 아닌 경우>>
 
 .<<업체 신청>>
 . <<업체 신청 생성>>
@@ -141,7 +152,7 @@ operation::follow/팔로우 생성 실패(Conflict)[snippets='http-request,http-
 
 operation::follow/팔로우 삭제 성공[snippets='http-request,http-response']
 
-==== 팔로우 삭제 실패 - 존재하지 않는 marketId 인 경우, 팔로우하지 않은 경우
+==== 팔로우 삭제 실패 - 존재하지 않는 marketId 거나 팔로우하지 않은 경우
 
 operation::follow/팔로우 삭제 실패(BadRequest)[snippets='http-request,http-response,response-fields']
 
