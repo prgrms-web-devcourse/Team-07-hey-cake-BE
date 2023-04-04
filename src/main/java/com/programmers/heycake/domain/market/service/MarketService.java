@@ -67,6 +67,11 @@ public class MarketService {
 				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 	}
 
+	@Transactional(readOnly = true)
+	public boolean existMarketById(Long marketId) {
+		return marketRepository.existsById(marketId);
+	}
+
 	private MarketEnrollment getMarketEnrollment(Long enrollmentId) {
 		return marketEnrollmentRepository.findById(enrollmentId)
 				.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
