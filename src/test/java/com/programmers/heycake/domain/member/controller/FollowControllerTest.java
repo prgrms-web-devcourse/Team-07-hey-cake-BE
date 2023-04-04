@@ -270,18 +270,12 @@ class FollowControllerTest {
 							),
 							pathParameters(
 									parameterWithName("marketId").description("마켓 식별자")
-							),
-							responseFields(
-									fieldWithPath("message").description("에러 메세지"),
-									fieldWithPath("path").description("에러 발생 uri"),
-									fieldWithPath("time").description("에러 발생 시각"),
-									fieldWithPath("inputErrors").description("에러 상세")
 							)
 					));
 		}
 
 		@Test
-		@DisplayName("Fail - follow 를 삭제 실패.(BadRequest) 존재하지 않는 market_id")
+		@DisplayName("Fail - follow 를 삭제 실패.(BadRequest)")
 		void deleteFollowBadRequestNotExistsMarketId() throws Exception {
 			//given
 			Member member = memberRepository.save(getMember("test1@test.com"));
@@ -302,7 +296,7 @@ class FollowControllerTest {
 					).andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(document(
-							"follow/팔로우 삭제 실패(BadRequest)",
+							"follow/팔로우 삭제 실패(BadRequest) - 존재하지 않는 market_id",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestHeaders(
@@ -321,7 +315,7 @@ class FollowControllerTest {
 		}
 
 		@Test
-		@DisplayName("Fail - follow 를 삭제 실패.(BadRequest) 팔로우 하지 않은 market")
+		@DisplayName("Fail - follow 를 삭제 실패.(BadRequest)")
 		void deleteFollowBadRequestNotFollowed() throws Exception {
 			//given
 			Member member = memberRepository.save(getMember("test1@test.com"));
@@ -339,7 +333,7 @@ class FollowControllerTest {
 					).andExpect(status().isBadRequest())
 					.andDo(print())
 					.andDo(document(
-							"follow/팔로우 삭제 실패(BadRequest)",
+							"follow/팔로우 삭제 실패(BadRequest) - 팔로우 하지 않은 market",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestHeaders(
