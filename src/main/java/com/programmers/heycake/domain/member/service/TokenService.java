@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.jwt.Jwt;
+import com.programmers.heycake.domain.member.model.dto.request.TokenRefreshRequest;
 import com.programmers.heycake.domain.member.model.dto.response.TokenResponse;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.entity.Token;
@@ -37,8 +38,9 @@ public class TokenService {
 		);
 
 		Token newToken = new Token(
-				member.getId(),
-				tokenResponse.refreshToken()
+				tokenResponse.refreshToken(),
+				tokenResponse.accessToken(),
+				member.getId()
 		);
 
 		if (foundToken.isPresent()) {
@@ -56,10 +58,10 @@ public class TokenService {
 	}
 
 	@Transactional
-	public TokenResponse reissueToken(String refreshToken) {
-		Optional<Token> optionalToken = tokenRepository.findById(refreshToken);
+	public Token reissueToken(TokenRefreshRequest tokenRefreshRequest) {
+		Optional<Token> optionalToken = tokenRepository.findById(tokenRefreshRequest.refreshToken());
 		if (optionalToken.isEmpty()) {
-			throw new AccessDeniedException("refresh token이 만료되었습니다.");
+			throw new AccessDeniedException("refresh token 이 만료되었습니다.");
 		}
 		Long memberId;
 		String[] roles;
@@ -75,13 +77,17 @@ public class TokenService {
 			tokenRepository.delete(optionalToken.get());
 		}
 
+		String savedAccessToken = optionalToken.get().getAccessToken();
+		if (!savedAccessToken.equals(tokenRefreshRequest.accessToken())) {
+			throw new AccessDeniedException("잘못된 토큰 쌍입니다.");
+		}
+
 		TokenResponse tokenResponse = jwt.generateAllToken(
 				Jwt.Claims
 						.from(memberId, roles)
 		);
-		Token token = new Token(memberId, tokenResponse.refreshToken());
-		tokenRepository.save(token);
+		Token token = new Token(tokenResponse.refreshToken(), tokenResponse.accessToken(), memberId);
 
-		return tokenResponse;
+		return tokenRepository.save(token);
 	}
 }

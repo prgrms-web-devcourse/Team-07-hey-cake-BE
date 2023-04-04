@@ -16,11 +16,15 @@ public class Token implements Serializable {
 	private String refreshToken;
 
 	@Indexed
+	private String accessToken;
+
+	@Indexed
 	private Long memberId;
 
-	public Token(Long memberId, String refreshToken) {
-		this.memberId = memberId;
+	public Token(String refreshToken, String accessToken, Long memberId) {
 		this.refreshToken = refreshToken;
+		this.accessToken = accessToken;
+		this.memberId = memberId;
 	}
 
 	public void updateRefreshToken(String refreshToken) {
