@@ -176,7 +176,7 @@ class FollowControllerTest {
 					).andExpect(status().isForbidden())
 					.andDo(print())
 					.andDo(document(
-							"follow/팔로우 생성 실패(Unauthorized)",
+							"follow/팔로우 생성 실패(Forbidden)",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestHeaders(
@@ -270,6 +270,12 @@ class FollowControllerTest {
 							),
 							pathParameters(
 									parameterWithName("marketId").description("마켓 식별자")
+							),
+							responseFields(
+									fieldWithPath("message").description("에러 메세지"),
+									fieldWithPath("path").description("에러 발생 uri"),
+									fieldWithPath("time").description("에러 발생 시각"),
+									fieldWithPath("inputErrors").description("에러 상세")
 							)
 					));
 		}
@@ -304,6 +310,12 @@ class FollowControllerTest {
 							),
 							pathParameters(
 									parameterWithName("marketId").description("마켓 식별자")
+							),
+							responseFields(
+									fieldWithPath("message").description("에러 메세지"),
+									fieldWithPath("path").description("에러 발생 uri"),
+									fieldWithPath("time").description("에러 발생 시각"),
+									fieldWithPath("inputErrors").description("에러 상세")
 							)
 					));
 		}
@@ -335,6 +347,12 @@ class FollowControllerTest {
 							),
 							pathParameters(
 									parameterWithName("marketId").description("마켓 식별자")
+							),
+							responseFields(
+									fieldWithPath("message").description("에러 메세지"),
+									fieldWithPath("path").description("에러 발생 uri"),
+									fieldWithPath("time").description("에러 발생 시각"),
+									fieldWithPath("inputErrors").description("에러 상세")
 							)
 					));
 		}
@@ -364,6 +382,12 @@ class FollowControllerTest {
 							),
 							pathParameters(
 									parameterWithName("marketId").description("마켓 식별자")
+							),
+							responseFields(
+									fieldWithPath("message").description("에러 메세지"),
+									fieldWithPath("path").description("에러 발생 uri"),
+									fieldWithPath("time").description("에러 발생 시각"),
+									fieldWithPath("inputErrors").description("에러 상세")
 							)
 					));
 		}
@@ -394,6 +418,12 @@ class FollowControllerTest {
 							),
 							pathParameters(
 									parameterWithName("marketId").description("마켓 식별자")
+							),
+							responseFields(
+									fieldWithPath("message").description("에러 메세지"),
+									fieldWithPath("path").description("에러 발생 uri"),
+									fieldWithPath("time").description("에러 발생 시각"),
+									fieldWithPath("inputErrors").description("에러 상세")
 							)
 					));
 		}
