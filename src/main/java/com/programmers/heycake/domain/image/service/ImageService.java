@@ -62,10 +62,10 @@ public class ImageService {
 	public String getImageUrl(Long referenceId, ImageType imageType) {
 		List<Image> images = imageRepository.findAllByReferenceIdAndImageType(referenceId, imageType);
 
-		if (!images.isEmpty()) {
-			return images.get(0).getImageUrl();
-		}
-		return null;
+		return images.stream()
+				.findFirst()
+				.map(Image::getImageUrl)
+				.orElse(null);
 	}
 
 	private String getImageFilename(String imageUrl) {

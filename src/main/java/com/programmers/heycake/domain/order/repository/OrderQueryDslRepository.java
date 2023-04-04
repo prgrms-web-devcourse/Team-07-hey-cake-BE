@@ -1,6 +1,7 @@
 package com.programmers.heycake.domain.order.repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class OrderQueryDslRepository {
 			LocalDateTime cursorDate,
 			int pageSize) {
 
-		List<Order> myOrders = new java.util.ArrayList<>(jpaQueryFactory
+		List<Order> myOrders = new ArrayList<>(jpaQueryFactory
 				.select(
 						qOrder
 				)

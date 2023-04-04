@@ -15,7 +15,6 @@ import com.programmers.heycake.domain.member.model.dto.response.OrderDetailRespo
 import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrdersRequest;
 import com.programmers.heycake.domain.order.model.dto.request.OrderCreateRequest;
-import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrdersResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrdersElementResponse;
 import com.programmers.heycake.domain.order.model.dto.response.OrdersResponse;
@@ -87,41 +86,22 @@ public class OrderFacade {
 		Long memberId = getMemberId();
 		if (memberService.isMarketById(memberId)) {
 			Long marketId = marketService.getMarketIdByMember(memberService.getMemberById(memberId));
-			MyOrdersResponse myOrders =
-					historyService.getMyOrders(getOrderRequest, marketId);
+			MyOrdersResponse myOrders = historyService.getMyOrders(getOrderRequest, marketId);
 
 			return new MyOrdersResponse(
 					myOrders.myOrdersResponse()
 							.stream()
-							.map(myOrder -> new MyOrderResponse(
-									myOrder.id(),
-									myOrder.title(),
-									myOrder.orderStatus(),
-									myOrder.region(),
-									myOrder.visitTime(),
-									myOrder.createdAt(),
-									myOrder.cakeInfo(),
-									myOrder.hopePrice(),
-									myOrder.imageUrl(),
-									orderService.offerCount(myOrder.id()))
+							.map(myOrder -> toMyOrderResponse(myOrder, orderService.offerCount(myOrder.id()))
 							).toList(),
 					myOrders.cursorId());
 		} else {
 			List<Order> myOrders = orderService.getMyOrders(getOrderRequest, memberId);
-
 			Long lastId = myOrders.isEmpty() ? 0L : myOrders.get(myOrders.size() - 1).getId();
 
 			return new MyOrdersResponse(
 					myOrders.stream()
-							.map(myOrder -> new MyOrderResponse(
-									myOrder.getId(),
-									myOrder.getTitle(),
-									myOrder.getOrderStatus(),
-									myOrder.getRegion(),
-									myOrder.getVisitDate(),
-									myOrder.getCreatedAt(),
-									myOrder.getCakeInfo(),
-									myOrder.getHopePrice(),
+							.map(myOrder -> toMyOrderResponse(
+									myOrder,
 									imageService.getImageUrl(myOrder.getId(), ORDER),
 									orderService.offerCount(myOrder.getId()))
 							).toList(),
