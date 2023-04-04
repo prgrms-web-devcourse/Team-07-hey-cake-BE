@@ -57,7 +57,7 @@ public class TokenService {
 
 	@Transactional
 	public TokenResponse reissueToken(String refreshToken) {
-		Optional<Token> optionalToken = tokenRepository.findTokenByRefreshToken(refreshToken);
+		Optional<Token> optionalToken = tokenRepository.findById(refreshToken);
 		if (optionalToken.isEmpty()) {
 			throw new AccessDeniedException("refresh token이 만료되었습니다.");
 		}
@@ -73,7 +73,6 @@ public class TokenService {
 			throw e;
 		} finally {
 			tokenRepository.delete(optionalToken.get());
-			tokenRepository.flush();
 		}
 
 		TokenResponse tokenResponse = jwt.generateAllToken(
