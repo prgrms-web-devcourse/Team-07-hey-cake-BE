@@ -51,7 +51,7 @@ public class TestUtils {
 				.build();
 	}
 
-	public static Market getMarket(String phoneNumber, Member member, MarketEnrollment marketEnrollment) {
+	public static Market getMarket(Member member, MarketEnrollment marketEnrollment) {
 		Market market = Market.builder()
 				.phoneNumber("01012345678")
 				.marketAddress(new MarketAddress("서울", "성동구", "응봉동"))
@@ -61,22 +61,21 @@ public class TestUtils {
 				.build();
 		market.setMember(member);
 		market.setMarketEnrollment(marketEnrollment);
-
 		return market;
 	}
 
-	public static MarketEnrollment getMarketEnrollment() {
-		return MarketEnrollment.builder()
-				.businessNumber("1234567890")
-				.ownerName("Owner.Kong")
-				.openDate(LocalDate.now())
-				.marketName("서울 제과점")
-				.phoneNumber("01012345678")
+	public static Market getMarket(String phoneNumber, Member member, MarketEnrollment marketEnrollment) {
+		Market market = Market.builder()
+				.phoneNumber(phoneNumber)
 				.marketAddress(new MarketAddress("서울", "성동구", "응봉동"))
 				.openTime(LocalTime.now())
 				.endTime(LocalTime.now())
 				.description("업장 설명")
 				.build();
+		market.setMember(member);
+		market.setMarketEnrollment(marketEnrollment);
+
+		return market;
 	}
 
 	public static MarketEnrollment getMarketEnrollment(String businessNumber) {
@@ -206,6 +205,12 @@ public class TestUtils {
 		Offer offer = new Offer(marketId, expectedPrice, content);
 		offer.setOrder(order);
 
+		return offer;
+	}
+
+	public static Offer getOffer(Order order, Market market) {
+		Offer offer = getOffer(market.getId(), 1000, "content");
+		offer.setOrder(order);
 		return offer;
 	}
 
