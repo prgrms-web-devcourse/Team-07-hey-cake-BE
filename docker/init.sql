@@ -120,12 +120,3 @@ create table if not exists order_history
     order_id   bigint      not null,
     constraint order_history_with_order_id_fk foreign key (order_id) references orders (id)
 );
-
-create table if not exists token
-(
-    id            bigint auto_increment primary key,
-    member_id     bigint       not null,
-    refresh_token varchar(300) not null,
-    constraint refresh_token_uk unique (refresh_token),
-    constraint member_id_uk unique (member_id)
-);
