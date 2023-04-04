@@ -32,7 +32,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,14 +99,16 @@ class EnrollmentControllerTest {
 		void setUp() {
 			member = TestUtils.getMember();
 			memberRepository.save(member);
-
-			TestUtils.setContext(member.getId(), USER);
 		}
 
 		@Test
 		@DisplayName("Success - 업체 신청에 성공하여 201 응답으로 성공한다")
 		void createEnrollmentSuccess() throws Exception {
-			// given & when
+
+			// given
+			TestUtils.setContext(member.getId(), USER);
+
+			// when
 			MvcResult mvcResult = mockMvc.perform(
 							multipart("/api/v1/enrollments").file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 									.file("marketImage", userRequest.marketImage().getBytes())
@@ -164,7 +165,11 @@ class EnrollmentControllerTest {
 		@Test
 		@DisplayName("Fail - 입력 요청 값이 잘못되면 400 응답으로 실패한다")
 		void createEnrollmentFailByBadRequest() throws Exception {
-			// given & when & then
+
+			// given
+			TestUtils.setContext(member.getId(), USER);
+
+			// when & then
 			MvcResult mvcResult = mockMvc.perform(
 							multipart("/api/v1/enrollments").file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 									.file("marketImage", userRequest.marketImage().getBytes())
@@ -215,6 +220,7 @@ class EnrollmentControllerTest {
 		@DisplayName("Fail - 현재 시각보다 개업일이 늦으면 400 응답으로 실패한다")
 		void createEnrollmentFailByOpenDateAfterNow() throws Exception {
 			// given
+			TestUtils.setContext(member.getId(), USER);
 			LocalDate openDateAfterNow = LocalDate.now().plusDays(1);
 
 			// when & then
@@ -265,10 +271,7 @@ class EnrollmentControllerTest {
 		@Test
 		@DisplayName("Fail - 회원 인증에 실패하여 401 응답으로 실패한다")
 		void createEnrollmentFailByUnAuthorized() throws Exception {
-			// given
-			SecurityContextHolder.clearContext();
-
-			// when & then
+			// given & when & then
 			mockMvc.perform(
 							multipart("/api/v1/enrollments").file("businessLicenseImage", userRequest.businessLicenseImage().getBytes())
 									.file("marketImage", userRequest.marketImage().getBytes())
@@ -317,7 +320,6 @@ class EnrollmentControllerTest {
 			Member marketMember = new Member("market@heycake.com", MARKET, "1010", "kwon");
 			memberRepository.save(marketMember);
 
-			SecurityContextHolder.clearContext();
 			TestUtils.setContext(marketMember.getId(), MARKET);
 
 			// when & then
@@ -551,7 +553,7 @@ class EnrollmentControllerTest {
 			memberRepository.save(user);
 			memberRepository.save(adminMember);
 
-			TestUtils.setContext(adminMember.getId(), ADMIN);
+			// TestUtils.setContext(adminMember.getId(), ADMIN);
 
 			enrollment = TestUtils.getMarketEnrollment("1234567890");
 			enrollment.setMember(user);
@@ -563,6 +565,7 @@ class EnrollmentControllerTest {
 		void changeEnrollmentStatusSuccessToApproved() throws Exception {
 			// given
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
+			TestUtils.setContext(adminMember.getId(), ADMIN);
 
 			// when
 			mockMvc.perform(
@@ -590,6 +593,7 @@ class EnrollmentControllerTest {
 		void changeEnrollmentStatusSuccessToDeleted() throws Exception {
 			// given
 			EnrollmentUpdateStatusRequest deletedRequest = new EnrollmentUpdateStatusRequest(DELETED);
+			TestUtils.setContext(adminMember.getId(), ADMIN);
 
 			// when
 			mockMvc.perform(
@@ -616,6 +620,7 @@ class EnrollmentControllerTest {
 			// given
 			enrollmentFacade.updateEnrollmentStatus(savedEnrollment.getId(), DELETED);
 			EnrollmentUpdateStatusRequest waitingRequest = new EnrollmentUpdateStatusRequest(WAITING);
+			TestUtils.setContext(adminMember.getId(), ADMIN);
 
 			// when
 			mockMvc.perform(
@@ -639,7 +644,7 @@ class EnrollmentControllerTest {
 		@DisplayName("Fail - 회원 인증에 실패하여 401 응답으로 실패한다")
 		void changeEnrollmentStatusFailByUnauthorized() throws Exception {
 			// given
-			SecurityContextHolder.clearContext();
+			// SecurityContextHolder.clearContext();
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 
 			// when & then
@@ -666,7 +671,7 @@ class EnrollmentControllerTest {
 		@DisplayName("Fail - 관리자가 아닌 회원이 요청하면 403 응답으로 실패한다")
 		void changeEnrollmentStatusFailByForbidden() throws Exception {
 			// given
-			SecurityContextHolder.clearContext();
+			// SecurityContextHolder.clearContext();
 			TestUtils.setContext(user.getId(), USER);
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 
@@ -695,6 +700,7 @@ class EnrollmentControllerTest {
 		void changeEnrollmentStatusFailByNotFound() throws Exception {
 			// given
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
+			TestUtils.setContext(adminMember.getId(), ADMIN);
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(
@@ -723,6 +729,7 @@ class EnrollmentControllerTest {
 		void changeEnrollmentStatusFailByDuplicated() throws Exception {
 			// given
 			EnrollmentUpdateStatusRequest waitingRequest = new EnrollmentUpdateStatusRequest(WAITING);
+			TestUtils.setContext(adminMember.getId(), ADMIN);
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(
@@ -753,6 +760,7 @@ class EnrollmentControllerTest {
 			// given
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 			enrollmentController.updateEnrollmentStatus(savedEnrollment.getId(), approvedRequest);
+			TestUtils.setContext(adminMember.getId(), ADMIN);
 
 			// when & then
 			MvcResult mvcResult = mockMvc.perform(
@@ -874,88 +882,88 @@ class EnrollmentControllerTest {
 			}
 		}
 
-		// todo 업체 신청 조회 권한 permitAll -> Admin 으로 변경 시 활성화
+		//todo업체 신청 조회 권한 permitAll -> Admin으로 변경 시 활성화
 		// @Test
 		// @DisplayName("Fail - 회원 인증 실패로 업체 신청 목록 조회에 실패하여 401 응답한다")
 		// void getMarketEnrollmentsFailByUnauthorized() throws Exception {
-		// 	// given
-		// 	EnrollmentCreateRequest request1 = TestUtils.getEnrollmentRequest("1234567891");
-		// 	EnrollmentCreateRequest request2 = TestUtils.getEnrollmentRequest("1234567892");
-		// 	EnrollmentCreateRequest request3 = TestUtils.getEnrollmentRequest("1234567893");
-		// 	Long cursorId = enrollmentFacade.createEnrollment(request1);
-		// 	enrollmentFacade.createEnrollment(request2);
-		// 	enrollmentFacade.createEnrollment(request3);
+		//   // given
+		//   EnrollmentCreateRequest request1 = TestUtils.getEnrollmentRequest("1234567891");
+		//   EnrollmentCreateRequest request2 = TestUtils.getEnrollmentRequest("1234567892");
+		//   EnrollmentCreateRequest request3 = TestUtils.getEnrollmentRequest("1234567893");
+		//   Long cursorId = enrollmentFacade.createEnrollment(request1);
+		//   enrollmentFacade.createEnrollment(request2);
+		//   enrollmentFacade.createEnrollment(request3);
 		//
-		// 	SecurityContextHolder.clearContext();
+		//   SecurityContextHolder.clearContext();
 		//
-		// 	// when & then
-		// 	mockMvc.perform(get("/api/v1/enrollments")
-		// 					.header("access_token", ACCESS_TOKEN)
-		// 					.queryParam("cursorId", cursorId.toString())
-		// 					.queryParam("pageSize", "10")
-		// 					.queryParam("status", WAITING.toString()))
-		// 			.andExpect(status().isUnauthorized())
-		// 			.andDo(print())
-		// 			.andDo(document("marketEnrollment/업체 신청 목록 조회 실패 - 회원 인증 실패",
-		// 					requestHeaders(
-		// 							headerWithName("access_token").description("Access token 정보")
-		// 					),
-		// 					requestParameters(
-		// 							parameterWithName("cursorId").optional().description("목록의 시작이 되는 업체 신청 id"),
-		// 							parameterWithName("pageSize").description("한번에 조회할 데이터 수"),
-		// 							parameterWithName("status").optional().description("조회하고자 하는 업체 신청의 상태")
-		// 					),
-		// 					responseFields(
-		// 							fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
-		// 							fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
-		// 							fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-		// 							fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-		// 					)))
-		// 			.andReturn();
+		//   // when & then
+		//   mockMvc.perform(get("/api/v1/enrollments")
+		//       .header("access_token", ACCESS_TOKEN)
+		//       .queryParam("cursorId", cursorId.toString())
+		//       .queryParam("pageSize", "10")
+		//       .queryParam("status", WAITING.toString()))
+		//     .andExpect(status().isUnauthorized())
+		//     .andDo(print())
+		//     .andDo(document("marketEnrollment/업체 신청 목록 조회 실패 - 회원 인증 실패",
+		//       requestHeaders(
+		//         headerWithName("access_token").description("Access token 정보")
+		//       ),
+		//       requestParameters(
+		//         parameterWithName("cursorId").optional().description("목록의 시작이 되는 업체 신청 id"),
+		//         parameterWithName("pageSize").description("한번에 조회할 데이터 수"),
+		//         parameterWithName("status").optional().description("조회하고자 하는 업체 신청의 상태")
+		//       ),
+		//       responseFields(
+		//         fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+		//         fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+		//         fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+		//         fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
+		//       )))
+		//     .andReturn();
 		// }
 
-		// todo 업체 신청 조회 권한 permitAll -> Admin 으로 변경 시 활성화
+		//todo업체 신청 조회 권한 permitAll -> Admin으로 변경 시 활성화
 		// @Test
 		// @DisplayName("Fail - 관리자가 아닌 회원이 업체 신청 목록을 조회하면 실패하며 403 응답한다")
 		// void getMarketEnrollmentsFailByForbidden() throws Exception {
-		// 	// given
-		// 	EnrollmentCreateRequest request1 = TestUtils.getEnrollmentRequest("1234567891");
-		// 	EnrollmentCreateRequest request2 = TestUtils.getEnrollmentRequest("1234567892");
-		// 	EnrollmentCreateRequest request3 = TestUtils.getEnrollmentRequest("1234567893");
-		// 	Long cursorId = enrollmentFacade.createEnrollment(request1);
-		// 	enrollmentFacade.createEnrollment(request2);
-		// 	enrollmentFacade.createEnrollment(request3);
+		//   // given
+		//   EnrollmentCreateRequest request1 = TestUtils.getEnrollmentRequest("1234567891");
+		//   EnrollmentCreateRequest request2 = TestUtils.getEnrollmentRequest("1234567892");
+		//   EnrollmentCreateRequest request3 = TestUtils.getEnrollmentRequest("1234567893");
+		//   Long cursorId = enrollmentFacade.createEnrollment(request1);
+		//   enrollmentFacade.createEnrollment(request2);
+		//   enrollmentFacade.createEnrollment(request3);
 		//
-		// 	member = TestUtils.getMember();
-		// 	memberRepository.save(member);
+		//   member = TestUtils.getMember();
+		//   memberRepository.save(member);
 		//
-		// 	SecurityContextHolder.clearContext();
-		// 	TestUtils.setContext(member.getId(), USER);
+		//   SecurityContextHolder.clearContext();
+		//   TestUtils.setContext(member.getId(), USER);
 		//
-		// 	// when & then
-		// 	mockMvc.perform(get("/api/v1/enrollments")
-		// 					.header("access_token", ACCESS_TOKEN)
-		// 					.queryParam("cursorId", cursorId.toString())
-		// 					.queryParam("pageSize", "10")
-		// 					.queryParam("status", WAITING.toString()))
-		// 			.andExpect(status().isUnauthorized())
-		// 			.andDo(print())
-		// 			.andDo(document("marketEnrollment/업체 신청 목록 조회 실패 - 회원 인증 실패",
-		// 					requestHeaders(
-		// 							headerWithName("access_token").description("Access token 정보")
-		// 					),
-		// 					requestParameters(
-		// 							parameterWithName("cursorId").optional().description("목록의 시작이 되는 업체 신청 id"),
-		// 							parameterWithName("pageSize").description("한번에 조회할 데이터 수"),
-		// 							parameterWithName("status").optional().description("조회하고자 하는 업체 신청의 상태")
-		// 					),
-		// 					responseFields(
-		// 							fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
-		// 							fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
-		// 							fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
-		// 							fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
-		// 					)))
-		// 			.andReturn();
+		//   // when & then
+		//   mockMvc.perform(get("/api/v1/enrollments")
+		//       .header("access_token", ACCESS_TOKEN)
+		//       .queryParam("cursorId", cursorId.toString())
+		//       .queryParam("pageSize", "10")
+		//       .queryParam("status", WAITING.toString()))
+		//     .andExpect(status().isUnauthorized())
+		//     .andDo(print())
+		//     .andDo(document("marketEnrollment/업체 신청 목록 조회 실패 - 회원 인증 실패",
+		//       requestHeaders(
+		//         headerWithName("access_token").description("Access token 정보")
+		//       ),
+		//       requestParameters(
+		//         parameterWithName("cursorId").optional().description("목록의 시작이 되는 업체 신청 id"),
+		//         parameterWithName("pageSize").description("한번에 조회할 데이터 수"),
+		//         parameterWithName("status").optional().description("조회하고자 하는 업체 신청의 상태")
+		//       ),
+		//       responseFields(
+		//         fieldWithPath("message").type(JsonFieldType.STRING).description("예외 메세지"),
+		//         fieldWithPath("path").type(JsonFieldType.STRING).description("요청 URL"),
+		//         fieldWithPath("time").type(JsonFieldType.STRING).description("예외 발생 시간"),
+		//         fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("검증 실패 에러 정보")
+		//       )))
+		//     .andReturn();
 		// }
 
 		private EnrollmentsElementResponse getEnrollmentResponse(MarketEnrollment enrollment, Image image) {
