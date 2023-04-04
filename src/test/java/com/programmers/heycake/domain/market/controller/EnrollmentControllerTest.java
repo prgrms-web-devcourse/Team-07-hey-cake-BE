@@ -644,7 +644,6 @@ class EnrollmentControllerTest {
 		@DisplayName("Fail - 회원 인증에 실패하여 401 응답으로 실패한다")
 		void changeEnrollmentStatusFailByUnauthorized() throws Exception {
 			// given
-			// SecurityContextHolder.clearContext();
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 
 			// when & then
@@ -671,7 +670,6 @@ class EnrollmentControllerTest {
 		@DisplayName("Fail - 관리자가 아닌 회원이 요청하면 403 응답으로 실패한다")
 		void changeEnrollmentStatusFailByForbidden() throws Exception {
 			// given
-			// SecurityContextHolder.clearContext();
 			TestUtils.setContext(user.getId(), USER);
 			EnrollmentUpdateStatusRequest approvedRequest = new EnrollmentUpdateStatusRequest(APPROVED);
 
