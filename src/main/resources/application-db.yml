@@ -2,6 +2,7 @@ spring:
   config:
     import:
       - optional:file:env/spring.env[.properties]
+      - optional:file:env/redis.env[.properties]
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -12,3 +13,7 @@ spring:
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
+
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
