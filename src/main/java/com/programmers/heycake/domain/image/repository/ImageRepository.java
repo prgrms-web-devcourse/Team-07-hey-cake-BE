@@ -17,7 +17,7 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 	@Query("SELECT i FROM Image i WHERE i.deletedAt IS NOT NULL")
 	List<Image> findDeletedImages();
 
-	@Modifying(clearAutomatically = true)
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query("UPDATE Image i SET i.deletedAt = NOW() "
 			+ "WHERE i.deletedAt IS NULL AND i.referenceId = :referenceId AND i.imageType = :imageType")
 	void softDeleteByReferenceIdAndImageType(
