@@ -2,7 +2,6 @@ package com.programmers.heycake.domain.order.repository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -29,7 +28,7 @@ public class OrderQueryDslRepository {
 			LocalDateTime cursorDate,
 			int pageSize) {
 
-		List<Order> myOrders = new ArrayList<>(jpaQueryFactory
+		return new ArrayList<>(jpaQueryFactory
 				.select(
 						qOrder
 				)
@@ -39,13 +38,10 @@ public class OrderQueryDslRepository {
 						eqOrderStatus(option),
 						qOrder.memberId.eq(memberId)
 				).limit(pageSize)
+				.orderBy(qOrder.visitDate.asc())
 				.fetchAll()
 				.stream()
 				.toList());
-
-		myOrders.sort(Comparator.comparing(Order::getVisitDate));
-
-		return myOrders;
 	}
 
 	public List<Order> findAllByRegionAndCategoryOrderByCreatedAtAsc(
