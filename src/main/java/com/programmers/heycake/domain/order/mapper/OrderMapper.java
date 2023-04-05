@@ -98,4 +98,32 @@ public class OrderMapper {
 			Long cursorId) {
 		return new MyOrdersResponse(orderList, cursorId);
 	}
+
+	public static MyOrderResponse toMyOrderResponse(MyOrderResponse myOrderResponse, int offerCount) {
+		return new MyOrderResponse(
+				myOrderResponse.id(),
+				myOrderResponse.title(),
+				myOrderResponse.orderStatus(),
+				myOrderResponse.region(),
+				myOrderResponse.visitTime(),
+				myOrderResponse.createdAt(),
+				myOrderResponse.cakeInfo(),
+				myOrderResponse.hopePrice(),
+				myOrderResponse.imageUrl(),
+				offerCount);
+	}
+
+	public static MyOrderResponse toMyOrderResponse(Order order, String imageUrl, int offerCount) {
+		return new MyOrderResponse(
+				order.getId(),
+				order.getTitle(),
+				order.getOrderStatus(),
+				order.getRegion(),
+				order.getVisitDate(),
+				order.getCreatedAt(),
+				order.getCakeInfo(),
+				order.getHopePrice(),
+				imageUrl,
+				offerCount);
+	}
 }
