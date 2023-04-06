@@ -134,8 +134,8 @@ CREATE TABLE `follow` (
       id	BIGINT	NOT NULL auto_increment primary key,
       member_id	BIGINT	NOT NULL,
       market_id	BIGINT	NOT NULL,
-      created_at	TIMESTAMP	NOT NULL,
-      updated_at	TIMESTAMP	NOT NULL,
-      deleted_at	TIMESTAMP	NULL
+      created_at	datetime(6)	NOT NULL,
+      updated_at	datetime(6)	NOT NULL,
+      deleted_at	datetime(6)	NULL
 );
 
