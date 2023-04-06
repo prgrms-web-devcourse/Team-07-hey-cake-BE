@@ -1,22 +1,15 @@
 package com.programmers.heycake.domain.order.repository;
 
-import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
-import static com.querydsl.core.group.GroupBy.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
-import com.programmers.heycake.domain.image.model.entity.QImage;
-import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.entity.QOrder;
 import com.programmers.heycake.domain.order.model.vo.CakeCategory;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -28,64 +21,27 @@ public class OrderQueryDslRepository {
 
 	private final JPAQueryFactory jpaQueryFactory;
 	QOrder qOrder = QOrder.order;
-	QImage qImage = QImage.image;
-	private static final long MAX_PHOTOS_NUM_PER_ORDER = 3L;
 
-	public List<MyOrderResponse> findAllByMemberIdOrderByVisitDateAsc(
+	public List<Order> findAllByMemberIdOrderByVisitDateAsc(
 			Long memberId,
 			OrderStatus option,
 			LocalDateTime cursorDate,
 			int pageSize) {
 
-		Map<Long, MyOrderResponse> distinctMyOrders = jpaQueryFactory
+		return new ArrayList<>(jpaQueryFactory
 				.select(
-						qOrder.id,
-						qOrder.title,
-						qOrder.orderStatus,
-						qOrder.region,
-						qOrder.visitDate,
-						qOrder.createdAt,
-						qOrder.cakeInfo,
-						qOrder.hopePrice,
-						qImage.imageUrl,
-						qOrder.offers
+						qOrder
 				)
 				.from(qOrder)
-				.leftJoin(qImage)
-				.on(
-						qOrder.id.eq(qImage.referenceId),
-						qImage.imageType.eq(ORDER)
-				)
 				.where(
 						gtVisitDate(cursorDate),
 						eqOrderStatus(option),
 						qOrder.memberId.eq(memberId)
-				).orderBy(qOrder.visitDate.asc(), qImage.id.asc())
-				.limit(pageSize * MAX_PHOTOS_NUM_PER_ORDER)
-				.transform(
-						groupBy(qOrder.id)
-								.as(
-										Projections.constructor(
-												MyOrderResponse.class,
-												qOrder.id,
-												qOrder.title,
-												qOrder.orderStatus,
-												qOrder.region,
-												qOrder.visitDate,
-												qOrder.createdAt,
-												qOrder.cakeInfo,
-												qOrder.hopePrice,
-												qImage.imageUrl,
-												qOrder.offers.size()
-										)
-								)
-				);
-
-		if (distinctMyOrders.size() > pageSize) {
-			return new ArrayList<>(distinctMyOrders.values()).subList(0, pageSize);
-		}
-
-		return new ArrayList<>(distinctMyOrders.values());
+				).limit(pageSize)
+				.orderBy(qOrder.visitDate.asc())
+				.fetchAll()
+				.stream()
+				.toList());
 	}
 
 	public List<Order> findAllByRegionAndCategoryOrderByCreatedAtAsc(

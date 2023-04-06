@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class DeleteEvent {
+public class RollbackUploadEvent {
 
 	private final String subPath;
 	private final String savedFilename;
