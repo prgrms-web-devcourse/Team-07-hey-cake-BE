@@ -22,7 +22,7 @@ public class FollowFacade {
 
 	@Transactional
 	public Long createFollow(Long marketId) {
-		existMarket(marketId);
+		marketService.checkMarketExists(marketId);
 
 		Long memberId = getMemberId();
 		if (memberService.isMarketById(memberId)) {
@@ -34,14 +34,8 @@ public class FollowFacade {
 
 	@Transactional
 	public void deleteFollow(Long marketId) {
-		existMarket(marketId);
-
+		marketService.checkMarketExists(marketId);
 		followService.deleteFollow(marketId);
 	}
 
-	private void existMarket(Long marketId) {
-		if (!marketService.existMarketById(marketId)) {
-			throw new BusinessException(ErrorCode.BAD_REQUEST);
-		}
-	}
 }

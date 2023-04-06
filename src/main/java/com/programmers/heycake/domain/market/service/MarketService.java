@@ -68,8 +68,10 @@ public class MarketService {
 	}
 
 	@Transactional(readOnly = true)
-	public boolean existMarketById(Long marketId) {
-		return marketRepository.existsById(marketId);
+	public void checkMarketExists(Long marketId) {
+		if (!marketRepository.existsById(marketId)) {
+			throw new BusinessException(ENTITY_NOT_FOUND);
+		}
 	}
 
 	private MarketEnrollment getMarketEnrollment(Long enrollmentId) {
