@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class FollowController {
 	private final FollowFacade followFacade;
 
-	@PostMapping("{marketId}")
+	@PostMapping("/{marketId}")
 	public ResponseEntity<Void> createFollow(@PathVariable @Positive Long marketId, HttpServletRequest request) {
 		Long followId = followFacade.createFollow(marketId);
 
@@ -32,7 +32,7 @@ public class FollowController {
 		return ResponseEntity.created(location).build();
 	}
 
-	@DeleteMapping("{marketId}")
+	@DeleteMapping("/{marketId}")
 	public ResponseEntity<Void> deleteFollow(@PathVariable @Positive Long marketId) {
 		followFacade.deleteFollow(marketId);
 
