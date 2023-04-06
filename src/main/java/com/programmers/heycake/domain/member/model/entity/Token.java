@@ -1,47 +1,33 @@
 package com.programmers.heycake.domain.member.model.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.io.Serializable;
 
-import lombok.AccessLevel;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Table(name = "token")
-@Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Token {
+@RedisHash(value = "token", timeToLive = 36000)
+public class Token implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-
-	@Column(name = "member_id", nullable = false, unique = true)
-	private Long memberId;
-
-	@Column(name = "refresh_token", length = 300, nullable = false, unique = true)
 	private String refreshToken;
 
-	public Token(Long memberId, String refreshToken) {
-		this.memberId = memberId;
+	@Indexed
+	private String accessToken;
+
+	@Indexed
+	private Long memberId;
+
+	public Token(String refreshToken, String accessToken, Long memberId) {
 		this.refreshToken = refreshToken;
+		this.accessToken = accessToken;
+		this.memberId = memberId;
 	}
 
 	public void updateRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
-	}
-
-	@Override
-	public String toString() {
-		return "Token{" +
-				"id=" + id +
-				", memberId=" + memberId +
-				", refreshToken='" + refreshToken + '\'' +
-				'}';
 	}
 }

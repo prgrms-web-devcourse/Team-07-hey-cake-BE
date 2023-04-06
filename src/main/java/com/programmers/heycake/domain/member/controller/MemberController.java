@@ -11,6 +11,7 @@ import com.programmers.heycake.domain.facade.MemberFacade;
 import com.programmers.heycake.domain.member.model.dto.request.AuthenticationCodeRequest;
 import com.programmers.heycake.domain.member.model.dto.request.TokenRefreshRequest;
 import com.programmers.heycake.domain.member.model.dto.response.TokenResponse;
+import com.programmers.heycake.domain.member.model.entity.Token;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,7 @@ public class MemberController {
 	public ResponseEntity<TokenResponse> refreshToken(
 			@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest
 	) {
-		return ResponseEntity.ok(memberFacade.reissueToken(tokenRefreshRequest.refreshToken()));
+		Token token = memberFacade.reissueToken(tokenRefreshRequest);
+		return ResponseEntity.ok(new TokenResponse(token.getAccessToken(), token.getRefreshToken()));
 	}
 }
