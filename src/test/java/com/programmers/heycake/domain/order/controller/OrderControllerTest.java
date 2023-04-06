@@ -99,7 +99,7 @@ class OrderControllerTest {
 		@Test
 		@DisplayName("Success - getMyOrderList 조회한다.")
 		void getMyOrderListSuccess() throws Exception {
-			//given
+			//given록
 			Member member = memberRepository.save(getMember("member"));
 			setContext(member.getId(), USER);
 			setOrders(member, 10);

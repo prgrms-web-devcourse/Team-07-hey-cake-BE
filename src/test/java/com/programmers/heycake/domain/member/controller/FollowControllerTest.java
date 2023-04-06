@@ -24,8 +24,10 @@ import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
+import com.programmers.heycake.domain.member.model.entity.Follow;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
+import com.programmers.heycake.domain.member.repository.FollowRepository;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
 
 @Transactional
@@ -46,6 +48,9 @@ class FollowControllerTest {
 
 	@Autowired
 	private MarketRepository marketRepository;
+
+	@Autowired
+	private FollowRepository followRepository;
 
 	@Nested
 	@DisplayName("createFollow")
@@ -86,7 +91,7 @@ class FollowControllerTest {
 		}
 
 		@Test
-		@DisplayName("Fail - follow 생성 실패. (BadRequest) - not exists market id")
+		@DisplayName("Fail - follow 생성 실패. (NotFound) - not exists market id")
 		void createFollowBadRequest() throws Exception {
 			//given
 			Member member = memberRepository.save(getMember("test1@test.com"));
@@ -101,10 +106,10 @@ class FollowControllerTest {
 			//when // then
 			mockMvc.perform(post("/api/v1/follows/{marketId}", market.getId() + 1)
 							.header("access_token", ACCESS_TOKEN)
-					).andExpect(status().isBadRequest())
+					).andExpect(status().isNotFound())
 					.andDo(print())
 					.andDo(document(
-							"follow/팔로우 생성 실패(BadRequest)",
+							"follow/팔로우 생성 실패(NotFound)",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestHeaders(
@@ -253,8 +258,11 @@ class FollowControllerTest {
 			Market market = marketRepository.save(getMarket(memberForMarket, marketEnrollment));
 			memberForMarket.changeAuthority(MemberAuthority.MARKET);
 
-			mockMvc.perform(post("/api/v1/follows/{marketId}", market.getId())
-					.header("access_token", ACCESS_TOKEN));
+			Follow follow = Follow.builder()
+					.memberId(member.getId())
+					.marketId(market.getId())
+					.build();
+			followRepository.save(follow);
 
 			//when // then
 			mockMvc.perform(delete("/api/v1/follows/{marketId}", market.getId())
@@ -275,7 +283,7 @@ class FollowControllerTest {
 		}
 
 		@Test
-		@DisplayName("Fail - follow 를 삭제 실패.(BadRequest)")
+		@DisplayName("Fail - follow 를 삭제 실패.(NotFound)")
 		void deleteFollowBadRequestNotExistsMarketId() throws Exception {
 			//given
 			Member member = memberRepository.save(getMember("test1@test.com"));
@@ -287,16 +295,19 @@ class FollowControllerTest {
 			Market market = marketRepository.save(getMarket(memberForMarket, marketEnrollment));
 			memberForMarket.changeAuthority(MemberAuthority.MARKET);
 
-			mockMvc.perform(post("/api/v1/follows/{marketId}", market.getId())
-					.header("access_token", ACCESS_TOKEN));
+			Follow follow = Follow.builder()
+					.memberId(member.getId())
+					.marketId(market.getId())
+					.build();
+			followRepository.save(follow);
 
 			//when // then
 			mockMvc.perform(delete("/api/v1/follows/{marketId}", market.getId() + 1)
 							.header("access_token", ACCESS_TOKEN)
-					).andExpect(status().isBadRequest())
+					).andExpect(status().isNotFound())
 					.andDo(print())
 					.andDo(document(
-							"follow/팔로우 삭제 실패(BadRequest) - 존재하지 않는 market_id",
+							"follow/팔로우 삭제 실패(NotFound) - 존재하지 않는 market_id",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestHeaders(
