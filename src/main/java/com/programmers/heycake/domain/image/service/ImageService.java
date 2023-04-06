@@ -9,8 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.domain.image.event.DeleteEvent;
-import com.programmers.heycake.domain.image.event.UploadRollbackEvent;
+import com.programmers.heycake.domain.image.event.RollbackUploadEvent;
 import com.programmers.heycake.domain.image.mapper.ImageMapper;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.entity.Image;
@@ -23,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ImageService {
 
-	private final ImageUploadService imageUploadService;
+	private final ImageStorageService imageStorageService;
 	private final ImageRepository imageRepository;
 	private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -32,24 +31,14 @@ public class ImageService {
 		if (multipartFile.isEmpty()) {
 			throw new BusinessException(ErrorCode.BAD_REQUEST);
 		}
-		String savedUrl = imageUploadService.upload(multipartFile, subPath);
-		applicationEventPublisher.publishEvent(new UploadRollbackEvent(subPath, getImageFilename(savedUrl)));
+		String savedUrl = imageStorageService.upload(multipartFile, subPath);
+		applicationEventPublisher.publishEvent(new RollbackUploadEvent(subPath, getImageFilename(savedUrl)));
 		imageRepository.save(new Image(referenceId, imageType, savedUrl));
 	}
 
 	@Transactional
-	public void deleteImages(Long referenceId, ImageType imageType, String subPath) {
-		List<Image> images = imageRepository.findAllByReferenceIdAndImageType(referenceId, imageType);
-		imageRepository.deleteAllByReferenceIdAndImageType(referenceId, imageType);
-
-		List<String> imageUrls = images.stream()
-				.map(Image::getImageUrl)
-				.toList();
-
-		imageUrls
-				.forEach(
-						imageUrl -> applicationEventPublisher.publishEvent(new DeleteEvent(subPath, getImageFilename(imageUrl)))
-				);
+	public void deleteImages(Long referenceId, ImageType imageType) {
+		imageRepository.softDeleteByReferenceIdAndImageType(referenceId, imageType);
 	}
 
 	@Transactional(readOnly = true)

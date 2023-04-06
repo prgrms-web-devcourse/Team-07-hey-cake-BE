@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.programmers.heycake.domain.BaseEntity;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 
 import lombok.AccessLevel;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Image {
+public class Image extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,5 +45,13 @@ public class Image {
 	public String getFilename() {
 		int beforeFilenameIndex = imageUrl.lastIndexOf("/");
 		return imageUrl.substring(beforeFilenameIndex + 1);
+	}
+
+	public String getSubPath() {
+		String subPath = imageUrl.replaceFirst("//", "");
+		int beforeSubPathIndex = subPath.indexOf("/");
+		int afterSubPathIndex = subPath.lastIndexOf("/");
+		subPath = subPath.substring(beforeSubPathIndex + 1, afterSubPathIndex);
+		return subPath;
 	}
 }

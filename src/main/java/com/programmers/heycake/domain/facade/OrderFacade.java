@@ -111,7 +111,7 @@ public class OrderFacade {
 
 	@Transactional
 	public void deleteOrder(Long orderId) {
-		imageService.deleteImages(orderId, ORDER, ORDER_IMAGE_SUB_PATH);
+		imageService.deleteImages(orderId, ORDER);
 
 		List<Long> ordersOfferId = orderService.getOrdersOfferId(orderId);
 		ordersOfferId.forEach(offerFacade::deleteOfferWithoutAuth);
