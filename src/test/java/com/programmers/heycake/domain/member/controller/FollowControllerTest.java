@@ -36,6 +36,7 @@ import com.programmers.heycake.domain.member.repository.MemberRepository;
 @AutoConfigureRestDocs
 class FollowControllerTest {
 	private static final String ACCESS_TOKEN = "access_token";
+	private static final String INVALID_ACCESS_TOKEN = "access_token";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -140,7 +141,7 @@ class FollowControllerTest {
 
 			//when // then
 			mockMvc.perform(post("/api/v1/follows/{marketId}", market.getId())
-							.header("access_token", ACCESS_TOKEN)
+							.header("access_token", INVALID_ACCESS_TOKEN)
 					).andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document(
@@ -375,7 +376,7 @@ class FollowControllerTest {
 
 			//when // then
 			mockMvc.perform(delete("/api/v1/follows/{marketId}", market.getId())
-							.header("access_token", ACCESS_TOKEN)
+							.header("access_token", INVALID_ACCESS_TOKEN)
 					).andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document(

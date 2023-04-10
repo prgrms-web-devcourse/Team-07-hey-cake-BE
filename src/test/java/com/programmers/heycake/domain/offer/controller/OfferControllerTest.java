@@ -73,6 +73,7 @@ import com.programmers.heycake.domain.order.repository.OrderRepository;
 class OfferControllerTest {
 
 	private static final String ACCESS_TOKEN = "access_token";
+	private static final String INVALID_ACCESS_TOKEN = "access_token";
 
 	@Autowired
 	MockMvc mockMvc;
@@ -198,7 +199,7 @@ class OfferControllerTest {
 
 			//when //then
 			mockMvc.perform(delete("/api/v1/offers/{offerId}", 1)
-							.header("access_token", ACCESS_TOKEN)
+							.header("access_token", INVALID_ACCESS_TOKEN)
 							.with(csrf())
 					).andExpect(status().isUnauthorized())
 					.andDo(print())

@@ -85,6 +85,7 @@ class OrderControllerTest {
 	private ImageRepository imageRepository;
 
 	private static final String ACCESS_TOKEN = "access_token";
+	private static final String INVALID_ACCESS_TOKEN = "access_token";
 
 	void setOrders(Member member, int amount) {
 		for (int i = 0; i < amount; i++) {
@@ -189,7 +190,7 @@ class OrderControllerTest {
 
 			//when //then
 			mockMvc.perform(get("/api/v1/orders/my?cursorId=1&pageSize=10&orderStatus=NEW")
-							.header("access_token", ACCESS_TOKEN)
+							.header("access_token", INVALID_ACCESS_TOKEN)
 					).andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document(
@@ -740,7 +741,7 @@ class OrderControllerTest {
 
 			//when //then
 			mockMvc.perform(delete("/api/v1/orders/{orderId}", 1)
-							.header("access_token", ACCESS_TOKEN)
+							.header("access_token", INVALID_ACCESS_TOKEN)
 							.with(csrf())
 					).andExpect(status().isUnauthorized())
 					.andDo(print())

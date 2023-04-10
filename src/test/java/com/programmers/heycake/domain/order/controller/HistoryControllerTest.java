@@ -43,6 +43,7 @@ import com.programmers.heycake.domain.order.repository.OrderRepository;
 class HistoryControllerTest {
 
 	private static final String ACCESS_TOKEN = "access_token";
+	private static final String INVALID_ACCESS_TOKEN = "access_token";
 
 	@Autowired
 	MockMvc mockMvc;
@@ -179,7 +180,7 @@ class HistoryControllerTest {
 
 			//when //then
 			mockMvc.perform(post("/api/v1/histories")
-							.header("access_token", ACCESS_TOKEN)
+							.header("access_token", INVALID_ACCESS_TOKEN)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(historyControllerRequest))
 							.with(csrf()))
