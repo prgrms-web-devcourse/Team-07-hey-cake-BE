@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -70,6 +71,11 @@ class MemberControllerTest {
 
 	@Autowired
 	InMemoryClientRegistrationRepository inMemoryClientRegistrationRepository;
+
+	@AfterEach
+	void tearDown() {
+		tokenRepository.deleteAll();
+	}
 
 	@Nested
 	@DisplayName("login")
@@ -252,7 +258,7 @@ class MemberControllerTest {
 					Jwt.Claims.from(
 							1L, new String[] {USER.getRole()}
 					));
-			tokenRepository.save(new Token(1L, tokenResponse.refreshToken()));
+			tokenRepository.save(new Token(tokenResponse.refreshToken(), tokenResponse.accessToken(), 1L));
 
 			mockMvc.perform(post("/logout")
 							.contentType(MediaType.APPLICATION_JSON)
@@ -304,11 +310,12 @@ class MemberControllerTest {
 							1L, new String[] {USER.getRole()}
 					));
 
-			tokenRepository.save(new Token(1L, tokenResponse.refreshToken()));
+			tokenRepository.save(new Token(tokenResponse.refreshToken(), tokenResponse.accessToken(), 1L));
 
 			mockMvc.perform(post("/api/v1/members/refresh")
 							.contentType(MediaType.APPLICATION_JSON)
-							.content(objectMapper.writeValueAsString(new TokenRefreshRequest(tokenResponse.refreshToken())))
+							.content(objectMapper.writeValueAsString(
+									new TokenRefreshRequest(tokenResponse.accessToken(), tokenResponse.refreshToken())))
 					)
 					.andExpect(status().isOk())
 					.andDo(print())
@@ -316,6 +323,7 @@ class MemberControllerTest {
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestFields(
+									fieldWithPath("accessToken").type(JsonFieldType.STRING).description("액세스 토큰"),
 									fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰")
 							),
 							responseFields(
@@ -333,7 +341,7 @@ class MemberControllerTest {
 							1L, new String[] {USER.getRole()}
 					));
 
-			tokenRepository.save(new Token(1L, tokenResponse.refreshToken()));
+			tokenRepository.save(new Token(tokenResponse.refreshToken(), tokenResponse.accessToken(), 1L));
 
 			mockMvc.perform(post("/api/v1/members/refresh")
 							.contentType(MediaType.APPLICATION_JSON)
@@ -363,14 +371,16 @@ class MemberControllerTest {
 
 			mockMvc.perform(post("/api/v1/members/refresh")
 							.contentType(MediaType.APPLICATION_JSON)
-							.content(objectMapper.writeValueAsString(new TokenRefreshRequest(tokenResponse.refreshToken())))
-					)
+							.content(objectMapper.writeValueAsString(new TokenRefreshRequest(
+									tokenResponse.accessToken(), tokenResponse.refreshToken()))
+							))
 					.andExpect(status().isUnauthorized())
 					.andDo(print())
 					.andDo(document("member/refresh token 재발급 실패 - 리프레시 토큰이 만료되었을 경우",
 							getDocumentRequest(),
 							getDocumentResponse(),
 							requestFields(
+									fieldWithPath("accessToken").description("액세스 토큰"),
 									fieldWithPath("refreshToken").description("리프레시 토큰")
 							),
 							responseFields(

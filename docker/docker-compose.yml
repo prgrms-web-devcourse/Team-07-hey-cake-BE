@@ -3,7 +3,7 @@ services:
   mysql:
     image: mysql:8.0.32
     ports:
-      - 3306:3306
+      - "3306:3306"
     env_file:
       - ../env/docker-compose.env
     container_name: hey-cake
@@ -13,6 +13,20 @@ services:
       - hey-cake:/var/lib/hey-cake/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: always
+
+  redis:
+    image: redis:6.0.16
+    ports:
+      - "6379:6379"
+    env_file:
+      - ../env/redis.env
+    container_name: hey-cake-redis
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - hey-cake:/var/lib/hey-cake/redis
+    restart: always
+    command: redis-server
 
 volumes:
   hey-cake:

@@ -18,16 +18,16 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          
+
       - name: Caching gradle
         uses: actions/cache@v3
         with:
           path: |
-              ~/.gradle/caches
-              ~/.gradle/wrapper
+            ~/.gradle/caches
+            ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-              ${{ runner.os }}-gradle-
+            ${{ runner.os }}-gradle-
 
       #CI
       - name: Generate environment file
@@ -38,6 +38,7 @@ jobs:
           echo "${{secrets.AWS_ENV}}" >> env/aws.env
           echo "${{secrets.JWT_ENV}}" >> env/jwt.env
           echo "${{secrets.OAUTH2_ENV}}" >> env/oauth2.env
+          echo "${{secrets.REDIS_ENV}}" >> env/redis.env
           echo "${{secrets.TEST_DB_ENV}}" >> env/test-db.env
       - name: Run docker-compose
         uses: isbang/compose-action@v1.4.1

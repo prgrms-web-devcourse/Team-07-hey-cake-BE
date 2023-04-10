@@ -3,8 +3,10 @@ package com.programmers.heycake.domain.facade;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.domain.member.model.dto.request.TokenRefreshRequest;
 import com.programmers.heycake.domain.member.model.dto.response.TokenResponse;
 import com.programmers.heycake.domain.member.model.entity.Member;
+import com.programmers.heycake.domain.member.model.entity.Token;
 import com.programmers.heycake.domain.member.service.MemberService;
 import com.programmers.heycake.domain.member.service.TokenService;
 
@@ -30,7 +32,7 @@ public class MemberFacade {
 	}
 
 	@Transactional
-	public TokenResponse reissueToken(String refreshToken) {
-		return tokenService.reissueToken(refreshToken);
+	public Token reissueToken(TokenRefreshRequest tokenRefreshRequest) {
+		return tokenService.reissueToken(tokenRefreshRequest);
 	}
 }

@@ -47,7 +47,7 @@ import com.programmers.heycake.domain.comment.repository.CommentRepository;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.repository.ImageRepository;
-import com.programmers.heycake.domain.image.service.ImageUploadService;
+import com.programmers.heycake.domain.image.service.ImageStorageService;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
@@ -97,7 +97,7 @@ class OfferControllerTest {
 	ImageRepository imageRepository;
 
 	@MockBean
-	private ImageUploadService imageUploadService;
+	private ImageStorageService imageStorageService;
 
 	@Autowired
 	CommentRepository commentRepository;
@@ -318,7 +318,7 @@ class OfferControllerTest {
 			OfferCreateRequest request = new OfferCreateRequest(order.getId(), 50000, "내용", getMockFile());
 			String imageUrl = "imageURL";
 
-			when(imageUploadService.upload(any(), any()))
+			when(imageStorageService.upload(any(), any()))
 					.thenReturn(imageUrl);
 
 			Offer offerResult = getOffer(market.getId(), request.expectedPrice(), request.content());
@@ -366,7 +366,7 @@ class OfferControllerTest {
 			Image image = images.get(0);
 
 			Image imageResult = getImage(offer.getId(), ImageType.OFFER, imageUrl);
-			verify(imageUploadService).upload(any(), any());
+			verify(imageStorageService).upload(any(), any());
 
 			assertThat(offers).hasSize(1);
 			assertThat(offer)
@@ -377,7 +377,7 @@ class OfferControllerTest {
 			assertThat(images).hasSize(1);
 			assertThat(image)
 					.usingRecursiveComparison()
-					.ignoringFields("id")
+					.ignoringFields("id", "createdAt", "updatedAt")
 					.isEqualTo(imageResult);
 		}
 
@@ -447,7 +447,7 @@ class OfferControllerTest {
 			OfferCreateRequest request = new OfferCreateRequest(1L, 50000, "내용", getMockFile());
 			String imageUrl = "imageURL";
 
-			when(imageUploadService.upload(any(), any()))
+			when(imageStorageService.upload(any(), any()))
 					.thenReturn(imageUrl);
 
 			// when
@@ -512,7 +512,7 @@ class OfferControllerTest {
 			OfferCreateRequest request = new OfferCreateRequest(order.getId(), 50000, "내용", getMockFile());
 			String imageUrl = "imageURL";
 
-			when(imageUploadService.upload(any(), any()))
+			when(imageStorageService.upload(any(), any()))
 					.thenReturn(imageUrl);
 
 			// when
@@ -733,7 +733,7 @@ class OfferControllerTest {
 		OfferCreateRequest request = new OfferCreateRequest(order.getId(), 50000, "내용", getMockFile());
 		String imageUrl = "imageURL";
 
-		when(imageUploadService.upload(any(), any()))
+		when(imageStorageService.upload(any(), any()))
 				.thenReturn(imageUrl);
 
 		Offer offerResult = getOffer(market.getId(), request.expectedPrice(), request.content());
@@ -795,7 +795,7 @@ class OfferControllerTest {
 		OfferCreateRequest request = new OfferCreateRequest(order.getId(), 50000, "내용", getMockFile());
 		String imageUrl = "imageURL";
 
-		when(imageUploadService.upload(any(), any()))
+		when(imageStorageService.upload(any(), any()))
 				.thenReturn(imageUrl);
 
 		Offer offerResult = getOffer(market.getId(), request.expectedPrice(), request.content());
@@ -860,7 +860,7 @@ class OfferControllerTest {
 		OfferCreateRequest request = new OfferCreateRequest(order.getId(), 50000, "내용", getMockFile());
 		String imageUrl = "imageURL";
 
-		when(imageUploadService.upload(any(), any()))
+		when(imageStorageService.upload(any(), any()))
 				.thenReturn(imageUrl);
 
 		Offer offerResult = getOffer(market.getId(), request.expectedPrice(), request.content());
