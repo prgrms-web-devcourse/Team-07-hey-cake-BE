@@ -137,6 +137,7 @@ CREATE TABLE `follow` (
       created_at	datetime(6)	NOT NULL,
       updated_at	datetime(6)	NOT NULL,
       deleted_at	datetime(6)	NULL,
+      constraint unique_follow UNIQUE (member_id, market_id),
       constraint follow_with_member_id_fk foreign key (member_id) references member (id),
       constraint follow_with_market_id_fk foreign key (market_id) references market (id)
 );
