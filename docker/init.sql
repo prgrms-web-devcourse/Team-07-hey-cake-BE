@@ -124,6 +124,19 @@ create table if not exists order_history
     constraint order_history_with_order_id_fk foreign key (order_id) references orders (id)
 );
 
+
+CREATE TABLE `follow` (
+      id	BIGINT	NOT NULL auto_increment primary key,
+      member_id	BIGINT	NOT NULL,
+      market_id	BIGINT	NOT NULL,
+      created_at	datetime(6)	NOT NULL,
+      updated_at	datetime(6)	NOT NULL,
+      deleted_at	datetime(6)	NULL,
+      constraint unique_follow UNIQUE (member_id, market_id),
+      constraint follow_with_member_id_fk foreign key (member_id) references member (id),
+      constraint follow_with_market_id_fk foreign key (market_id) references market (id)
+);
+
 CREATE TABLE BATCH_JOB_INSTANCE
 (
     JOB_INSTANCE_ID BIGINT  NOT NULL PRIMARY KEY ,
