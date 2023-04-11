@@ -9,6 +9,7 @@ import com.programmers.heycake.domain.offer.model.dto.OfferDto;
 import com.programmers.heycake.domain.offer.service.OfferService;
 import com.programmers.heycake.domain.order.model.dto.request.HistoryCreateControllerRequest;
 import com.programmers.heycake.domain.order.model.dto.request.HistoryCreateFacadeRequest;
+import com.programmers.heycake.domain.order.model.dto.request.UpdateSugarScoreRequest;
 import com.programmers.heycake.domain.order.model.entity.Order;
 import com.programmers.heycake.domain.order.model.vo.OrderStatus;
 import com.programmers.heycake.domain.order.service.HistoryService;
@@ -36,6 +37,11 @@ public class HistoryFacade {
 				new HistoryCreateFacadeRequest(getMemberId(), offerDto.marketId(), order);
 
 		return historyService.createHistory(historyCreateFacadeRequest);
+	}
+
+	@Transactional
+	public void updateSugarScore(UpdateSugarScoreRequest updateSugarScoreRequest) {
+		historyService.updateSugarScore(updateSugarScoreRequest);
 	}
 
 	private OrderStatus checkPayment(Boolean isPaid) {
