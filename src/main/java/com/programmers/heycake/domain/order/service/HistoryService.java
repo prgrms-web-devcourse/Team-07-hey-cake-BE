@@ -7,11 +7,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.common.exception.BusinessException;
+import com.programmers.heycake.common.exception.ErrorCode;
+import com.programmers.heycake.common.util.AuthenticationUtil;
 import com.programmers.heycake.domain.order.model.dto.request.HistoryCreateFacadeRequest;
 import com.programmers.heycake.domain.order.model.dto.request.MyOrdersRequest;
+import com.programmers.heycake.domain.order.model.dto.request.UpdateSugarScoreRequest;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrderResponse;
 import com.programmers.heycake.domain.order.model.dto.response.MyOrdersResponse;
 import com.programmers.heycake.domain.order.model.entity.Order;
@@ -57,8 +62,27 @@ public class HistoryService {
 		return toMyOrdersResponse(orderHistories, lastId);
 	}
 
+	@Transactional
+	public OrderHistory getOrderHistory(Long orderHistoryId) {
+		return historyRepository.findById(orderHistoryId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+	}
+
 	@Transactional(readOnly = true)
 	public boolean isPaidOffer(Long marketId, Long orderId) {
 		return historyRepository.existsByMarketIdAndOrderId(marketId, orderId);
+	}
+
+	@Transactional
+	public void updateSugarScore(UpdateSugarScoreRequest updateSugarScoreRequest) {
+		OrderHistory orderHistory = getOrderHistory(updateSugarScoreRequest.orderHistoryId());
+		isOrderWriter(orderHistory);
+		orderHistory.updateSugarScore(updateSugarScoreRequest.sugarScore());
+	}
+
+	private void isOrderWriter(OrderHistory orderHistory) {
+		if (!orderHistory.getMemberId().equals(AuthenticationUtil.getMemberId())) {
+			throw new AccessDeniedException("잘못된 접근입니다.");
+		}
 	}
 }
