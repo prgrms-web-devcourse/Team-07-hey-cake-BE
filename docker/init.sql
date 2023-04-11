@@ -111,13 +111,14 @@ create table if not exists comment
 
 create table if not exists order_history
 (
-    id         bigint auto_increment primary key,
-    created_at datetime(6) not null,
-    deleted_at datetime(6) null,
-    updated_at datetime(6) not null,
-    market_id  bigint      not null,
-    member_id  bigint      not null,
-    order_id   bigint      not null,
+    id          bigint auto_increment primary key,
+    created_at  datetime(6) not null,
+    deleted_at  datetime(6) null,
+    updated_at  datetime(6) not null,
+    market_id   bigint      not null,
+    member_id   bigint      not null,
+    order_id    bigint      not null,
+    sugar_score tinyint     not null,
     constraint order_history_with_order_id_fk foreign key (order_id) references orders (id)
 );
 
