@@ -20,14 +20,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.programmers.heycake.domain.market.model.entity.Follow;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
+import com.programmers.heycake.domain.market.repository.FollowRepository;
 import com.programmers.heycake.domain.market.repository.MarketEnrollmentRepository;
 import com.programmers.heycake.domain.market.repository.MarketRepository;
-import com.programmers.heycake.domain.member.model.entity.Follow;
 import com.programmers.heycake.domain.member.model.entity.Member;
 import com.programmers.heycake.domain.member.model.vo.MemberAuthority;
-import com.programmers.heycake.domain.member.repository.FollowRepository;
 import com.programmers.heycake.domain.member.repository.MemberRepository;
 
 @Transactional

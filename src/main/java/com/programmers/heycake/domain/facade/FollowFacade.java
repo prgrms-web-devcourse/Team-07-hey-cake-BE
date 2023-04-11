@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
+import com.programmers.heycake.domain.market.service.FollowService;
 import com.programmers.heycake.domain.market.service.MarketService;
-import com.programmers.heycake.domain.member.service.FollowService;
 import com.programmers.heycake.domain.member.service.MemberService;
 
 import lombok.RequiredArgsConstructor;

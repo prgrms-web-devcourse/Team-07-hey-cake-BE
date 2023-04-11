@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.member.controller;
+package com.programmers.heycake.domain.market.controller;
 
 import java.net.URI;
 

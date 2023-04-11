@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.member.service;
+package com.programmers.heycake.domain.market.service;
 
 import static com.programmers.heycake.common.util.AuthenticationUtil.*;
 
@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.common.exception.ErrorCode;
-import com.programmers.heycake.domain.member.model.entity.Follow;
-import com.programmers.heycake.domain.member.repository.FollowRepository;
+import com.programmers.heycake.domain.market.model.entity.Follow;
+import com.programmers.heycake.domain.market.repository.FollowRepository;
 
 import lombok.RequiredArgsConstructor;
 
