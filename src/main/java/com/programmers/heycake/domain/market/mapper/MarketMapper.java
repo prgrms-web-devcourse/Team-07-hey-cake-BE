@@ -2,8 +2,11 @@ package com.programmers.heycake.domain.market.mapper;
 
 import static com.programmers.heycake.common.exception.ErrorCode.*;
 
+import java.util.List;
+
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
+import com.programmers.heycake.domain.market.model.dto.response.FollowMarketsResponse;
 import com.programmers.heycake.domain.market.model.dto.response.MarketDetailResponse;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
@@ -41,5 +44,10 @@ public class MarketMapper {
 				.endTime(enrollment.getEndTime())
 				.description(enrollment.getDescription())
 				.build();
+	}
+
+	public static FollowMarketsResponse toFollowMarketsResponse(List<MarketDetailResponse> myFollowMarkets,
+			Long lastCursorId) {
+		return new FollowMarketsResponse(myFollowMarkets, lastCursorId);
 	}
 }

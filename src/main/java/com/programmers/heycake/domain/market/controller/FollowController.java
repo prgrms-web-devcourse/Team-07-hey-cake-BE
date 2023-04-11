@@ -8,12 +8,16 @@ import javax.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.facade.FollowFacade;
+import com.programmers.heycake.domain.market.model.dto.request.FollowMarketRequest;
+import com.programmers.heycake.domain.market.model.dto.response.FollowMarketsResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,4 +43,13 @@ public class FollowController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@GetMapping("/my")
+	public ResponseEntity<FollowMarketsResponse> getFollowMarkets(
+			@RequestParam(required = false) Long cursorId,
+			@RequestParam(defaultValue = "10") int pageSize
+	) {
+		FollowMarketRequest followMarketRequest = new FollowMarketRequest(cursorId, pageSize);
+
+		return ResponseEntity.ok(followFacade.getFollowMarkets(followMarketRequest));
+	}
 }

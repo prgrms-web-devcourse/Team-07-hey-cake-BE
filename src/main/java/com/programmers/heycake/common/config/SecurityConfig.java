@@ -96,6 +96,7 @@ public class SecurityConfig {
 				.antMatchers(HttpMethod.PATCH, "/api/v1/markets/**").hasRole("MARKET")
 				.antMatchers(HttpMethod.POST, "/api/v1/follows/**").hasRole("USER")
 				.antMatchers(HttpMethod.DELETE, "/api/v1/follows/**").hasRole("USER")
+				.antMatchers(HttpMethod.GET, "/api/v1/follows/my").hasRole("USER")
 				.and()
 				.csrf().disable()
 				.headers().disable()
