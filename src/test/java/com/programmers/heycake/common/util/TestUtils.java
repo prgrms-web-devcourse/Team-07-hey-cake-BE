@@ -15,6 +15,7 @@ import com.programmers.heycake.domain.comment.model.entity.Comment;
 import com.programmers.heycake.domain.image.model.entity.Image;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.market.model.dto.request.EnrollmentCreateRequest;
+import com.programmers.heycake.domain.market.model.entity.Follow;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 import com.programmers.heycake.domain.market.model.vo.MarketAddress;
@@ -263,6 +264,13 @@ public class TestUtils {
 				.description("성준's 가게")
 				.businessLicenseImage(getMockFile())
 				.marketImage(getMockFile())
+				.build();
+	}
+
+	public static Follow getFollow(Long memberId, Long marketId) {
+		return Follow.builder()
+				.memberId(memberId)
+				.marketId(marketId)
 				.build();
 	}
 
