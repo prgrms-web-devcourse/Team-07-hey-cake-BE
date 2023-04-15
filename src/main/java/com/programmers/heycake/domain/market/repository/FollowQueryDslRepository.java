@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.programmers.heycake.domain.market.model.dto.request.FollowMarketRequest;
-import com.programmers.heycake.domain.member.model.entity.QFollow;
+import com.programmers.heycake.domain.market.model.entity.QFollow;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 

@@ -24,7 +24,7 @@ public class FollowService {
 
 	@Transactional
 	public Long createFollow(Long marketId, Long memberId) {
-		if (followRepository.existsByMemberIdAndMarketId(memberId, marketId)) {
+		if (isFollowed(memberId, marketId)) {
 			throw new BusinessException(ErrorCode.DUPLICATED);
 		}
 
@@ -38,7 +38,7 @@ public class FollowService {
 
 	@Transactional
 	public void deleteFollow(Long marketId) {
-		if (!followRepository.existsByMemberIdAndMarketId(getMemberId(), marketId)) {
+		if (!isFollowed(getMemberId(), marketId)) {
 			throw new BusinessException(ErrorCode.BAD_REQUEST);
 		}
 
@@ -49,6 +49,16 @@ public class FollowService {
 	public List<Long> getFollowMarketIds(FollowMarketRequest followMarketRequest, Long memberId) {
 
 		return followQueryDslRepository.getFollowMarketIds(followMarketRequest, memberId);
+	}
+
+	@Transactional(readOnly = true)
+	public int getFollowNumber(Long marketId) {
+		return followRepository.countByMarketId(marketId);
+	}
+
+	@Transactional(readOnly = true)
+	public boolean isFollowed(Long memberId, Long marketId) {
+		return followRepository.existsByMemberIdAndMarketId(memberId, marketId);
 	}
 
 }

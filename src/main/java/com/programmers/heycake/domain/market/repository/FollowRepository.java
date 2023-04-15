@@ -8,4 +8,6 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 	void deleteByMemberIdAndMarketId(Long memberId, Long marketId);
 
 	boolean existsByMemberIdAndMarketId(Long memberId, Long marketId);
+
+	int countByMarketId(Long marketId);
 }
