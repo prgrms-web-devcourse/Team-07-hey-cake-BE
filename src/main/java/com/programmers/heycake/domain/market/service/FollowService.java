@@ -52,7 +52,7 @@ public class FollowService {
 	}
 
 	@Transactional(readOnly = true)
-	public int getFollowNumber(Long marketId) {
+	public Long getFollowNumber(Long marketId) {
 		return followRepository.countByMarketId(marketId);
 	}
 

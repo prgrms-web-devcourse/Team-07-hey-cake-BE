@@ -9,7 +9,7 @@ import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.mapper.MarketMapper;
-import com.programmers.heycake.domain.market.model.dto.response.MarketDetailResponse;
+import com.programmers.heycake.domain.market.model.dto.response.MarketResponse;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.service.FollowService;
 import com.programmers.heycake.domain.market.service.MarketService;
@@ -25,14 +25,14 @@ public class MarketFacade {
 	private final FollowService followService;
 
 	@Transactional(readOnly = true)
-	public MarketDetailResponse getMarket(Long marketId) {
+	public MarketResponse getMarket(Long marketId) {
 		Market market = marketService.getMarketWithMarketEnrollmentById(marketId);
 		ImageResponses images = imageService.getImages(marketId, ImageType.MARKET);
-		int followNumber = followService.getFollowNumber(marketId);
+		Long followNumber = followService.getFollowNumber(marketId);
 		if (!isAnonymous()) {
 			boolean followed = followService.isFollowed(getMemberId(), marketId);
-			return MarketMapper.toMarketDetailResponse(market, images, followNumber, followed);
+			return MarketMapper.toMarketResponse(market, images, followNumber, followed);
 		}
-		return MarketMapper.toMarketDetailResponse(market, images, followNumber);
+		return MarketMapper.toMarketResponse(market, images, followNumber);
 	}
 }

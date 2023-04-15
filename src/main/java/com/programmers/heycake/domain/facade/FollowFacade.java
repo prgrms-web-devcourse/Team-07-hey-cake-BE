@@ -14,7 +14,7 @@ import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.model.dto.request.FollowMarketRequest;
 import com.programmers.heycake.domain.market.model.dto.response.FollowMarketsResponse;
-import com.programmers.heycake.domain.market.model.dto.response.MarketDetailResponse;
+import com.programmers.heycake.domain.market.model.dto.response.MarketResponse;
 import com.programmers.heycake.domain.market.service.FollowService;
 import com.programmers.heycake.domain.market.service.MarketService;
 import com.programmers.heycake.domain.member.service.MemberService;
@@ -51,8 +51,8 @@ public class FollowFacade {
 	public FollowMarketsResponse getFollowMarkets(FollowMarketRequest followMarketRequest) {
 		List<Long> followMarketIds = followService.getFollowMarketIds(followMarketRequest, getMemberId());
 
-		List<MarketDetailResponse> myFollowMarkets = followMarketIds.stream()
-				.map(id -> toMarketDetailResponse(
+		List<MarketResponse> myFollowMarkets = followMarketIds.stream()
+				.map(id -> toMarketResponse(
 						marketService.getMarketById(id),
 						imageService.getImages(id, ImageType.MARKET),
 						followService.getFollowNumber(id)

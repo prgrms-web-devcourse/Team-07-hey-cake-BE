@@ -9,5 +9,5 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
 	boolean existsByMemberIdAndMarketId(Long memberId, Long marketId);
 
-	int countByMarketId(Long marketId);
+	Long countByMarketId(Long marketId);
 }

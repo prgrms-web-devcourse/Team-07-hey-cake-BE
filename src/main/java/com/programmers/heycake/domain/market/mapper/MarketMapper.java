@@ -8,6 +8,7 @@ import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
 import com.programmers.heycake.domain.market.model.dto.response.FollowMarketsResponse;
 import com.programmers.heycake.domain.market.model.dto.response.MarketDetailResponse;
+import com.programmers.heycake.domain.market.model.dto.response.MarketResponse;
 import com.programmers.heycake.domain.market.model.entity.Market;
 import com.programmers.heycake.domain.market.model.entity.MarketEnrollment;
 
@@ -17,8 +18,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MarketMapper {
 
-	public static MarketDetailResponse toMarketDetailResponse(
-			Market market, ImageResponses images, int followerNumber) {
+	public static MarketDetailResponse toMarketDetailResponse(Market market, ImageResponses images) {
 		return MarketDetailResponse.builder()
 				.phoneNumber(market.getPhoneNumber())
 				.address(market.getMarketAddress())
@@ -34,14 +34,18 @@ public class MarketMapper {
 								.orElseThrow(() -> {
 									throw new BusinessException(ENTITY_NOT_FOUND);
 								}).imageUrl())
-				.followerNumber(followerNumber)
-				.isFollowed(false)
 				.build();
 	}
 
-	public static MarketDetailResponse toMarketDetailResponse(
-			Market market, ImageResponses images, int followerNumber, boolean isFollowed) {
-		return MarketDetailResponse.builder()
+	public static MarketResponse toMarketResponse(
+			Market market, ImageResponses images, Long followerNumber) {
+		return toMarketResponse(market, images, followerNumber, false);
+	}
+
+	public static MarketResponse toMarketResponse(
+			Market market, ImageResponses images, Long followerNumber, boolean isFollowed) {
+		return MarketResponse.builder()
+				.id(market.getId())
 				.phoneNumber(market.getPhoneNumber())
 				.address(market.getMarketAddress())
 				.openTime(market.getOpenTime())
@@ -71,8 +75,8 @@ public class MarketMapper {
 				.build();
 	}
 
-	public static FollowMarketsResponse toFollowMarketsResponse(List<MarketDetailResponse> myFollowMarkets,
-			Long lastCursorId) {
-		return new FollowMarketsResponse(myFollowMarkets, lastCursorId);
+	public static FollowMarketsResponse toFollowMarketsResponse(List<MarketResponse> myFollowMarkets,
+			Long cursorId) {
+		return new FollowMarketsResponse(myFollowMarkets, cursorId);
 	}
 }
