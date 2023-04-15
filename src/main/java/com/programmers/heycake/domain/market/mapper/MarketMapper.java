@@ -17,7 +17,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MarketMapper {
 
-	public static MarketDetailResponse toMarketDetailResponse(Market market, ImageResponses images) {
+	public static MarketDetailResponse toMarketDetailResponse(
+			Market market, ImageResponses images, int followerNumber) {
 		return MarketDetailResponse.builder()
 				.phoneNumber(market.getPhoneNumber())
 				.address(market.getMarketAddress())
@@ -33,6 +34,30 @@ public class MarketMapper {
 								.orElseThrow(() -> {
 									throw new BusinessException(ENTITY_NOT_FOUND);
 								}).imageUrl())
+				.followerNumber(followerNumber)
+				.isFollowed(false)
+				.build();
+	}
+
+	public static MarketDetailResponse toMarketDetailResponse(
+			Market market, ImageResponses images, int followerNumber, boolean isFollowed) {
+		return MarketDetailResponse.builder()
+				.phoneNumber(market.getPhoneNumber())
+				.address(market.getMarketAddress())
+				.openTime(market.getOpenTime())
+				.endTime(market.getEndTime())
+				.description(market.getDescription())
+				.marketName(market.getMarketEnrollment().getMarketName())
+				.businessNumber(market.getMarketEnrollment().getBusinessNumber())
+				.ownerName(market.getMarketEnrollment().getOwnerName())
+				.marketImage(
+						images.images().stream()
+								.findFirst()
+								.orElseThrow(() -> {
+									throw new BusinessException(ENTITY_NOT_FOUND);
+								}).imageUrl())
+				.followerNumber(followerNumber)
+				.isFollowed(isFollowed)
 				.build();
 	}
 

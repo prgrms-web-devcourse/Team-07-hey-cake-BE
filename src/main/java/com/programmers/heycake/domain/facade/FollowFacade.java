@@ -54,7 +54,8 @@ public class FollowFacade {
 		List<MarketDetailResponse> myFollowMarkets = followMarketIds.stream()
 				.map(id -> toMarketDetailResponse(
 						marketService.getMarketById(id),
-						imageService.getImages(id, ImageType.MARKET)
+						imageService.getImages(id, ImageType.MARKET),
+						followService.getFollowNumber(id)
 				))
 				.toList();
 

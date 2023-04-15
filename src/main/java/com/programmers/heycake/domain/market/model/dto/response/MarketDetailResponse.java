@@ -17,6 +17,8 @@ public record MarketDetailResponse(
 		String marketName,
 		String businessNumber,
 		String ownerName,
-		String marketImage
+		String marketImage,
+		int followerNumber,
+		boolean isFollowed
 ) {
 }
