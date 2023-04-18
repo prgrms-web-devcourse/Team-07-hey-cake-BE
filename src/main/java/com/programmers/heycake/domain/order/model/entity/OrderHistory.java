@@ -37,7 +37,7 @@ public class OrderHistory extends BaseEntity {
 	@Column(name = "market_id", nullable = false)
 	private Long marketId;
 
-	@Column(name = "sugar_score", nullable = false)
+	@Column(name = "sugar_score", nullable = true)
 	private Integer sugarScore;
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -47,7 +47,6 @@ public class OrderHistory extends BaseEntity {
 	public OrderHistory(Long memberId, Long marketId) {
 		this.memberId = memberId;
 		this.marketId = marketId;
-		this.sugarScore = 0;
 	}
 
 	public void setOrder(Order order) {
