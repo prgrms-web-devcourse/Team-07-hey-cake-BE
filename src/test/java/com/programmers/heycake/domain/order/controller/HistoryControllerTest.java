@@ -109,10 +109,12 @@ class HistoryControllerTest {
 
 			Order order = orderRepository.save(getOrder(member.getId()));
 
-			MarketEnrollment marketEnrollment = setTestMarketEnrollment(member, "1231231234");
-			Market market = setTestMarket(member, marketEnrollment);
+			MarketEnrollment marketEnrollment =
+					marketEnrollmentRepository.save(getMarketEnrollment("1231231234", member));
 
-			Offer offer = setTestOffer(order, market);
+			Market market = marketRepository.save(getMarket(member, marketEnrollment));
+
+			Offer offer = offerRepository.save(getOffer(order, market));
 
 			HistoryCreateControllerRequest historyControllerRequest =
 					new HistoryCreateControllerRequest(order.getId(), offer.getId(), true);
@@ -153,17 +155,20 @@ class HistoryControllerTest {
 
 			Order order = orderRepository.save(getOrder(member.getId()));
 
-			MarketEnrollment marketEnrollment = setTestMarketEnrollment(anotherMember, "1234123412");
-			Market market = setTestMarket(member, marketEnrollment);
+			MarketEnrollment marketEnrollment =
+					marketEnrollmentRepository.save(getMarketEnrollment("1234123412", anotherMember));
 
-			setTestOffer(order, market);
+			Market market = marketRepository.save(getMarket(member, marketEnrollment));
 
+			offerRepository.save(getOffer(order, market));
 			Order anotherOrder = orderRepository.save(getOrder(anotherMember.getId()));
 
-			MarketEnrollment anotherMarketEnrollment = setTestMarketEnrollment(anotherMember, "1231231234");
-			Market anotherMarket = setTestMarket(anotherMember, anotherMarketEnrollment);
+			MarketEnrollment anotherMarketEnrollment =
+					marketEnrollmentRepository.save(getMarketEnrollment("1231231234", anotherMember));
 
-			Offer anotherOffer = setTestOffer(anotherOrder, anotherMarket);
+			Market anotherMarket = marketRepository.save(getMarket(anotherMember, anotherMarketEnrollment));
+
+			Offer anotherOffer = offerRepository.save(getOffer(anotherOrder, anotherMarket));
 
 			HistoryCreateControllerRequest historyControllerRequest =
 					new HistoryCreateControllerRequest(order.getId(), anotherOffer.getId(), true);
@@ -236,20 +241,23 @@ class HistoryControllerTest {
 
 			Order order = orderRepository.save(getOrder(member.getId()));
 
-			MarketEnrollment marketEnrollment = setTestMarketEnrollment(anotherMember, "1234123412");
-			Market market = setTestMarket(member, marketEnrollment);
+			MarketEnrollment marketEnrollment =
+					marketEnrollmentRepository.save(getMarketEnrollment("1234123412", anotherMember));
 
-			setTestOffer(order, market);
+			Market market = marketRepository.save(getMarket(member, marketEnrollment));
 
+			offerRepository.save(getOffer(order, market));
 			Order anotherOrder = orderRepository.save(getOrder(anotherMember.getId()));
 
-			MarketEnrollment anotherMarketEnrollment = setTestMarketEnrollment(anotherMember, "1231231231");
-			Market anotherMarket = setTestMarket(anotherMember, anotherMarketEnrollment);
+			MarketEnrollment anotherMarketEnrollment =
+					marketEnrollmentRepository.save(getMarketEnrollment("1231231231", anotherMember));
 
-			Offer anotherOffer = setTestOffer(anotherOrder, anotherMarket);
+			Market anotherMarket = marketRepository.save(getMarket(anotherMember, anotherMarketEnrollment));
 
-			HistoryCreateControllerRequest historyControllerRequest = new HistoryCreateControllerRequest(anotherOrder.getId(),
-					anotherOffer.getId(), true);
+			Offer anotherOffer = offerRepository.save(getOffer(anotherOrder, anotherMarket));
+
+			HistoryCreateControllerRequest historyControllerRequest =
+					new HistoryCreateControllerRequest(anotherOrder.getId(), anotherOffer.getId(), true);
 
 			//when //then
 			mockMvc.perform(post("/api/v1/histories")

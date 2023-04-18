@@ -121,7 +121,7 @@ create table if not exists order_history
     market_id   bigint      not null,
     member_id   bigint      not null,
     order_id    bigint      not null,
-    sugar_score tinyint     not null,
+    sugar_score tinyint     null,
     constraint order_history_with_order_id_fk foreign key (order_id) references orders (id)
 );
 
