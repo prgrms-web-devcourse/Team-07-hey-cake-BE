@@ -13,6 +13,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,7 +35,10 @@ import com.programmers.heycake.domain.member.repository.MemberRepository;
 import com.programmers.heycake.domain.offer.model.entity.Offer;
 import com.programmers.heycake.domain.offer.repository.OfferRepository;
 import com.programmers.heycake.domain.order.model.dto.request.HistoryCreateControllerRequest;
+import com.programmers.heycake.domain.order.model.dto.request.UpdateSugarScoreRequest;
 import com.programmers.heycake.domain.order.model.entity.Order;
+import com.programmers.heycake.domain.order.model.entity.OrderHistory;
+import com.programmers.heycake.domain.order.repository.HistoryRepository;
 import com.programmers.heycake.domain.order.repository.OrderRepository;
 
 @Transactional
@@ -43,7 +48,7 @@ import com.programmers.heycake.domain.order.repository.OrderRepository;
 class HistoryControllerTest {
 
 	private static final String ACCESS_TOKEN = "access_token";
-	private static final String INVALID_ACCESS_TOKEN = "access_token";
+	private static final String INVALID_ACCESS_TOKEN = "invalid_access_token";
 
 	@Autowired
 	MockMvc mockMvc;
@@ -64,7 +69,32 @@ class HistoryControllerTest {
 	MemberRepository memberRepository;
 
 	@Autowired
+	HistoryRepository historyRepository;
+
+	@Autowired
 	MarketEnrollmentRepository marketEnrollmentRepository;
+
+	private Offer setTestOffer(Order order, Market market) {
+		Offer offer = getOffer(market.getId(), 1000, "content");
+		offer.setOrder(order);
+		offerRepository.save(offer);
+		return offer;
+	}
+
+	private Market setTestMarket(Member member, MarketEnrollment marketEnrollment) {
+		Market market = getMarket();
+		market.setMember(member);
+		market.setMarketEnrollment(marketEnrollment);
+		marketRepository.save(market);
+		return market;
+	}
+
+	private MarketEnrollment setTestMarketEnrollment(Member member, String businessNumber) {
+		MarketEnrollment marketEnrollment = getMarketEnrollment(businessNumber);
+		marketEnrollment.setMember(member);
+		marketEnrollmentRepository.save(marketEnrollment);
+		return marketEnrollment;
+	}
 
 	@Nested
 	@DisplayName("createHistory")
@@ -180,7 +210,7 @@ class HistoryControllerTest {
 
 			//when //then
 			mockMvc.perform(post("/api/v1/histories")
-							.header("access_token", INVALID_ACCESS_TOKEN)
+							.header("access_token", ACCESS_TOKEN)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(historyControllerRequest))
 							.with(csrf()))
@@ -293,4 +323,189 @@ class HistoryControllerTest {
 
 	}
 
+	@Nested
+	@DisplayName("updateSugarScore")
+	@Transactional
+	class UpdateSugarScore {
+
+		@Test
+		@DisplayName("Success - 당도 갱신에 성공하여 204 응답으로 한다.")
+		void updateSugarScoreSuccess() throws Exception {
+			Member member = memberRepository.save(getMember("member@gmail.com"));
+			setContext(member.getId(), MemberAuthority.USER);
+
+			Order order = orderRepository.save(getOrder(member.getId()));
+
+			MarketEnrollment marketEnrollment = setTestMarketEnrollment(member, "1231231234");
+			Market market = setTestMarket(member, marketEnrollment);
+
+			Offer offer = setTestOffer(order, market);
+			offer.setOrder(order);
+
+			OrderHistory orderHistory = getOrderHistory(member.getId(), market.getId(), order);
+			historyRepository.save(orderHistory);
+
+			UpdateSugarScoreRequest updateSugarScoreRequest = new UpdateSugarScoreRequest(orderHistory.getId(), 30);
+
+			//when //then
+			mockMvc.perform(post("/api/v1/histories/sugar-score")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(updateSugarScoreRequest))
+							.header("access_token", ACCESS_TOKEN)
+							.with(csrf()))
+					.andExpect(status().isNoContent())
+					.andDo(print())
+					.andDo(
+							document("order/내 주문 당도 갱신 성공",
+									getDocumentRequest(),
+									getDocumentResponse(),
+									requestHeaders(
+											headerWithName("access_token").description("인가 토큰")
+									),
+									requestFields(
+											fieldWithPath("orderHistoryId").type(JsonFieldType.NUMBER).description("주문 히스토리 식별자"),
+											fieldWithPath("sugarScore").type(JsonFieldType.NUMBER).description("주문에 대한 만족도 점수")
+									)));
+		}
+
+		@ParameterizedTest
+		@ValueSource(ints = {-1, -4, 101, 140, 200})
+		@DisplayName("Fail - 당도 갱신값이 잘못되어 400으로 응답으로 한다.")
+		void updateSugarScoreFailByBadRequest(int score) throws Exception {
+			Member member = memberRepository.save(getMember("member@gmail.com"));
+			setContext(member.getId(), MemberAuthority.USER);
+
+			Order order = orderRepository.save(getOrder(member.getId()));
+
+			MarketEnrollment marketEnrollment = setTestMarketEnrollment(member, "1231231234");
+			Market market = setTestMarket(member, marketEnrollment);
+
+			Offer offer = setTestOffer(order, market);
+			offer.setOrder(order);
+
+			OrderHistory orderHistory = getOrderHistory(member.getId(), market.getId(), order);
+			historyRepository.save(orderHistory);
+
+			UpdateSugarScoreRequest updateSugarScoreRequest = new UpdateSugarScoreRequest(orderHistory.getId(), score);
+
+			//when //then
+			mockMvc.perform(post("/api/v1/histories/sugar-score")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(updateSugarScoreRequest))
+							.header("access_token", ACCESS_TOKEN)
+							.with(csrf()))
+					.andExpect(status().isBadRequest())
+					.andDo(print())
+					.andDo(
+							document("order/내 주문 당도 갱신 실패 - 당도값 범위 벗어난 경우",
+									getDocumentRequest(),
+									getDocumentResponse(),
+									requestHeaders(
+											headerWithName("access_token").description("인가 토큰")
+									),
+									requestFields(
+											fieldWithPath("orderHistoryId").type(JsonFieldType.NUMBER).description("주문 히스토리 식별자"),
+											fieldWithPath("sugarScore").type(JsonFieldType.NUMBER).description("주문에 대한 만족도 점수")
+									),
+									responseFields(
+											fieldWithPath("message").type(JsonFieldType.STRING).description("오류 메시지"),
+											fieldWithPath("path").type(JsonFieldType.STRING).description("오류 경로"),
+											fieldWithPath("time").type(JsonFieldType.STRING).description("오류 발생한 시간"),
+											fieldWithPath("inputErrors").type(JsonFieldType.ARRAY).description("오류가 발생한 필드 리스트"),
+											fieldWithPath("inputErrors[].field").type(JsonFieldType.STRING).description("오류가 발생한 필드"),
+											fieldWithPath("inputErrors[].rejectedValue").type(JsonFieldType.NUMBER).description("오류가 발생한 값"),
+											fieldWithPath("inputErrors[].message").type(JsonFieldType.STRING).description("필드에 대한 오류 메시지")
+									)));
+		}
+
+		@Test
+		@DisplayName("Fail - 인증이 되지 않아 401으로 응답으로 한다.")
+		void updateSugarScoreFailByUnAuthorized() throws Exception {
+			Member member = memberRepository.save(getMember("member@gmail.com"));
+			Order order = orderRepository.save(getOrder(member.getId()));
+
+			MarketEnrollment marketEnrollment = setTestMarketEnrollment(member, "1231231234");
+			Market market = setTestMarket(member, marketEnrollment);
+
+			Offer offer = setTestOffer(order, market);
+			offer.setOrder(order);
+
+			OrderHistory orderHistory = getOrderHistory(member.getId(), market.getId(), order);
+			historyRepository.save(orderHistory);
+
+			UpdateSugarScoreRequest updateSugarScoreRequest = new UpdateSugarScoreRequest(orderHistory.getId(), 101);
+
+			//when //then
+			mockMvc.perform(post("/api/v1/histories/sugar-score")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(updateSugarScoreRequest))
+							.header("access_token", INVALID_ACCESS_TOKEN)
+							.with(csrf()))
+					.andExpect(status().isUnauthorized())
+					.andDo(print())
+					.andDo(
+							document("order/내 주문 당도 수정 실패 - 인증이 되지 않은 경우",
+									getDocumentRequest(),
+									getDocumentResponse(),
+									requestHeaders(
+											headerWithName("access_token").description("인가 토큰")
+									),
+									requestFields(
+											fieldWithPath("orderHistoryId").type(JsonFieldType.NUMBER).description("주문 히스토리 식별자"),
+											fieldWithPath("sugarScore").type(JsonFieldType.NUMBER).description("주문에 대한 만족도 점수")
+									),
+									responseFields(
+											fieldWithPath("message").type(JsonFieldType.STRING).description("오류 메시지"),
+											fieldWithPath("path").type(JsonFieldType.STRING).description("오류 경로"),
+											fieldWithPath("time").type(JsonFieldType.STRING).description("오류 발생한 시간"),
+											fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("오류가 발생한 필드")
+									)));
+		}
+	}
+
+	@Test
+	@DisplayName("Fail - 주문 작성자와 평점 작성자가 달라 403으로 응답으로 한다.")
+	void updateSugarScoreFailByBadRequest() throws Exception {
+		Member member = memberRepository.save(getMember("member@gmail.com"));
+		setContext(member.getId(), MemberAuthority.USER);
+
+		Order order = orderRepository.save(getOrder(member.getId()));
+
+		MarketEnrollment marketEnrollment = setTestMarketEnrollment(member, "1231231234");
+		Market market = setTestMarket(member, marketEnrollment);
+
+		Offer offer = setTestOffer(order, market);
+		offer.setOrder(order);
+
+		OrderHistory orderHistory = getOrderHistory(member.getId() + 1L, market.getId(), order);
+		historyRepository.save(orderHistory);
+
+		UpdateSugarScoreRequest updateSugarScoreRequest = new UpdateSugarScoreRequest(orderHistory.getId(), 30);
+
+		//when //then
+		mockMvc.perform(post("/api/v1/histories/sugar-score")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(updateSugarScoreRequest))
+						.header("access_token", ACCESS_TOKEN)
+						.with(csrf()))
+				.andExpect(status().isForbidden())
+				.andDo(print())
+				.andDo(
+						document("order/내 주문 당도 갱신 실패 - 주문 작성자와 당도 평가자가 다른 경우",
+								getDocumentRequest(),
+								getDocumentResponse(),
+								requestHeaders(
+										headerWithName("access_token").description("인가 토큰")
+								),
+								requestFields(
+										fieldWithPath("orderHistoryId").type(JsonFieldType.NUMBER).description("주문 히스토리 식별자"),
+										fieldWithPath("sugarScore").type(JsonFieldType.NUMBER).description("주문에 대한 만족도 점수")
+								),
+								responseFields(
+										fieldWithPath("message").type(JsonFieldType.STRING).description("오류 메시지"),
+										fieldWithPath("path").type(JsonFieldType.STRING).description("오류 경로"),
+										fieldWithPath("time").type(JsonFieldType.STRING).description("오류 발생한 시간"),
+										fieldWithPath("inputErrors").type(JsonFieldType.NULL).description("오류가 발생한 필드")
+								)));
+	}
 }

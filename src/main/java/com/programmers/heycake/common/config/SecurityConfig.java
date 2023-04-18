@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-public class SecurityConfig {
+public class  SecurityConfig {
 
 	private final JwtProperties jwtProperties;
 
@@ -83,7 +83,7 @@ public class SecurityConfig {
 				.antMatchers(HttpMethod.POST, "/api/v1/orders").hasRole("USER")
 				.antMatchers(HttpMethod.GET, "/api/v1/orders/**").permitAll()
 				.antMatchers(HttpMethod.DELETE, "/api/v1/orders/**").hasAnyRole("ADMIN", "USER")
-				.antMatchers(HttpMethod.POST, "/api/v1/histories").hasRole("USER")
+				.antMatchers(HttpMethod.POST, "/api/v1/histories/**").hasRole("USER")
 				.antMatchers(HttpMethod.DELETE, "/api/v1/offers/**").hasAnyRole("ADMIN", "MARKET")
 				.antMatchers(HttpMethod.POST, "/api/v1/offers").hasRole("MARKET")
 				.antMatchers(HttpMethod.POST, "/api/v1/comments").hasAnyRole("ADMIN", "MARKET", "USER")

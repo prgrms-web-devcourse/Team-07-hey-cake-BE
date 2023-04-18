@@ -3,6 +3,7 @@ package com.programmers.heycake.domain.order.controller;
 import java.net.URI;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.facade.HistoryFacade;
 import com.programmers.heycake.domain.order.model.dto.request.HistoryCreateControllerRequest;
+import com.programmers.heycake.domain.order.model.dto.request.UpdateSugarScoreRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,4 +32,11 @@ public class HistoryController {
 		return ResponseEntity.created(location).build();
 	}
 
+	@PostMapping("/sugar-score")
+	public ResponseEntity<Void> updateSugarContent(
+			@RequestBody @Valid UpdateSugarScoreRequest updateSugarScoreRequest
+	) {
+		historyFacade.updateSugarScore(updateSugarScoreRequest);
+		return ResponseEntity.noContent().build();
+	}
 }
