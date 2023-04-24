@@ -18,7 +18,7 @@ public class FollowQueryDslRepository {
 
 	QFollow qFollow = QFollow.follow;
 
-	public List<Long> getFollowMarketIds(FollowMarketRequest followMarketRequest, Long memberId) {
+	public List<Long> getFollowedMarketIds(FollowMarketRequest followMarketRequest, Long memberId) {
 		return jpaQueryFactory.select(qFollow.marketId)
 				.from(qFollow)
 				.where(

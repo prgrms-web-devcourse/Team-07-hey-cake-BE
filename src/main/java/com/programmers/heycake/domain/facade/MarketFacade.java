@@ -28,11 +28,11 @@ public class MarketFacade {
 	public MarketResponse getMarket(Long marketId) {
 		Market market = marketService.getMarketWithMarketEnrollmentById(marketId);
 		ImageResponses images = imageService.getImages(marketId, ImageType.MARKET);
-		Long followNumber = followService.getFollowNumber(marketId);
+		Long followedCount = followService.getFollowedCount(marketId);
 		if (!isAnonymous()) {
-			boolean followed = followService.isFollowed(getMemberId(), marketId);
-			return MarketMapper.toMarketResponse(market, images, followNumber, followed);
+			boolean isFollowed = followService.isFollowed(getMemberId(), marketId);
+			return MarketMapper.toMarketResponse(market, images, followedCount, isFollowed);
 		}
-		return MarketMapper.toMarketResponse(market, images, followNumber);
+		return MarketMapper.toMarketResponse(market, images, followedCount);
 	}
 }

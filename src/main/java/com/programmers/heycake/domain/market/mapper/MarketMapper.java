@@ -43,7 +43,7 @@ public class MarketMapper {
 	}
 
 	public static MarketResponse toMarketResponse(
-			Market market, ImageResponses images, Long followerNumber, boolean isFollowed) {
+			Market market, ImageResponses images, Long followCount, boolean isFollowed) {
 		return MarketResponse.builder()
 				.id(market.getId())
 				.phoneNumber(market.getPhoneNumber())
@@ -60,7 +60,7 @@ public class MarketMapper {
 								.orElseThrow(() -> {
 									throw new BusinessException(ENTITY_NOT_FOUND);
 								}).imageUrl())
-				.followerNumber(followerNumber)
+				.followedCount(followCount)
 				.isFollowed(isFollowed)
 				.build();
 	}

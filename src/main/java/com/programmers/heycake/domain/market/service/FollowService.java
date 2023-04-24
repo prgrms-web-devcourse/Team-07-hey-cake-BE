@@ -46,13 +46,13 @@ public class FollowService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Long> getFollowMarketIds(FollowMarketRequest followMarketRequest, Long memberId) {
+	public List<Long> getFollowedMarketIds(FollowMarketRequest followMarketRequest, Long memberId) {
 
-		return followQueryDslRepository.getFollowMarketIds(followMarketRequest, memberId);
+		return followQueryDslRepository.getFollowedMarketIds(followMarketRequest, memberId);
 	}
 
 	@Transactional(readOnly = true)
-	public Long getFollowNumber(Long marketId) {
+	public Long getFollowedCount(Long marketId) {
 		return followRepository.countByMarketId(marketId);
 	}
 

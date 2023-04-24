@@ -50,6 +50,6 @@ public class FollowController {
 	) {
 		FollowMarketRequest followMarketRequest = new FollowMarketRequest(cursorId, pageSize);
 
-		return ResponseEntity.ok(followFacade.getFollowMarkets(followMarketRequest));
+		return ResponseEntity.ok(followFacade.getFollowedMarkets(followMarketRequest));
 	}
 }

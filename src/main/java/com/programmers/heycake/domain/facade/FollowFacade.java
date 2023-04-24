@@ -48,19 +48,19 @@ public class FollowFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public FollowMarketsResponse getFollowMarkets(FollowMarketRequest followMarketRequest) {
-		List<Long> followMarketIds = followService.getFollowMarketIds(followMarketRequest, getMemberId());
+	public FollowMarketsResponse getFollowedMarkets(FollowMarketRequest followMarketRequest) {
+		List<Long> followedMarketIds = followService.getFollowedMarketIds(followMarketRequest, getMemberId());
 
-		List<MarketResponse> myFollowMarkets = followMarketIds.stream()
+		List<MarketResponse> followedMarkets = followedMarketIds.stream()
 				.map(id -> toMarketResponse(
 						marketService.getMarketById(id),
 						imageService.getImages(id, ImageType.MARKET),
-						followService.getFollowNumber(id)
+						followService.getFollowedCount(id)
 				))
 				.toList();
 
-		Long lastId = followMarketIds.isEmpty() ? 0L : followMarketIds.get(followMarketIds.size() - 1);
+		Long lastId = followedMarketIds.isEmpty() ? 0L : followedMarketIds.get(followedMarketIds.size() - 1);
 
-		return toFollowMarketsResponse(myFollowMarkets, lastId);
+		return toFollowMarketsResponse(followedMarkets, lastId);
 	}
 }

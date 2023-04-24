@@ -19,7 +19,7 @@ public record MarketResponse(
 		String businessNumber,
 		String ownerName,
 		String marketImage,
-		Long followerNumber,
+		Long followedCount,
 		boolean isFollowed
 ) {
 }
