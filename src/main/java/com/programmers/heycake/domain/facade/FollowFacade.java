@@ -13,7 +13,7 @@ import com.programmers.heycake.common.exception.ErrorCode;
 import com.programmers.heycake.domain.image.model.vo.ImageType;
 import com.programmers.heycake.domain.image.service.ImageService;
 import com.programmers.heycake.domain.market.model.dto.request.FollowMarketRequest;
-import com.programmers.heycake.domain.market.model.dto.response.FollowMarketsResponse;
+import com.programmers.heycake.domain.market.model.dto.response.FollowedMarketsResponse;
 import com.programmers.heycake.domain.market.model.dto.response.MarketResponse;
 import com.programmers.heycake.domain.market.service.FollowService;
 import com.programmers.heycake.domain.market.service.MarketService;
@@ -48,7 +48,7 @@ public class FollowFacade {
 	}
 
 	@Transactional(readOnly = true)
-	public FollowMarketsResponse getFollowedMarkets(FollowMarketRequest followMarketRequest) {
+	public FollowedMarketsResponse getFollowedMarkets(FollowMarketRequest followMarketRequest) {
 		List<Long> followedMarketIds = followService.getFollowedMarketIds(followMarketRequest, getMemberId());
 
 		List<MarketResponse> followedMarkets = followedMarketIds.stream()

@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.programmers.heycake.common.exception.BusinessException;
 import com.programmers.heycake.domain.image.model.dto.ImageResponses;
-import com.programmers.heycake.domain.market.model.dto.response.FollowMarketsResponse;
+import com.programmers.heycake.domain.market.model.dto.response.FollowedMarketsResponse;
 import com.programmers.heycake.domain.market.model.dto.response.MarketDetailResponse;
 import com.programmers.heycake.domain.market.model.dto.response.MarketResponse;
 import com.programmers.heycake.domain.market.model.entity.Market;
@@ -75,8 +75,8 @@ public class MarketMapper {
 				.build();
 	}
 
-	public static FollowMarketsResponse toFollowMarketsResponse(List<MarketResponse> myFollowMarkets,
+	public static FollowedMarketsResponse toFollowMarketsResponse(List<MarketResponse> myFollowMarkets,
 			Long cursorId) {
-		return new FollowMarketsResponse(myFollowMarkets, cursorId);
+		return new FollowedMarketsResponse(myFollowMarkets, cursorId);
 	}
 }

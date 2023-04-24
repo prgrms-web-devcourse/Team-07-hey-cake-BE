@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.programmers.heycake.domain.facade.FollowFacade;
 import com.programmers.heycake.domain.market.model.dto.request.FollowMarketRequest;
-import com.programmers.heycake.domain.market.model.dto.response.FollowMarketsResponse;
+import com.programmers.heycake.domain.market.model.dto.response.FollowedMarketsResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,7 +44,7 @@ public class FollowController {
 	}
 
 	@GetMapping("/my")
-	public ResponseEntity<FollowMarketsResponse> getFollowMarkets(
+	public ResponseEntity<FollowedMarketsResponse> getFollowMarkets(
 			@RequestParam(required = false) Long cursorId,
 			@RequestParam(defaultValue = "10") int pageSize
 	) {
