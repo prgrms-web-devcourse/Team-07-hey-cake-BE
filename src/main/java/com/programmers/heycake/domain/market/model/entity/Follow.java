@@ -1,9 +1,6 @@
-package com.programmers.heycake.domain.member.model.entity;
-
-import java.time.LocalTime;
+package com.programmers.heycake.domain.market.model.entity;
 
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,7 +11,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import com.programmers.heycake.domain.BaseEntity;
-import com.programmers.heycake.domain.market.model.vo.MarketAddress;
 
 import lombok.AccessLevel;
 import lombok.Builder;

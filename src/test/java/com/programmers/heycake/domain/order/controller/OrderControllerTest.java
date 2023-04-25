@@ -3,8 +3,8 @@ package com.programmers.heycake.domain.order.controller;
 import static com.programmers.heycake.common.util.ApiDocumentUtils.*;
 import static com.programmers.heycake.common.util.TestUtils.*;
 import static com.programmers.heycake.domain.image.model.vo.ImageType.*;
-import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.MARKET;
 import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.*;
+import static com.programmers.heycake.domain.member.model.vo.MemberAuthority.MARKET;
 import static com.programmers.heycake.domain.order.model.vo.CakeCategory.*;
 import static com.programmers.heycake.domain.order.model.vo.OrderStatus.*;
 import static org.assertj.core.api.Assertions.*;
@@ -100,7 +100,7 @@ class OrderControllerTest {
 		@Test
 		@DisplayName("Success - getMyOrderList 조회한다.")
 		void getMyOrderListSuccess() throws Exception {
-			//given록
+			//given
 			Member member = memberRepository.save(getMember("member"));
 			setContext(member.getId(), USER);
 			setOrders(member, 10);
