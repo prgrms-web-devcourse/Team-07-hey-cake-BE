@@ -1,4 +1,4 @@
-package com.programmers.heycake.domain.member.controller;
+package com.programmers.heycake.domain.market.controller;
 
 import static com.programmers.heycake.common.util.ApiDocumentUtils.*;
 import static com.programmers.heycake.common.util.TestUtils.*;
@@ -502,7 +502,7 @@ class FollowControllerTest {
 									fieldWithPath("followedMarkets[].businessNumber").description("사업자 등록 번호"),
 									fieldWithPath("followedMarkets[].ownerName").description("대표자 이름"),
 									fieldWithPath("followedMarkets[].marketImage").description("업체 사진 url"),
-									fieldWithPath("followedMarkets[].followerNumber").description("팔로우 수"),
+									fieldWithPath("followedMarkets[].followedCount").description("팔로우 수"),
 									fieldWithPath("followedMarkets[].isFollowed").description("팔로우 유무"),
 									fieldWithPath("cursorId").description("커서 식별자")
 							)));
