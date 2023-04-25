@@ -61,14 +61,4 @@ public class FollowService {
 		return followRepository.existsByMemberIdAndMarketId(memberId, marketId);
 	}
 
-	@Transactional(readOnly = true)
-	public int getFollowNumber(Long marketId) {
-		return followRepository.countByMarketId(marketId);
-	}
-
-	@Transactional(readOnly = true)
-	public boolean isFollowed(Long memberId, Long marketId) {
-		return followRepository.existsByMemberIdAndMarketId(memberId, marketId);
-	}
-
 }
